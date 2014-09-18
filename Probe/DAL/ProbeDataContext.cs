@@ -30,7 +30,7 @@ namespace Probe.DAL
 
         static ProbeDataContext()
         {
-            Database.SetInitializer(new InitializeProbeDatabaseWithSeedData());
+            //Database.SetInitializer(new InitializeProbeDatabaseWithSeedData()); //MNS - NO NEED TO SEED IN PRODUCTION
         }
 
         public ProbeDataContext()

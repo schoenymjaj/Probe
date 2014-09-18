@@ -8,8 +8,8 @@ using System.Collections.Generic;
 
 namespace Probe.DAL
 {
-    //public class InitializeProbeDatabaseWithSeedData : DropCreateDatabaseIfModelChanges<ProbeDataContext>
-    public class InitializeProbeDatabaseWithSeedData : DropCreateDatabaseAlways<ProbeDataContext>
+    public class InitializeProbeDatabaseWithSeedData : DropCreateDatabaseIfModelChanges<ProbeDataContext>
+    //public class InitializeProbeDatabaseWithSeedData : DropCreateDatabaseAlways<ProbeDataContext>
     {
 
         protected override void Seed(ProbeDataContext context)
