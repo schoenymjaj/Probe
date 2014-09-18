@@ -366,6 +366,7 @@ namespace Probe.Controllers
             ViewBag.GamePlayName = db.GamePlay.Find(gameplayid).Name;
             ViewBag.PlayerId = playerid;
 
+            //check mobile indicator from request
             if (mobileind != 1)
             {
                 ViewBag.MobileInd = false;
