@@ -1,0 +1,49 @@
+﻿@model Probe.Models.GameQuestion
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Game Question - Details</h2>
+
+<div>
+    <h4>GameQuestion</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Game
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Game.Name)
+        </dd>
+
+        <dt>
+            Question
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Question.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Weight)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Weight)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.OrderNbr)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrderNbr)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index", new { SelectedGame = ViewBag.GameId.SelectedValue })
+</p>

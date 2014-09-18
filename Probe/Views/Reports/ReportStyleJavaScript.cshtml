@@ -1,0 +1,22 @@
+﻿var resize = false;
+$('parent_chart_div').css('min-height:500px;height: 100%;width: 100%;margin:auto;background:#fff;text-align:center');
+$('chart_div').css('min-height:500px;height: 100%;width: 100%;margin:auto;background:#fff;text-align:center');
+
+DoStyleMobile = function () {
+    if (isMobile.any() != null || '@ViewBag.MobileInd' == 'True') {
+    return true;
+    } else {
+    return false;
+    }
+}
+
+$(window).resize(function () {
+    resize = true;
+    drawContent();
+});
+
+
+
+
+
+

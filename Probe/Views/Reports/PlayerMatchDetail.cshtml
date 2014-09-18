@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "PlayerMatchDetail";
+}
+
+<html>
+<head>
+    <title>Player Match Detail</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi "></script>
+    <script type="text/javascript">
+
+        @Html.Partial("ReportStyleJavaScript")
+
+        google.load('visualization', '1', { packages: ['table'] });
+
+        //google.setOnLoadCallback(drawContent);
+        $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
+            drawContent();
+        });
+        function drawContent() {
+            console.log('func drawContent');
+            logError('PlayerMatchDetail - func drawContent start', arguments.callee.trace()); //Logging an event on the server
+
+            if (!resize) ActivityIndicatorOn('#spinner');
+
+            var gamePlayId = '@ViewBag.GamePlayId';
+            var playerId = '@ViewBag.PlayerId';
+            var matchedPlayerId = '@ViewBag.MatchedPlayerId';
+
+            $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchDetailData/' + gamePlayId + '/' + playerId + '/' + matchedPlayerId, {},
+            function (data) {
+
+                //HANDLER FOR INTERACTIVITY
+                selectHandler = function () {
+                    console.log('selectHandler');
+                    var selectedItem = chart.getSelection()[0]; //will get player name
+                    if (selectedItem) {
+                        var matchedplayerId = data[selectedItem.row].MatchedPlayerId;
+                        console.log('The player selected ' + matchedplayerId);
+
+                        //event handler not supported at this time (9/4/14)
+                    }
+                };
+
+                //Let's start catching exceptions
+                try {
+
+                    /*
+                    SETUP REPORT HEADER
+                    */
+                    if (data.length >= 1) {
+                        if (DoStyleMobile()) {
+                            $('#header').html('<span class="reportLabel">Player:</span> ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
+                            $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-2); return false;">Go Back</a>');
+
+                        } else {
+                            $('#header').html('<span class="reportLabel">Player:</span> ' + data[0].PlayerName + ' <span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
+                            $('.reportReturnLink').html('@Html.ActionLink("Back to Player Match Totals", "PlayerMatchSummary", "Reports")');
+                        }
+                    }
+
+                    /*
+                    SETUP GOOGLE TABLE DATA
+                    */
+                    var tdataMatch = new google.visualization.DataTable();
+                    var tdataNonMatch = new google.visualization.DataTable();
+
+                    //tdataMatch.addColumn('string', 'Player');
+                    tdataMatch.addColumn('string', 'Question');
+                    tdataMatch.addColumn('string', 'Player Choice');
+                    tdataMatch.addColumn('string', 'Matchup Choice');
+                    if (!DoStyleMobile()) tdataMatch.addColumn('boolean', 'Match');
+                    tdataMatch.addColumn('number', '% Choice');
+
+                    //tdataNonMatch.addColumn('string', 'Player');
+                    tdataNonMatch.addColumn('string', 'Question');
+                    tdataNonMatch.addColumn('string', 'Player Choice');
+                    tdataNonMatch.addColumn('string', 'Matchup Choice');
+                    if (!DoStyleMobile()) tdataNonMatch.addColumn('boolean', 'Match');
+                    tdataNonMatch.addColumn('number', '% Choice');
+
+                    (!DoStyleMobile()) ? rowlength = 5 : rowlength = 4;
+                    rowVector = new Array(rowlength);
+
+                    for (var i = 0; i < data.length; i++) {
+                        row = 0;
+                        rowVector[row++] = data[i].Question;
+                        rowVector[row++] = data[i].PlayerChoice;
+                        rowVector[row++] = data[i].MatchedPlayerChoice;
+                        if (!DoStyleMobile()) rowVector[row++] = (data[i].Match == 1)
+                        rowVector[row++] = data[i].PercentChosen;
+
+                        if (data[i].Match == 1) {
+                            tdataMatch.addRow(rowVector);
+                        } else {
+                            tdataNonMatch.addRow(rowVector);
+                        }
+                    }
+
+                    var tableMatch = new google.visualization.Table(document.getElementById('tableMatch_div'));
+                    google.visualization.events.addListener(tableMatch, 'select', selectHandler);
+                    tableMatch.draw(tdataMatch);
+
+                    var tableNonMatch = new google.visualization.Table(document.getElementById('tableNonMatch_div'));
+                    google.visualization.events.addListener(tableNonMatch, 'select', selectHandler);
+                    tableNonMatch.draw(tdataNonMatch);
+
+                    if (!resize) ActivitySelectorOff('#spinner');
+
+                    logError('PlayerMatchDetail - func drawContent end', null); //Logging an event on the server
+
+                } catch (err) {
+                    if (arguments != null && arguments.callee != null && arguments.callee.trace) {
+                        logError(err, arguments.callee.trace());
+                    } else {
+                        logError(err, null);
+                    }
+
+                    //retry generating the report (ie.e android emulator had a problem)
+                    //window.location.reload(true); hopefully won't don't need this. loading via document ready alleviated issue
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id='spinner'></div>
+    <div id="title" class="reportTitle">Player - Player Match Details Report</div>
+    <div class="reportReturnLink"></div>
+    <div class="reportResetSytle"></div>
+    <div class="reportGameHeader"><span class="reportLabel">Game: </span>@ViewBag.GamePlayName</div>
+    <div id="header" class="reportHeader"></div>
+    <div class="positiveTableHeader">Matched Questions</div>
+    <div id="tableMatch_div" class="tableMatch"></div>
+    <div class="negativeTableHeader">Non Matched Questions</div>
+    <div id="tableNonMatch_div" class="tableNonMatch"></div>
+</body>
+</html>
