@@ -18,25 +18,25 @@
             drawContent();
         });
         function DoesMaleExist(data) {
-            var status = false;
+            returnstatus = false;
             for (var i = 0; i < data.length; i++) {
                 if (data[i].MaleMaxMatchedPlayerId != null || data[i].MaleMinMatchedPlayerId != null) {
-                    status = true;
+                    returnstatus = true;
                 }
-                if (status) break;
+                if (returnstatus) break;
             }
-            return status;
+            return returnstatus;
         }
 
         function DoesFemaleExist(data) {
-            var status = false;
+            var returnstatus = false;
             for (var i = 0; i < data.length; i++) {
                 if (data[i].FemaleMaxMatchedPlayerId != null || data[i].FemaleMinMatchedPlayerId != null) {
-                    status = true;
+                    returnstatus = true;
                 }
-                if (status) break;
+                if (returnstatus) break;
             }
-            return status;
+            return returnstatus;
         }
 
         function GetNameLabel(playerName, nbrOfMatched) {
