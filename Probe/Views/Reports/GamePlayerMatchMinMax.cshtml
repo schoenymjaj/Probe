@@ -18,7 +18,7 @@
             drawContent();
         });
         function DoesMaleExist(data) {
-            status = false;
+            var status = false;
             for (var i = 0; i < data.length; i++) {
                 if (data[i].MaleMaxMatchedPlayerId != null || data[i].MaleMinMatchedPlayerId != null) {
                     status = true;
@@ -29,7 +29,7 @@
         }
 
         function DoesFemaleExist(data) {
-            status = false;
+            var status = false;
             for (var i = 0; i < data.length; i++) {
                 if (data[i].FemaleMaxMatchedPlayerId != null || data[i].FemaleMinMatchedPlayerId != null) {
                     status = true;
