@@ -40,7 +40,7 @@ namespace Probe.Controllers
             ViewBag.DctGameActive = ProbeValidate.GetAllGamesActiveStatus();
 
             IQueryable<GameQuestion> gameQuestions = db.GameQuestion
-                .Where(gq => (!SelectedGame.HasValue && loggedInUserId != "-1" ) || gq.GameId == gameId)
+                .Where(gq => gq.GameId == gameId)
                 .OrderBy(gq => gq.OrderNbr)
                 .Include(g => g.Game);
             return View(gameQuestions.ToList());
