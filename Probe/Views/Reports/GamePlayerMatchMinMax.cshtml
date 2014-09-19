@@ -88,34 +88,34 @@
 
                      var dSeries = new Array(data.length + 1)
                      rowlength = 1;
-                     if (DoesMaleExist(data) == "true") rowlength = rowlength + 4;
-                     if (DoesFemaleExist(data) == "true") rowlength = rowlength + 4;
+                     if (DoesMaleExist(data)) rowlength = rowlength + 4;
+                     if (DoesFemaleExist(data)) rowlength = rowlength + 4;
 
                      rowcount = 0;
                      dSeries[0] = new Array(rowlength)
                      dSeries[0][rowcount++] = 'Player';
-                     if (DoesMaleExist(data) == "true") dSeries[0][rowcount++] = 'Male Max Matches';
-                     if (DoesMaleExist(data) == "true") dSeries[0][rowcount++] = { role: 'annotation' };
-                     if (DoesMaleExist(data) == "true") dSeries[0][rowcount++] = 'Male Min Matches';
-                     if (DoesMaleExist(data) == "true") dSeries[0][rowcount++] = { role: 'annotation' };
-                     if (DoesFemaleExist(data) == "true") dSeries[0][rowcount++] = 'Female Max Matches';
-                     if (DoesFemaleExist(data) == "true") dSeries[0][rowcount++] = { role: 'annotation' };
-                     if (DoesFemaleExist(data) == "true") dSeries[0][rowcount++] = 'Female Min Matches';
-                     if (DoesFemaleExist(data) == "true") dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = 'Male Max Matches';
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = 'Male Min Matches';
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = 'Female Max Matches';
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = 'Female Min Matches';
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
 
 
                      for (var i = 0; i < data.length; i++) {
                          rowcount = 0;
                          dSeries[i + 1] = new Array(rowlength)
                          dSeries[i + 1][rowcount++] = data[i].PlayerName;
-                         if (DoesMaleExist(data) == "true") dSeries[i + 1][rowcount++] = data[i].MaleMaxNbrOfMatched;
-                         if (DoesMaleExist(data) == "true") dSeries[i + 1][rowcount++] = GetNameLabel(data[i].MaleMaxPlayerName, data[i].MaleMaxNbrOfMatched);
-                         if (DoesMaleExist(data) == "true") dSeries[i + 1][rowcount++] = data[i].MaleMinNbrOfMatched;
-                         if (DoesMaleExist(data) == "true") dSeries[i + 1][rowcount++] = GetNameLabel(data[i].MaleMinPlayerName, data[i].MaleMinNbrOfMatched);
-                         if (DoesFemaleExist(data) == "true") dSeries[i + 1][rowcount++] = data[i].FemaleMaxNbrOfMatched;
-                         if (DoesFemaleExist(data) == "true") dSeries[i + 1][rowcount++] = GetNameLabel(data[i].FemaleMaxPlayerName, data[i].FemaleMaxNbrOfMatched);
-                         if (DoesFemaleExist(data) == "true") dSeries[i + 1][rowcount++] = data[i].FemaleMinNbrOfMatched;
-                         if (DoesFemaleExist(data) == "true") dSeries[i + 1][rowcount++] = GetNameLabel(data[i].FemaleMinPlayerName, data[i].FemaleMinNbrOfMatched);
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = data[i].MaleMaxNbrOfMatched;
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].MaleMaxPlayerName, data[i].MaleMaxNbrOfMatched);
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = data[i].MaleMinNbrOfMatched;
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].MaleMinPlayerName, data[i].MaleMinNbrOfMatched);
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = data[i].FemaleMaxNbrOfMatched;
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].FemaleMaxPlayerName, data[i].FemaleMaxNbrOfMatched);
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = data[i].FemaleMinNbrOfMatched;
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].FemaleMinPlayerName, data[i].FemaleMinNbrOfMatched);
 
                          maxTickValue = Math.max(maxTickValue
                                                  , (data[i].MaleMaxNbrOfMatched != null ? data[i].MaleMaxNbrOfMatched : 0)
