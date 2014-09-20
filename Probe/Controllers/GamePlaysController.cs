@@ -35,7 +35,7 @@ namespace Probe.Controllers
             int gameId = SelectedGame.GetValueOrDefault();
                 
             IQueryable<GamePlay> gamePlay = db.GamePlay
-                .Where(gp => (!SelectedGame.HasValue && loggedInUserId != "-1") || (gp.GameId == gameId))
+                .Where(gp => loggedInUserId != "-1" && (gp.Game.AspNetUsersId == loggedInUserId && (gp.GameId == gameId || !SelectedGame.HasValue)))
                 .OrderBy(gp => gp.Name)
                 .Include(gp => gp.Game);
 
@@ -51,7 +51,7 @@ namespace Probe.Controllers
             }
             GamePlay gamePlay = db.GamePlay.Find(id);
 
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gamePlay.GameId); //persist the selected game
+            ViewBag.GameId = new SelectList(db.Game , "Id", "Name", gamePlay.GameId); //persist the selected game
 
             if (gamePlay == null)
             {
@@ -63,7 +63,8 @@ namespace Probe.Controllers
         // GET: GamePlays/Create
         public ActionResult Create(int? SelectedGame)
         {
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", SelectedGame); //persist the selected game
+            string loggedInUserId = User.Identity.GetUserId();
+            ViewBag.GameId = new SelectList(db.Game.Where(g => g.AspNetUsersId == loggedInUserId), "Id", "Name", SelectedGame); //persist the selected game
             return View();
         }
 
@@ -74,7 +75,8 @@ namespace Probe.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,GameId,Name,Description,Code,GameUrl,StartDate,EndDate,SuspendMode,TestMode,ClientReportAccess")] GamePlay gamePlay)
         {
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gamePlay.GameId);
+            string loggedInUserId = User.Identity.GetUserId();
+            ViewBag.GameId = new SelectList(db.Game.Where(g => g.AspNetUsersId == loggedInUserId), "Id", "Name", gamePlay.GameId);
 
             ValidateGamePlayCreate(gamePlay);
             if (ModelState.IsValid)

@@ -118,7 +118,7 @@ namespace Probe.Controllers
             {
                 db.Entry(choice).State = EntityState.Modified;
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", "ChoiceQuestions");
+                return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
             }
             ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
             return View(choice);
