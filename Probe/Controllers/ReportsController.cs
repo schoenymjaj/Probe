@@ -138,6 +138,7 @@ namespace Probe.Controllers
 
         #region PlayerMatch Reporting
 
+        [AllowAnonymous]
         public JsonResult GetGamePlayerMatchMinMaxData(long gameplayid)
         {
             var result = db.Database.SqlQuery<GamePlayerMatchMinMaxData>
@@ -173,6 +174,7 @@ namespace Probe.Controllers
             return Json(reportData);
         }
 
+        [AllowAnonymous]
         public ActionResult GamePlayerMatchMinMax(long gameplayid, int? mobileind)
         {
             ViewBag.GamePlayId = gameplayid;
@@ -193,6 +195,7 @@ namespace Probe.Controllers
 
         }
 
+        [AllowAnonymous]
         public JsonResult GetPlayerMatchSummaryData(long gameplayid, long playerid)
         {
             var result = db.Database.SqlQuery<PlayerMatchSummaryData>
@@ -215,6 +218,7 @@ namespace Probe.Controllers
             return Json(reportData);
         }
 
+        [AllowAnonymous]
         public ActionResult PlayerMatchSummary(long gameplayid, long playerid, int? mobileind)
         {
             ViewBag.GamePlayId = gameplayid;
@@ -236,6 +240,7 @@ namespace Probe.Controllers
             }
         }
 
+        [AllowAnonymous]
         public JsonResult GetPlayerMatchDetailData(long gameplayid, long playerid, long matchedplayerid)
         {
             int filterType = 0; //get all questions match or no-match
@@ -266,6 +271,7 @@ namespace Probe.Controllers
             return Json(reportData);
         }
 
+        [AllowAnonymous]
         public ActionResult PlayerMatchDetail(long gameplayid, long playerid, long matchedplayerid, int? mobileind)
         {
             ViewBag.GamePlayId = gameplayid;
@@ -290,6 +296,7 @@ namespace Probe.Controllers
 
         #region PlayerTest Reporting
 
+        [AllowAnonymous]
         public JsonResult GetPlayerTestSummaryData(long gameplayid)
         {
             var result = db.Database.SqlQuery<PlayerTestSummaryData>
@@ -312,6 +319,7 @@ namespace Probe.Controllers
             return Json(reportData);
         }
 
+        [AllowAnonymous]
         public ActionResult PlayerTestSummary(long gameplayid, int? mobileind)
         {
             ViewBag.GamePlayId = gameplayid;
@@ -332,6 +340,7 @@ namespace Probe.Controllers
 
         }
 
+        [AllowAnonymous]
         public JsonResult GetPlayerTestDetailData(long gameplayid, long playerid)
         {
 
@@ -360,6 +369,7 @@ namespace Probe.Controllers
             return Json(reportData);
         }
 
+        [AllowAnonymous]
         public ActionResult PlayerTestDetail(long gameplayid, long playerid, int? mobileind)
         {
             ViewBag.GamePlayId = gameplayid;

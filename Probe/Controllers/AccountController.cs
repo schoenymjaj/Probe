@@ -58,14 +58,14 @@ namespace Probe.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindAsync(model.Email, model.Password);
-                if (user != null)
+                if (user != null && user.UserName == "mns@productivityedge.com")
                 {
                     await SignInAsync(user, model.RememberMe);
                     return RedirectToLocal(returnUrl);
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    ModelState.AddModelError("", "Invalid username or password - MNS DEBUG.");
                 }
             }
 
