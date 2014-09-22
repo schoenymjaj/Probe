@@ -413,6 +413,10 @@ $(function () {
             (result["LastName"] != {}) ? player["LastName"] : result["LastName"]; //curently last name will always be empty 8/1/14
             player["Sex"] = result["Sex"];
 
+            //mns debug
+            console.log('player["GamePlayId"]=' + player["GamePlayId"]);
+            console.log('result["GamePlayId"]=' + result["GamePlayId"]);
+
             url = ProbeAPIurl + 'Players/PostPlayer';
             console.log('func app.PostGamePlayAnswersServer AJAX url:' + url);
             app.ajaxHelper(url, 'POST', player)
