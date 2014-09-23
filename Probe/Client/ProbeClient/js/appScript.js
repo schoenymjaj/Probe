@@ -209,7 +209,16 @@ $(function () {
 
             $('#callGetPlays').tap(function () {
                 //event.preventDefault();
-                app.GetGamePlayServer($('#gameCode').val());
+                gameCode = $('#gameCode').val();
+                if (gameCode.length > 0) { //check to see that a game code was entered
+                    app.GetGamePlayServer($('#gameCode').val());
+                } else {
+                    popupArgs = new PopupArgs();
+                    popupArgs.header = 'Error';
+                    popupArgs.msg1 = 'The game code cannot be blank.';
+                    popupArgs.msg2 = 'Please enter a game code.';
+                    app.popUp(popupArgs);
+                }
             });
 
             $('#cancelGamePlay').tap(function () {
@@ -744,12 +753,10 @@ $(function () {
             if (gameState != GameState.ReadOnly)
             {
                 $("input[name ='choice']").checkboxradio().checkboxradio('enable').trigger("create");
-                //$('#qfooter #summaryButton').removeClass("ui-disabled");
                 $('#submitButton').removeClass('ui-disabled');
 
             } else {
                 $("input[name ='choice']").checkboxradio().checkboxradio('disable').trigger("create");
-                //$('#qfooter #summaryButton').addClass("ui-disabled");
                 $('#submitButton').addClass('ui-disabled');
             }
 
@@ -808,7 +815,7 @@ $(function () {
             /*
             user can't submit a game play unless they have completed all the questions
             */
-            if (app.IsAllQuestionsAnswered() & gameState != GameState.ReadOnly) {
+            if (app.IsAllQuestionsAnswered() && gameState != GameState.ReadOnly) {
                 if ($('#submitButton').hasClass('ui-disabled')) {
                     $('#submitButton').removeClass('ui-disabled');
                 }
@@ -871,8 +878,6 @@ $(function () {
 
                     $('#qfooter #summaryButton').tap(function () {
                         //event.preventDefault();
-                        //$('#qfooter nav').navbar().hide()
-                        //$('#sfooter nav').navbar().show()
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
