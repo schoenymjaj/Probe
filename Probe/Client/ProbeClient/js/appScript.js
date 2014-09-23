@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        console.log('VERSION CONTROL: popup to fade');
+        console.log('VERSION CONTROL: removed popup for submit');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
