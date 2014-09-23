@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-
+        console.log('VERSION CONTROL: popup to fade');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -1254,8 +1254,8 @@ $(function () {
             $('#popupMsgContent').html(contentHtml); //set content
 
             //display popup
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "slide" }); 
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "slide" });
+            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" }); 
+            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" });
         };
 
         /*
