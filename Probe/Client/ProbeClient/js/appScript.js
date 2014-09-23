@@ -894,15 +894,32 @@ $(function () {
 
                     $('#submitButton').tap(function () {
                         //event.preventDefault();
-                        popupArgs = new PopupArgs();
-                        popupArgs.header = 'Confirmation';
-                        popupArgs.msg1 = 'Are you sure you want to submit the Game \'' + gamePlayData.Name + '\'.';
-                        popupArgs.msg2 = 'You will not be able to edit your answers once you submit.';
-                        popupArgs.btnYesHandler = 'funcSubmitGamePlay';
-                        popupArgs.btnNoHandler = 'back';
-                        popupArgs.btnYesLabel = 'Yes';
-                        popupArgs.btnNoLabel = 'No';
-                        app.popUp(popupArgs);
+
+
+                        //MNS - REMOVE POPUP FROM SUBMISSION EQUATION
+                        //popupArgs = new PopupArgs();
+                        //popupArgs.header = 'Confirmation';
+                        //popupArgs.msg1 = 'Are you sure you want to submit the Game \'' + gamePlayData.Name + '\'.';
+                        //popupArgs.msg2 = 'You will not be able to edit your answers once you submit.';
+                        //popupArgs.btnYesHandler = 'funcSubmitGamePlay';
+                        //popupArgs.btnNoHandler = 'back';
+                        //popupArgs.btnYesLabel = 'Yes';
+                        //popupArgs.btnNoLabel = 'No';
+                        //app.popUp(popupArgs);
+
+                        //MNS - ALL CODE BELOW IS DEBUG TO REMOVE POPUPS FROM THE EQUATION FOR IPHONE DEBUG TEST
+                        result = app.GetResultLocalStorage();
+                        console.log('func #submitButton.TAP - GamePlayId:' + result["GamePlayId"]);
+                        returnErrMsg = app.PostGamePlayAnswersServer();
+                        console.log('completed app.PostGamePlayAnswersServer' );
+                        if (returnErrMsg == null) {
+                            app.SubmitSuccess();
+                            console.log('success - all done');
+                        }
+                        //MNS - ALL CODE TO HERE
+
+
+
                     });
 
                     break;
@@ -1330,17 +1347,18 @@ $(function () {
 
             app.QueueGamePlays();
 
+            //MNS COMMENT OUT ALL THE POPUP FOR IPHONE DEBUG TEST
             //update the current pop-up to a successful submission (a little bit of a hack, but couldn't put
             //another popup display. This doesn't work
-            $('#popMsgHeader').html('Informational'); //set header
-            $('#popupMsgContent').html('The submission of the Game \'' + gamePlayData.Name + '\' was successful.');
-            $('#popupMsgNoBtn').hide();
-            $('#popupMsgYesBtn').remove();
+            //$('#popMsgHeader').html('Informational'); //set header
+            //$('#popupMsgContent').html('The submission of the Game \'' + gamePlayData.Name + '\' was successful.');
+            //$('#popupMsgNoBtn').hide();
+            //$('#popupMsgYesBtn').remove();
 
-            $mybutton = $('<a id="popupMsgYesBtn" href="#" data-role="button" data-inline="true" style="display:none" class="ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all" role="button">OK</a>');
-            $mybutton.prependTo('#popupMsg div .buttonRight');
-            $('#popupMsgYesBtn').attr('data-rel', 'back');
-            $('#popupMsgYesBtn').show();
+            //$mybutton = $('<a id="popupMsgYesBtn" href="#" data-role="button" data-inline="true" style="display:none" class="ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all" role="button">OK</a>');
+            //$mybutton.prependTo('#popupMsg div .buttonRight');
+            //$('#popupMsgYesBtn').attr('data-rel', 'back');
+            //$('#popupMsgYesBtn').show();
 
         };//app.SubmitSuccess
 
@@ -1463,8 +1481,8 @@ funcSubmitGamePlay = function (button, theApp) {
     result = theApp.GetResultLocalStorage();
     console.log('func funcSubmitGamePlay - GamePlayId:' + result["GamePlayId"]);
 
-   
     returnErrMsg = theApp.PostGamePlayAnswersServer();
+
     if (returnErrMsg == null) {
         theApp.SubmitSuccess();
     } else {
