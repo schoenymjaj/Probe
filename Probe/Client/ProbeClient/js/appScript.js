@@ -1254,8 +1254,8 @@ $(function () {
             $('#popupMsgContent').html(contentHtml); //set content
 
             //display popup
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "none" }); //{ transition: "slide" }
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "none" }); //{ transition: "slide" }
+            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "slide" }); 
+            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "slide" });
         };
 
         /*
