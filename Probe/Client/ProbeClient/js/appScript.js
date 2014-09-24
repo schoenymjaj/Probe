@@ -545,7 +545,6 @@ $(function () {
 
             $('#homePageContent').html(promptforPlayerHtml);
 
-
             /*
             Dynamically update the Player Prompt based on the GameState
             */
@@ -589,6 +588,7 @@ $(function () {
             }//if (gameState != GameState.Idle)
 
             $('#homePageContent').trigger("create");
+            $('#firstName').focus(); //put the focus on this text input
 
             //toggle the sex radio boxes
             $('input[name="sex"]').on('change', function () {
@@ -807,10 +807,10 @@ $(function () {
             $('#summaryText h2').html(summaryText);
             $('#questionList').html(listViewHtml);
 
+            $('#summary').trigger('create');
+
             //don't need the refresh. In fact is creates a mysterious scroll bar
             //$('#questionList').listview().listview("refresh").trigger("create"); 
-
-            $('#summary').trigger('create');
 
             /*
             user can't submit a game play unless they have completed all the questions
@@ -824,6 +824,8 @@ $(function () {
                     $('#submitButton').addClass('ui-disabled');
                 }
             }
+
+
 
             //setup event handler for summary page listview to return to a specific question
             $('[data-qnum]').tap(function () {
@@ -888,6 +890,12 @@ $(function () {
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
+                    //MNS DEBUG
+                    $('#debugButton').tap(function () {
+                        //event.preventDefault();
+                        app.SetNavBars(false, true);
+                        app.SetSummaryPage();
+                    });
 
                     break;
                 case "#summary":
