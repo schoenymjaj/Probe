@@ -588,7 +588,7 @@ $(function () {
             }//if (gameState != GameState.Idle)
 
             $('#homePageContent').trigger("create");
-            $('#firstName').focus(); //put the focus on this text input
+            $('#firstName').focus(); //put the focus on the firstname text input
 
             //toggle the sex radio boxes
             $('input[name="sex"]').on('change', function () {
