@@ -468,7 +468,6 @@
     <Content Include="ClientiPhoneTest\js\script.js" />
     <Content Include="ClientiPhoneTest\js\set-weinre.js" />
     <Content Include="ClientiPhoneTest\main.html" />
-    <Content Include="ClientTest\ClientTest.sln" />
     <Content Include="ClientTest\css\index.html" />
     <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\index.html" />
     <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\ajax-loader.gif" />
