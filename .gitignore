@@ -162,3 +162,7 @@ ProbeClient.v12.suo
 # Probe Client iPhone Test Solution
 ClientiPhoneTest.sln
 ClientiPhoneTest.v12.suo
+
+# Probe Client ALL Test Solution
+ClientTest.sln
+ClientTest.v12.suo

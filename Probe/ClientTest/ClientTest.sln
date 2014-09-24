@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ClientTest", "http://localhost:53669", "{AA6B631A-B764-462B-AF3B-3BCEB3AD9748}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_53669"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\Devo\VS13 Solutions\Probe\Probe\ClientTest\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53669\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_53669"
+		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\Devo\VS13 Solutions\Probe\Probe\ClientTest\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53669\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "..\..\..\..\..\..\Devo\VS13 Solutions\Probe\Probe\ClientTest\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA6B631A-B764-462B-AF3B-3BCEB3AD9748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA6B631A-B764-462B-AF3B-3BCEB3AD9748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
