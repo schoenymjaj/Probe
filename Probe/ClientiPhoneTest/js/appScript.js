@@ -107,13 +107,13 @@ $(function () {
 
             switch (pageSelector) {
                 case "#home":
-                    $('[data-gameplay]').tap(function () {
+                    $('[data-gameplay]').click(function () {
                         //event.preventDefault();
 
                         alert('event - nothing is done');
                     });
                     
-                    $('#linkToPopup').tap(function () {
+                    $('#linkToPopup').click(function () {
                         popupArgs = new PopupArgs();
                         popupArgs.header = 'Info';
                         popupArgs.msg1 = 'Clicked Linked to Popup';
@@ -125,30 +125,30 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    $('#qfooter #backButton').tap(function () {
+                    $('#qfooter #backButton').click(function () {
                         alert('back');
                         $.mobile.changePage('#question');
                     });
 
-                    $('#qfooter #summaryButton').tap(function () {
+                    $('#qfooter #summaryButton').click(function () {
                         //event.preventDefault();
                         app.SetNavBars(false, true);
                         $.mobile.changePage('#summary');
                     });
 
-                    $('#qfooter #nextButton').tap(function () {
+                    $('#qfooter #nextButton').click(function () {
                         //event.preventDefault();
                         alert('next');
                         $.mobile.changePage('#question');
                     });
 
                     //MNS DEBUG
-                    $('#linkToSummary').tap(function () {
+                    $('#linkToSummary').click(function () {
                         //event.preventDefault();
                         app.SetNavBars(false, true);
                         $.mobile.changePage('#summary');
                     });
-                    $('#linkToQuestion').tap(function () {
+                    $('#linkToQuestion').click(function () {
                         //event.preventDefault();
                         app.SetNavBars(true, false);
                         $.mobile.changePage('#question');
@@ -157,7 +157,7 @@ $(function () {
                     break;
                 case "#summary":
 
-                    $('#submitButton').tap(function () {
+                    $('#submitButton').click(function () {
                         //event.preventDefault();
 
 
@@ -185,7 +185,7 @@ $(function () {
                 case "misc":
 
                     //bind all GO HOME events
-                    $('[data-icon="home"]').tap(function () {
+                    $('[data-icon="home"]').click(function () {
                         $('#menu').panel("close"); //if menu open
 
                         app.SetNavBars(false, false);
@@ -193,7 +193,7 @@ $(function () {
                     });
 
                     //bind all "Add Game" (plus) icons events
-                    $("[data-icon='plus'],#newGame").tap(function () {
+                    $("[data-icon='plus'],#newGame").click(function () {
                         //event.preventDefault();
                         $('#menu').panel("close"); //if menu open
 
@@ -209,7 +209,7 @@ $(function () {
                     });
 
                     //bind all "Cancel Game" (plus) icons events
-                    $("[data-icon='minus']").tap(function () {
+                    $("[data-icon='minus']").click(function () {
                         //event.preventDefault();
 
                         popupArgs = new PopupArgs();
@@ -282,7 +282,7 @@ $(function () {
                 } else {
                     //BIG BUG: event handler - gets called for each time the app.popup is called in a browser session. Can't seem to 
                     //find a fix for this.
-                    $('#popupMsgYesBtn').tap(function () {
+                    $('#popupMsgYesBtn').click(function () {
                         window[popupArgs.btnYesHandler](this, app);
                     });
                 }
@@ -295,7 +295,7 @@ $(function () {
                     $('#popupMsgNoBtn').attr('data-rel', 'back');
                 } else {
                     //event handler
-                    $('#popupMsgNoBtn').tap(function () {
+                    $('#popupMsgNoBtn').click(function () {
                         window[popupArgs.btnNoHandler](this, app);
                     });
                 }
