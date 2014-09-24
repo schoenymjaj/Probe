@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: added event.preventDefault');
+        alert('VERSION CONTROL: removed event.preventDefault');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -208,7 +208,6 @@ $(function () {
             $('#homePageContent').trigger("create");
 
             $('#callGetPlays').click(function (event) {
-                event.preventDefault();
                 gameCode = $('#gameCode').val();
                 if (gameCode.length > 0) { //check to see that a game code was entered
                     app.GetGamePlayServer($('#gameCode').val());
@@ -222,7 +221,6 @@ $(function () {
             });
 
             $('#cancelGamePlay').click(function (event) {
-                event.preventDefault();
                 app.CancelGame();
             });
 
@@ -603,7 +601,6 @@ $(function () {
 
             //bind event handlers to the start and cancel buttons
             $('#startGamePlay').click(function (event) {
-                event.preventDefault();
 
                 //error handling 
                 if ($('#firstName').val().length < 3 ||
@@ -646,12 +643,10 @@ $(function () {
             });
 
             $('#cancelGamePlay').click(function (event) {
-                event.preventDefault();
                 app.CancelGame();
             });
 
             $('#reportGamePlay').click(function (event) {
-                event.preventDefault();
                 app.DisplayReportPage();
             });
 
@@ -830,7 +825,6 @@ $(function () {
 
             //setup event handler for summary page listview to return to a specific question
             $('[data-qnum]').click(function (event) {
-                event.preventDefault();
                 app.SetNavBars(true, false);
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
                 app.SetQuestionPage(currentQuestionNbr);
@@ -849,7 +843,6 @@ $(function () {
             switch (pageSelector) {
                 case "#home":
                     $('[data-gameplay]').click(function (event) {
-                        event.preventDefault();
 
                         if(this.attributes["data-gameplay"].value == 'active') { //is it the active game selected
                             app.ResumeGame(GameState.Active);
@@ -874,26 +867,22 @@ $(function () {
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
                     $('#qfooter #backButton').click(function (event) {
-                        event.preventDefault();
                         (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
                     $('#qfooter #summaryButton').click(function (event) {
-                        event.preventDefault();
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
 
                     $('#qfooter #nextButton').click(function (event) {
-                        event.preventDefault();
                         (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
                     //MNS DEBUG
                     $('#debugButton').click(function (event) {
-                        event.preventDefault();
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
@@ -902,8 +891,6 @@ $(function () {
                 case "#summary":
 
                     $('#submitButton').click(function (event) {
-                        event.preventDefault();
-
 
                         //MNS - REMOVE POPUP FROM SUBMISSION EQUATION
                         //popupArgs = new PopupArgs();
@@ -937,7 +924,6 @@ $(function () {
 
                     //bind all GO HOME events
                     $('[data-icon="home"]').click(function (event) {
-                        event.preventDefault();
                         $('#menu').panel("close"); //if menu open
 
                         app.SetNavBars(false, false);
@@ -948,7 +934,6 @@ $(function () {
 
                     //bind all "Add Game" (plus) icons events
                     $("[data-icon='plus'],#newGame").click(function (event) {
-                        event.preventDefault();
                         $('#menu').panel("close"); //if menu open
 
                         if (app.IsGameInProgress()) {
@@ -972,7 +957,6 @@ $(function () {
 
                     //bind all "Cancel Game" (plus) icons events
                     $("[data-icon='minus']").click(function (event) {
-                        event.preventDefault();
 
                         if (!app.IsGameInProgress())
                         {
@@ -1241,7 +1225,6 @@ $(function () {
                     //BIG BUG: event handler - gets called for each time the app.popup is called in a browser session. Can't seem to 
                     //find a fix for this.
                     $('#popupMsgYesBtn').click(function (event) {
-                        event.preventDefault();
                         window[popupArgs.btnYesHandler](this, app);
                     });
                 }
@@ -1255,7 +1238,6 @@ $(function () {
                 } else {
                     //event handler
                     $('#popupMsgNoBtn').click(function (event) {
-                        event.preventDefault();
                         window[popupArgs.btnNoHandler](this, app);
                     });
                 }
