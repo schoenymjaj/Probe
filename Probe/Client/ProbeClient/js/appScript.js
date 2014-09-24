@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        console.log('VERSION CONTROL: changed tap events to click');
+        alert('VERSION CONTROL: added event.preventDefault');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -207,8 +207,8 @@ $(function () {
             $('#homePageContent').html(promptforCodeHtml);
             $('#homePageContent').trigger("create");
 
-            $('#callGetPlays').click(function () {
-                //event.preventDefault();
+            $('#callGetPlays').click(function (event) {
+                event.preventDefault();
                 gameCode = $('#gameCode').val();
                 if (gameCode.length > 0) { //check to see that a game code was entered
                     app.GetGamePlayServer($('#gameCode').val());
@@ -221,8 +221,8 @@ $(function () {
                 }
             });
 
-            $('#cancelGamePlay').click(function () {
-                //event.preventDefault();
+            $('#cancelGamePlay').click(function (event) {
+                event.preventDefault();
                 app.CancelGame();
             });
 
@@ -602,8 +602,8 @@ $(function () {
             });
 
             //bind event handlers to the start and cancel buttons
-            $('#startGamePlay').click(function () {
-                //event.preventDefault();
+            $('#startGamePlay').click(function (event) {
+                event.preventDefault();
 
                 //error handling 
                 if ($('#firstName').val().length < 3 ||
@@ -645,12 +645,13 @@ $(function () {
 
             });
 
-            $('#cancelGamePlay').click(function () {
-                //event.preventDefault();
+            $('#cancelGamePlay').click(function (event) {
+                event.preventDefault();
                 app.CancelGame();
             });
 
-            $('#reportGamePlay').click(function () {
+            $('#reportGamePlay').click(function (event) {
+                event.preventDefault();
                 app.DisplayReportPage();
             });
 
@@ -828,8 +829,8 @@ $(function () {
 
 
             //setup event handler for summary page listview to return to a specific question
-            $('[data-qnum]').click(function () {
-                //event.preventDefault();
+            $('[data-qnum]').click(function (event) {
+                event.preventDefault();
                 app.SetNavBars(true, false);
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
                 app.SetQuestionPage(currentQuestionNbr);
@@ -847,8 +848,8 @@ $(function () {
 
             switch (pageSelector) {
                 case "#home":
-                    $('[data-gameplay]').click(function () {
-                        //event.preventDefault();
+                    $('[data-gameplay]').click(function (event) {
+                        event.preventDefault();
 
                         if(this.attributes["data-gameplay"].value == 'active') { //is it the active game selected
                             app.ResumeGame(GameState.Active);
@@ -872,27 +873,27 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    $('#qfooter #backButton').click(function () {
-                        //event.preventDefault();
+                    $('#qfooter #backButton').click(function (event) {
+                        event.preventDefault();
                         (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
-                    $('#qfooter #summaryButton').click(function () {
-                        //event.preventDefault();
+                    $('#qfooter #summaryButton').click(function (event) {
+                        event.preventDefault();
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
 
-                    $('#qfooter #nextButton').click(function () {
-                        //event.preventDefault();
+                    $('#qfooter #nextButton').click(function (event) {
+                        event.preventDefault();
                         (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
                     //MNS DEBUG
-                    $('#debugButton').click(function () {
-                        //event.preventDefault();
+                    $('#debugButton').click(function (event) {
+                        event.preventDefault();
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
@@ -900,8 +901,8 @@ $(function () {
                     break;
                 case "#summary":
 
-                    $('#submitButton').click(function () {
-                        //event.preventDefault();
+                    $('#submitButton').click(function (event) {
+                        event.preventDefault();
 
 
                         //MNS - REMOVE POPUP FROM SUBMISSION EQUATION
@@ -935,7 +936,8 @@ $(function () {
                 case "misc":
 
                     //bind all GO HOME events
-                    $('[data-icon="home"]').click(function () {
+                    $('[data-icon="home"]').click(function (event) {
+                        event.preventDefault();
                         $('#menu').panel("close"); //if menu open
 
                         app.SetNavBars(false, false);
@@ -945,8 +947,8 @@ $(function () {
                     });
 
                     //bind all "Add Game" (plus) icons events
-                    $("[data-icon='plus'],#newGame").click(function () {
-                        //event.preventDefault();
+                    $("[data-icon='plus'],#newGame").click(function (event) {
+                        event.preventDefault();
                         $('#menu').panel("close"); //if menu open
 
                         if (app.IsGameInProgress()) {
@@ -969,8 +971,8 @@ $(function () {
                     });
 
                     //bind all "Cancel Game" (plus) icons events
-                    $("[data-icon='minus']").click(function () {
-                        //event.preventDefault();
+                    $("[data-icon='minus']").click(function (event) {
+                        event.preventDefault();
 
                         if (!app.IsGameInProgress())
                         {
@@ -1238,7 +1240,8 @@ $(function () {
                 } else {
                     //BIG BUG: event handler - gets called for each time the app.popup is called in a browser session. Can't seem to 
                     //find a fix for this.
-                    $('#popupMsgYesBtn').click(function () {
+                    $('#popupMsgYesBtn').click(function (event) {
+                        event.preventDefault();
                         window[popupArgs.btnYesHandler](this, app);
                     });
                 }
@@ -1251,7 +1254,8 @@ $(function () {
                     $('#popupMsgNoBtn').attr('data-rel', 'back');
                 } else {
                     //event handler
-                    $('#popupMsgNoBtn').click(function () {
+                    $('#popupMsgNoBtn').click(function (event) {
+                        event.preventDefault();
                         window[popupArgs.btnNoHandler](this, app);
                     });
                 }
