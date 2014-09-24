@@ -207,7 +207,7 @@ $(function () {
             $('#homePageContent').html(promptforCodeHtml);
             $('#homePageContent').trigger("create");
 
-            $('#callGetPlays').tap(function () {
+            $('#callGetPlays').click(function () {
                 //event.preventDefault();
                 gameCode = $('#gameCode').val();
                 if (gameCode.length > 0) { //check to see that a game code was entered
@@ -221,7 +221,7 @@ $(function () {
                 }
             });
 
-            $('#cancelGamePlay').tap(function () {
+            $('#cancelGamePlay').click(function () {
                 //event.preventDefault();
                 app.CancelGame();
             });
@@ -602,7 +602,7 @@ $(function () {
             });
 
             //bind event handlers to the start and cancel buttons
-            $('#startGamePlay').tap(function () {
+            $('#startGamePlay').click(function () {
                 //event.preventDefault();
 
                 //error handling 
@@ -645,12 +645,12 @@ $(function () {
 
             });
 
-            $('#cancelGamePlay').tap(function () {
+            $('#cancelGamePlay').click(function () {
                 //event.preventDefault();
                 app.CancelGame();
             });
 
-            $('#reportGamePlay').tap(function () {
+            $('#reportGamePlay').click(function () {
                 app.DisplayReportPage();
             });
 
@@ -828,7 +828,7 @@ $(function () {
 
 
             //setup event handler for summary page listview to return to a specific question
-            $('[data-qnum]').tap(function () {
+            $('[data-qnum]').click(function () {
                 //event.preventDefault();
                 app.SetNavBars(true, false);
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
@@ -847,7 +847,7 @@ $(function () {
 
             switch (pageSelector) {
                 case "#home":
-                    $('[data-gameplay]').tap(function () {
+                    $('[data-gameplay]').click(function () {
                         //event.preventDefault();
 
                         if(this.attributes["data-gameplay"].value == 'active') { //is it the active game selected
@@ -872,26 +872,26 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    $('#qfooter #backButton').tap(function () {
+                    $('#qfooter #backButton').click(function () {
                         //event.preventDefault();
                         (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
-                    $('#qfooter #summaryButton').tap(function () {
+                    $('#qfooter #summaryButton').click(function () {
                         //event.preventDefault();
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
 
-                    $('#qfooter #nextButton').tap(function () {
+                    $('#qfooter #nextButton').click(function () {
                         //event.preventDefault();
                         (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
                     //MNS DEBUG
-                    $('#debugButton').tap(function () {
+                    $('#debugButton').click(function () {
                         //event.preventDefault();
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
@@ -900,7 +900,7 @@ $(function () {
                     break;
                 case "#summary":
 
-                    $('#submitButton').tap(function () {
+                    $('#submitButton').click(function () {
                         //event.preventDefault();
 
 
@@ -917,7 +917,7 @@ $(function () {
 
                         //MNS - ALL CODE BELOW IS DEBUG TO REMOVE POPUPS FROM THE EQUATION FOR IPHONE DEBUG TEST
                         result = app.GetResultLocalStorage();
-                        console.log('func #submitButton.TAP - GamePlayId:' + result["GamePlayId"]);
+                        console.log('func #submitButton.click - GamePlayId:' + result["GamePlayId"]);
                         returnErrMsg = app.PostGamePlayAnswersServer();
                         console.log('completed app.PostGamePlayAnswersServer' );
                         if (returnErrMsg == null) {
@@ -935,7 +935,7 @@ $(function () {
                 case "misc":
 
                     //bind all GO HOME events
-                    $('[data-icon="home"]').tap(function () {
+                    $('[data-icon="home"]').click(function () {
                         $('#menu').panel("close"); //if menu open
 
                         app.SetNavBars(false, false);
@@ -945,7 +945,7 @@ $(function () {
                     });
 
                     //bind all "Add Game" (plus) icons events
-                    $("[data-icon='plus'],#newGame").tap(function () {
+                    $("[data-icon='plus'],#newGame").click(function () {
                         //event.preventDefault();
                         $('#menu').panel("close"); //if menu open
 
@@ -969,7 +969,7 @@ $(function () {
                     });
 
                     //bind all "Cancel Game" (plus) icons events
-                    $("[data-icon='minus']").tap(function () {
+                    $("[data-icon='minus']").click(function () {
                         //event.preventDefault();
 
                         if (!app.IsGameInProgress())
@@ -1238,7 +1238,7 @@ $(function () {
                 } else {
                     //BIG BUG: event handler - gets called for each time the app.popup is called in a browser session. Can't seem to 
                     //find a fix for this.
-                    $('#popupMsgYesBtn').tap(function () {
+                    $('#popupMsgYesBtn').click(function () {
                         window[popupArgs.btnYesHandler](this, app);
                     });
                 }
@@ -1251,7 +1251,7 @@ $(function () {
                     $('#popupMsgNoBtn').attr('data-rel', 'back');
                 } else {
                     //event handler
-                    $('#popupMsgNoBtn').tap(function () {
+                    $('#popupMsgNoBtn').click(function () {
                         window[popupArgs.btnNoHandler](this, app);
                     });
                 }
