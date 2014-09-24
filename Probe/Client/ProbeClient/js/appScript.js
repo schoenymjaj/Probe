@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        console.log('VERSION CONTROL: removed popup for submit');
+        console.log('VERSION CONTROL: changed tap events to click');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";

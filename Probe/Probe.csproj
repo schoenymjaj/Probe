@@ -711,7 +711,6 @@
     <Content Include="Client\ProbeClient\js\json\jsonpath-0.8.0.js" />
     <Content Include="Client\ProbeClient\js\json\json_parse.js" />
     <Content Include="Client\ProbeClient\js\json\json_parse_state.js" />
-    <Content Include="Client\ProbeClient\js\script.js" />
     <Content Include="Client\ProbeClient\js\set-weinre.js" />
     <Content Include="Client\ProbeClient\main.html" />
     <Content Include="Content\bootstrap.css" />

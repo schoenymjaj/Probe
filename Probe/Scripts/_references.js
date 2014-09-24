@@ -16,7 +16,6 @@
 /// <reference path="../client/probeclient/js/commonscript.js" />
 /// <reference path="../client/probeclient/js/eventscript.js" />
 /// <reference path="../client/probeclient/js/jqm-config.js" />
-/// <reference path="../client/probeclient/js/script.js" />
 /// <reference path="../client/probeclient/js/set-weinre.js" />
 /// <reference path="tablesorter/beta-testing/pager-custom-controls.js" />
 /// <reference path="tablesorter/beta-testing/widget-reorder.js" />
