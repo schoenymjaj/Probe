@@ -55,6 +55,14 @@
                 <div id="homePageContent"></div>
             </div>
         </article>
+        <footer data-role="footer" data-position="fixed">
+            <nav data-role="navbar" data-theme="a">
+                <ul>
+                    <li><a class="summaryButton" href="#" data-icon="star" data-theme="a">Summary</a></li>
+                    <li><a class="submitButton" href="#" data-icon="star" data-theme="a">Submit</a></li>
+                </ul>
+            </nav>
+        </footer>
     </section>
     <!-- ================= Question ======================== -->
     <section id="question" data-role="page" data-theme="a" data-title="Probe">
@@ -65,15 +73,17 @@
         </header>
         <article data-role="content" style="margin: 0px 0px 0px 0px; padding: 0px 10px 0px 10px">
             <div id="questionText" data-theme="a"><h2>Question Text Goes Here</h2></div>
+            <div style="width: 100px; border: 1px solid red; float: left"><button id="backButton" class="ui-btn" data-icon="arrow-l">Back</button></div>
+            <div id="choiceListLegend" style="height: 30px; border: 1px solid red; float: left"></div>
+            <div style="width: 100px; height: 30px; border: 1px solid red; float: left"><button id="nextButton" class="ui-btn" data-icon="arrow-r">Next</button></div>
+            <div style="clear:both;"></div>
             <div id="choiceList" data-theme="a"></div>
-            <a id="debugButton" href="#" data-icon="star" data-theme="a">DebugSummary</a>
         </article>
-        <footer id="qfooter" data-role="footer" data-position="fixed">
-            <nav id="questionNavbar" data-role="navbar" data-theme="a">
+        <footer data-role="footer" data-position="fixed">
+            <nav data-role="navbar" data-theme="a">
                 <ul>
-                    <li><a id="backButton" href="#" data-icon="arrow-l" data-theme="a">Back</a></li>
-                    <li><a id="summaryButton" href="#" data-icon="star" data-theme="a">Summary</a></li>
-                    <li><a id="nextButton" href="#" data-icon="arrow-r" data-theme="a">Next</a></li>
+                    <li><a class="summaryButton" href="#" data-icon="star" data-theme="a">Summary</a></li>
+                    <li><a class="submitButton" href="#" data-icon="star" data-theme="a">Submit</a></li>
                 </ul>
             </nav>
         </footer>
@@ -92,10 +102,11 @@
             </div>
 
         </article>
-        <footer id="sfooter" data-role="footer" data-position="fixed">
-            <nav id="summaryNavbar" data-role="navbar" data-theme="a">
+        <footer data-role="footer" data-position="fixed">
+            <nav data-role="navbar" data-theme="a">
                 <ul>
-                    <li><a id="submitButton" href="#" data-icon="star" data-theme="a">Submit</a></li>
+                    <li><a class="summaryButton" href="#" data-icon="star" data-theme="a">Summary</a></li>
+                    <li><a class="submitButton" href="#" data-icon="star" data-theme="a">Submit</a></li>
                 </ul>
             </nav>
         </footer>

@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.0');
+        alert('VERSION CONTROL: Client Test Version 1.1');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -725,8 +725,7 @@ $(function () {
             question = gamePlayData.GameQuestions[questionNbr].Question;
             questionText = question.Text;
 
-            fieldset = '<fieldset data-role="controlgroup"><legend>Question #' + (questionNbr + 1) + ' of ' +
-                        app.NbrQuestions() + ' - Please select one answer</legend>';
+            fieldset = '<fieldset data-role="controlgroup">';
             question.Choices.forEach(function (value, index, ar) {
                 choiceText = value.Text;
                 choiceName = value.Name;
@@ -744,16 +743,17 @@ $(function () {
             fieldset += '</fieldset>'
 
             $('#questionText h2').html(questionText + '?');
+            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' of ' + app.NbrQuestions());
             $('#choiceList').html(fieldset);
 
             if (gameState != GameState.ReadOnly)
             {
                 $("input[name ='choice']").checkboxradio().checkboxradio('enable').trigger("create");
-                $('#submitButton').removeClass('ui-disabled');
+                $('.submitButton').removeClass('ui-disabled');
 
             } else {
                 $("input[name ='choice']").checkboxradio().checkboxradio('disable').trigger("create");
-                $('#submitButton').addClass('ui-disabled');
+                $('.submitButton').addClass('ui-disabled');
             }
 
             $('#question').trigger('create');
@@ -812,12 +812,12 @@ $(function () {
             user can't submit a game play unless they have completed all the questions
             */
             if (app.IsAllQuestionsAnswered() && gameState != GameState.ReadOnly) {
-                if ($('#submitButton').hasClass('ui-disabled')) {
-                    $('#submitButton').removeClass('ui-disabled');
+                if ($('.submitButton').hasClass('ui-disabled')) {
+                    $('.submitButton').removeClass('ui-disabled');
                 }
             } else {
-                if (!$('#submitButton').hasClass('ui-disabled')) {
-                    $('#submitButton').addClass('ui-disabled');
+                if (!$('.submitButton').hasClass('ui-disabled')) {
+                    $('.submitButton').addClass('ui-disabled');
                 }
             }
 
@@ -866,31 +866,27 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    $('#qfooter #backButton').click(function (event) {
-                        (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
+                    //$('#qfooter #backButton').click(function (event) { MNS DEBUG
+                    $('#backButton').click(function (event) {
+                            (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
                         app.SetQuestionPage(currentQuestionNbr);
                     });
 
-                    $('#qfooter #summaryButton').click(function (event) {
+                    $('.summaryButton').click(function (event) {
                         app.SetNavBars(false, true);
                         app.SetSummaryPage();
                     });
 
-                    $('#qfooter #nextButton').click(function (event) {
-                        (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
+                    //$('#qfooter #nextButton').click(function (event) { //MNS DEBUG
+                    $('#nextButton').click(function (event) {
+                            (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr);
-                    });
-
-                    //MNS DEBUG
-                    $('#debugButton').click(function (event) {
-                        app.SetNavBars(false, true);
-                        app.SetSummaryPage();
                     });
 
                     break;
                 case "#summary":
 
-                    $('#submitButton').click(function (event) {
+                    $('.submitButton').click(function (event) {
 
                         //MNS - REMOVE POPUP FROM SUBMISSION EQUATION
                         //popupArgs = new PopupArgs();
@@ -905,7 +901,7 @@ $(function () {
 
                         //MNS - ALL CODE BELOW IS DEBUG TO REMOVE POPUPS FROM THE EQUATION FOR IPHONE DEBUG TEST
                         result = app.GetResultLocalStorage();
-                        console.log('func #submitButton.click - GamePlayId:' + result["GamePlayId"]);
+                        console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
                         returnErrMsg = app.PostGamePlayAnswersServer();
                         console.log('completed app.PostGamePlayAnswersServer' );
                         if (returnErrMsg == null) {
@@ -1303,6 +1299,7 @@ $(function () {
         app.SetNavBars = function (qNavInd, sNavInd) {
             console.log('func app.SetNavBars qNavInd:' + qNavInd + ' sNavInd:' + sNavInd);
 
+            /* MNS DEBUG
             if (qNavInd) {
                 $('#qfooter nav').navbar().removeClass('ui-fixed-hidden'); //shouldn't have to do this, but remove this to make sure
                 $('#qfooter nav').navbar().show()
@@ -1316,6 +1313,7 @@ $(function () {
             } else {
                 $('#sfooter nav').navbar().hide()
             }
+            */
 
         };//app.SetNavBars 
 
@@ -1333,7 +1331,7 @@ $(function () {
             gameState = GameState.ReadOnly;
 
             //set summary page for read-only game state
-            $('#submitButton').addClass('ui-disabled');
+            $('.submitButton').addClass('ui-disabled');
 
             //set the newgame and cancel game buttons (enable new game, disable cancel game)
             $("[data-icon='plus']").removeClass('ui-disabled');
