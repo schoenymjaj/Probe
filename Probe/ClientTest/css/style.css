@@ -126,10 +126,62 @@ header h1 {
 .dynamicFontSize {
 }
 
+
+/*
+    
+CLIENT TEST - NEW STYLES (MNS - 9/25/14
+    
+    */
 .summaryButton {
 }
 
 .submitButton {
 }
+
+
+/*Question Navigation Back and Next Buttons*/
+.questionNavButtonsParentDiv {
+    width: 100%; 
+    height:35px;
+}
+
+.backButtonDiv {
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    float: left; 
+    width: 30%; 
+    height:100%;
+}
+
+.legendDiv {
+    float: left; 
+    width: 40%; 
+    height:100%;
+    text-align:center;
+}
+
+.legendTextDiv {
+    padding-top: 10px;
+}
+
+.nextButtonDiv {
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    float: right; 
+    width: 30%; 
+    height:100%;
+}
+
+.backNextButton {
+    height: 100%;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    text-align: center;
+}
+
+
+
 
 
