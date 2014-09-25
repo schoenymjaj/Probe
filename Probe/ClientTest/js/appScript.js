@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.2');
+        alert('VERSION CONTROL: Client Test Version 1.21');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
