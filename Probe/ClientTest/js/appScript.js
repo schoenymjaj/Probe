@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.28');
+        alert('VERSION CONTROL: Client Test Version 1.29');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -457,8 +457,8 @@ $(function () {
 
                         switch (playerDTO.errorid) {
                             case 3:
-                                errorMessage = 'Your player name (first name + nickname) is already in use. ' + 
-                                    'Please enter another nickname to be unique for the game. Use Menu => Home option (upper right icon). Select Active Game and modify your nickname';
+                                errorMessage = 'Your player name (first name - nickname) is already in use. ' + 
+                                    'Please enter another nickname for this game. Select the active game, modify your nickname, and resubmit';
                                 break;
                             default:
                                 errorMessage = playerDTO.errormessage;
@@ -747,7 +747,7 @@ $(function () {
             fieldset += '</fieldset>'
 
             $('#questionText h2').html(questionText + '?');
-            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' of ' + app.NbrQuestions());
+            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' out of ' + app.NbrQuestions());
             $('#choiceList').html(fieldset);
 
             if (gameState != GameState.ReadOnly)
@@ -882,17 +882,32 @@ $(function () {
 
                         app.confirmDialog('You are about to submit the Game \'' + gamePlayData.Name + '\'.' + '<br/>Are you sure?',
                             function () {
-                            result = app.GetResultLocalStorage();
-                            console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
-                            returnErrMsg = app.PostGamePlayAnswersServer();
-                            console.log('completed app.PostGamePlayAnswersServer');
-                            if (returnErrMsg == null) {
-                                app.SubmitSuccess();
-                                console.log('success - all done');
-                                alert('success - all done');
-                            } else {
-                                alert('failure - returnerrmsg:' + returnErrMsg);
-                            }
+                                result = app.GetResultLocalStorage();
+                                console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
+                                returnErrMsg = app.PostGamePlayAnswersServer();
+                                console.log('completed app.PostGamePlayAnswersServer');
+                                if (returnErrMsg == null) {
+                                    app.SubmitSuccess();
+                                    console.log('success - all done');
+                                }
+
+                                app.SetNavBars(false, false);
+                                app.SetHomePageStyle(false);
+                                app.SetHomePageInitialDisplay();
+                                $.mobile.changePage('#home', { transition: 'fade' });
+
+                                //depending on success or failure; we display a different popup over the home page
+                                if (returnErrMsg == null) {
+                                    popupArgs = new PopupArgs();
+                                    popupArgs.header = 'Info';
+                                    popupArgs.msg1 = 'The submission of the Game \'' + gamePlayData.Name + '\' was successful.';
+                                    app.popUp(popupArgs);
+                                } else {
+                                    popupArgs = new PopupArgs();
+                                    popupArgs.header = 'Error';
+                                    popupArgs.msg1 = 'The submission of the Game \'' + gamePlayData.Name + '\' was NOT successful.<br/>' + returnErrMsg;
+                                    app.popUp(popupArgs);                                    
+                                }
 
                         });
 
