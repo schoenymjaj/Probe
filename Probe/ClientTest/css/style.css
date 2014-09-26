@@ -151,15 +151,15 @@ CLIENT TEST - NEW STYLES (MNS - 9/25/14
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     float: left;
-    width: 30%;
+    width: 27%;
     height: 100%;
 }
 
 .legendDiv {
     float: left;
-    width: 30%;
+    width: 44%;
     height: 100%;
-    text-align: center;
+    text-align: center;   
 }
 
 .legendTextDiv {
@@ -171,7 +171,7 @@ CLIENT TEST - NEW STYLES (MNS - 9/25/14
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     float: right;
-    width: 30%;
+    width: 27%;
     height: 100%;
 }
 
