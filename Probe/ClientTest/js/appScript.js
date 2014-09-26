@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.25');
+        alert('VERSION CONTROL: Client Test Version 1.26');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -140,12 +140,13 @@ $(function () {
             listViewHtml = '';
 
             if (app.IsGameInProgress() || gamePlayListQueue.length > 0) {
+                app.SetHomePageStyle(false);
+
                 listViewHtml += '<ul id="gameList" data-role="listview" data-inset="true">';
 
                 if (app.IsGameInProgress()) {
                     $("[data-icon='plus']").addClass('ui-disabled');
                     $("[data-icon='minus']").removeClass('ui-disabled');
-                    app.SetHomePageStyle(false);
 
                     gamePlayData = app.GetGamePlayLocalStorage();
                     result = app.GetResultLocalStorage();
@@ -175,6 +176,9 @@ $(function () {
                 listViewHtml += '</ul>';
 
             }// if (app.IsGameInProgress() || gamePlayListQueue > 0) {
+            else {
+                app.SetHomePageStyle(true); //the only time we set bckground image to full opacity -first time
+            }
 
             $('#homePageContent').html(listViewHtml);
             $('#gameList').listview().listview("refresh").trigger("create");
@@ -749,11 +753,9 @@ $(function () {
             if (gameState != GameState.ReadOnly)
             {
                 $("input[name ='choice']").checkboxradio().checkboxradio('enable').trigger("create");
-                $('.submitButton').removeClass('ui-disabled');
 
             } else {
                 $("input[name ='choice']").checkboxradio().checkboxradio('disable').trigger("create");
-                $('.submitButton').addClass('ui-disabled');
             }
 
             $('#question').trigger('create');
@@ -766,8 +768,11 @@ $(function () {
                 //set choice number of answer
                 result["GameQuestions"][currentQuestionNbr]["SelChoiceId"] = radioButtonSelectedID.substr(7, radioButtonSelectedID.length - 6);
                 app.PutResultLocalStorage(result);
+                app.SetBottomNavButtons(true, true);
 
             }); //$("input[name ='choice']").on('change', function () {
+
+            app.SetBottomNavButtons(true, true); //set summary and submit button to enabled
 
             $.mobile.changePage('#question');
 
@@ -808,27 +813,14 @@ $(function () {
             //don't need the refresh. In fact is creates a mysterious scroll bar
             //$('#questionList').listview().listview("refresh").trigger("create"); 
 
-            /*
-            user can't submit a game play unless they have completed all the questions
-            */
-            if (app.IsAllQuestionsAnswered() && gameState != GameState.ReadOnly) {
-                if ($('.submitButton').hasClass('ui-disabled')) {
-                    $('.submitButton').removeClass('ui-disabled');
-                }
-            } else {
-                if (!$('.submitButton').hasClass('ui-disabled')) {
-                    $('.submitButton').addClass('ui-disabled');
-                }
-            }
-
-
-
             //setup event handler for summary page listview to return to a specific question
             $('[data-qnum]').click(function (event) {
                 app.SetNavBars(true, false);
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
                 app.SetQuestionPage(currentQuestionNbr);
             });
+
+            app.SetBottomNavButtons(false, true); //set summary to disabled and submit button to enabled
 
             $.mobile.changePage('#summary');
 
@@ -996,6 +988,9 @@ $(function () {
             } else {
                 $('#home').css('background-image', 'url(./images/bckground/ProbeBackground-Opacity3.jpg)');
             }
+
+            app.SetBottomNavButtons(false, false); //From the home page. Always set the bottom nav bar bottoms to disabled.
+
         };
 
         /*
@@ -1318,6 +1313,44 @@ $(function () {
         };//app.SetNavBars 
 
         /*
+        Set Bottom Nav Bar Buttons (set them to true will enable them).Note the arguments set to false
+        will override all other conditions. i.e if submit is set to true, but not all questions have been
+        answered then submit be disabled. If set to false, it will be disabled no matter what.
+        */
+        app.SetBottomNavButtons = function (summaryButtonInd, submitButtonInd) {
+
+
+
+            if (summaryButtonInd) {
+
+                if ($('.summaryButton').hasClass('ui-disabled')) {
+                    $('.summaryButton').removeClass('ui-disabled');
+                }
+
+            } else {
+
+                if (!$('.summaryButton').hasClass('ui-disabled')) {
+                    $('.summaryButton').addClass('ui-disabled');
+                }
+            }//if (summaryButtonInd)
+
+
+            if (submitButtonInd && app.IsAllQuestionsAnswered() && gameState != GameState.ReadOnly) {
+
+                if ($('.submitButton').hasClass('ui-disabled')) {
+                    $('.submitButton').removeClass('ui-disabled');
+                }
+
+            } else {
+
+                if (!$('.submitButton').hasClass('ui-disabled')) {
+                    $('.submitButton').addClass('ui-disabled');
+                }
+            }//if (submitButtonInd)
+
+    }//app.SetBottomNavButtons
+
+        /*
         submit success
         */
         app.SubmitSuccess = function () {
@@ -1331,7 +1364,7 @@ $(function () {
             gameState = GameState.ReadOnly;
 
             //set summary page for read-only game state
-            $('.submitButton').addClass('ui-disabled');
+            app.SetBottomNavButtons(false, false);
 
             //set the newgame and cancel game buttons (enable new game, disable cancel game)
             $("[data-icon='plus']").removeClass('ui-disabled');
