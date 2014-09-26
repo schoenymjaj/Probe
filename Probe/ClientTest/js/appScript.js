@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.26');
+        alert('VERSION CONTROL: Client Test Version 1.28');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -880,31 +880,23 @@ $(function () {
 
                     $('.submitButton').click(function (event) {
 
-                        //MNS - REMOVE POPUP FROM SUBMISSION EQUATION
-                        //popupArgs = new PopupArgs();
-                        //popupArgs.header = 'Confirmation';
-                        //popupArgs.msg1 = 'Are you sure you want to submit the Game \'' + gamePlayData.Name + '\'.';
-                        //popupArgs.msg2 = 'You will not be able to edit your answers once you submit.';
-                        //popupArgs.btnYesHandler = 'funcSubmitGamePlay';
-                        //popupArgs.btnNoHandler = 'back';
-                        //popupArgs.btnYesLabel = 'Yes';
-                        //popupArgs.btnNoLabel = 'No';
-                        //app.popUp(popupArgs);
+                        app.confirmDialog('You are about to submit the Game \'' + gamePlayData.Name + '\'.' + '<br/>Are you sure?',
+                            function () {
+                            result = app.GetResultLocalStorage();
+                            console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
+                            returnErrMsg = app.PostGamePlayAnswersServer();
+                            console.log('completed app.PostGamePlayAnswersServer');
+                            if (returnErrMsg == null) {
+                                app.SubmitSuccess();
+                                console.log('success - all done');
+                                alert('success - all done');
+                            } else {
+                                alert('failure - returnerrmsg:' + returnErrMsg);
+                            }
 
-                        //MNS - ALL CODE BELOW IS DEBUG TO REMOVE POPUPS FROM THE EQUATION FOR IPHONE DEBUG TEST
-                        result = app.GetResultLocalStorage();
-                        console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
-                        returnErrMsg = app.PostGamePlayAnswersServer();
-                        console.log('completed app.PostGamePlayAnswersServer' );
-                        if (returnErrMsg == null) {
-                            app.SubmitSuccess();
-                            console.log('success - all done');
-                        }
-                        //MNS - ALL CODE TO HERE
+                        });
 
-
-
-                    });
+                    });//$('.submitButton').click
 
                     break;
 
@@ -956,15 +948,12 @@ $(function () {
                             return
                         } else {
                             gamePlayData = app.GetGamePlayLocalStorage();
-                            popupArgs = new PopupArgs();
-                            popupArgs.header = 'Confirmation';
-                            popupArgs.msg1 = 'Are you sure you want to cancel the Game \'' + gamePlayData.Name + '\' that is in progress?';
-                            popupArgs.btnYesHandler = 'funcCancelGamePlay';
-                            popupArgs.btnNoHandler = 'back';
-                            popupArgs.btnYesLabel = 'Yes';
-                            popupArgs.btnNoLabel = 'No';
-                            app.popUp(popupArgs);
-                            //return
+
+                            app.confirmDialog('Are you sure you want to cancel the Game \'' + gamePlayData.Name + '\' that is in progress?',
+                                function () {
+                                    app.CancelGame();
+                            });
+
                         }
 
                     });
@@ -1186,69 +1175,7 @@ $(function () {
             header = header of popup
             msg1 = first cell of a one column table
             msg2 = second cell of a one column table (if null, it won't display)
-            btnYesHandler = the function that is called when yes button is clicked //if back then will use data-rel="back"
-            btnNoHandler = the function that is called when no button is clicked //if back then will use data-rel="back"
-            btnYesLabel = label of yes button //default is OK
-            btnNoLabel = label of no button //default is No
-
-            Note: if btnYesHandler and buttonNoHandler are both null, then the yes button will be displayed with data-rel="back"
-
-            Note: the function handlers should have a convention fnc<name of function) to be written outside of the app, and theire
-            arguments are button, theApp
-
-            Note: within handler, the popup can be closed by:
-            $('#popupMsg').enhanceWithin().popup().popup("close", { transition: "slide" });
-
             */
-
-
-            /*
-            Set visibility of buttons and event handlers based on the eventhandler property arg
-            */
-            $('#popupMsgYesBtn').hide();
-            $('#popupMsgYesBtn').attr('data-rel', '');
-            $('#popupMsgNoBtn').hide();
-            $('#popupMsgNoBtn').attr('data-rel', '');
-            if (popupArgs.btnYesHandler != null) {
-                if (popupArgs.btnYesHandler == 'back') {
-                    $('#popupMsgYesBtn').attr('data-rel', 'back');
-                } else {
-                    //BIG BUG: event handler - gets called for each time the app.popup is called in a browser session. Can't seem to 
-                    //find a fix for this.
-                    $('#popupMsgYesBtn').click(function (event) {
-                        window[popupArgs.btnYesHandler](this, app);
-                    });
-                }
-                $('#popupMsgYesBtn').show();
-            }//if (popupArgs.btnYesHandler != null) {
-
-            if (popupArgs.btnNoHandler != null) {
-                $('#popupMsgNoBtn').show();
-                if (popupArgs.btnNoHandler == 'back') {
-                    $('#popupMsgNoBtn').attr('data-rel', 'back');
-                } else {
-                    //event handler
-                    $('#popupMsgNoBtn').click(function (event) {
-                        window[popupArgs.btnNoHandler](this, app);
-                    });
-                }
-            }// if (popupArgs.btnNoHandler != null) {
-
-            if (popupArgs.btnYesHandler == null && popupArgs.btnNoHandler == null) {
-                $('#popupMsgYesBtn').attr('data-rel', 'back')
-                $('#popupMsgYesBtn').show();
-            }
-
-            /*
-            Set text of buttons
-            */
-            if (popupArgs.btnYesLabel != null) {
-                $('#popupMsgYesBtn').text(popupArgs.btnYesLabel);
-            }
-            if (popupArgs.btnNoLabel != null) {
-                $('#popupMsgNoBtn').text(popupArgs.btnNoLabel);
-            }
-
 
             /*
             Set the the content of the popup
@@ -1260,10 +1187,45 @@ $(function () {
             $('#popMsgHeader').html(popupArgs.header); //set header
             $('#popupMsgContent').html(contentHtml); //set content
 
+            $('#popupMsgYesBtn').show();
+            $('#popupMsgYesBtn').attr('data-rel', 'back')
+
             //display popup
             $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" }); 
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" });
         };
+
+        app.confirmDialog = function (text, callback) {
+            var popupDialogId = 'popupDialog';
+            $('<div data-role="popup" id="' + popupDialogId + '" data-confirmed="no" data-transition="fade" data-overlay-theme="a" data-theme="a" data-dismissible="false" style="max-width:500px;"> \
+                    <div data-role="header" data-theme="a">\
+                        <h1>Question</h1>\
+                    </div>\
+                    <div role="main" class="ui-content" data-theme="a">\
+                        <h3 class="ui-title">' + text + '</h3>\
+                        <div style="text-align:right">\
+                        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b optionConfirm" data-rel="back" data-theme="a">Yes</a>\
+                        <a "href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b optionCancel" data-rel="back" data-transition="flow" data-theme="a">No</a>\
+                        <\div>\
+                    </div>\
+                </div>')
+                .appendTo($.mobile.pageContainer);
+            var popupDialogObj = $('#' + popupDialogId);
+            popupDialogObj.trigger('create');
+            popupDialogObj.popup({
+                afterclose: function (event, ui) {
+                    popupDialogObj.find(".optionConfirm").first().off('click');
+                    var isConfirmed = popupDialogObj.attr('data-confirmed') === 'yes' ? true : false;
+                    $(event.target).remove();
+                    if (isConfirmed && callback) {
+                        callback();
+                    }
+                }
+            });
+            popupDialogObj.popup('open');
+            popupDialogObj.find(".optionConfirm").first().on('click', function () {
+                popupDialogObj.attr('data-confirmed', 'yes');
+            });
+        }//app.confirmDialog 
 
         /*
         GetConfigurationValue
@@ -1496,35 +1458,6 @@ $(function () {
 
 
 })(probeApp); //app
-
-funcCancelGamePlay = function (button, theApp) {
-    theApp.CancelGame();
-    $('#popupMsg').enhanceWithin().popup().popup("close", { transition: "slide" });
-};
-
-funcSubmitGamePlay = function (button, theApp) {
-    result = theApp.GetResultLocalStorage();
-    console.log('func funcSubmitGamePlay - GamePlayId:' + result["GamePlayId"]);
-
-    returnErrMsg = theApp.PostGamePlayAnswersServer();
-
-    if (returnErrMsg == null) {
-        theApp.SubmitSuccess();
-    } else {
-        $('#popMsgHeader').html('Error'); //set header
-        $('#popupMsgContent').html('The submission of the Game \'' + gamePlayData.Name + '\' was NOT successful.<br/>' + returnErrMsg);
-        $('#popupMsgNoBtn').hide();
-        $('#popupMsgYesBtn').remove();
-
-        $mybutton = $('<a id="popupMsgYesBtn" href="#" data-role="button" data-inline="true" style="display:none" class="ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all" role="button">OK</a>');
-        $mybutton.prependTo('#popupMsg div .buttonRight');
-        $('#popupMsgYesBtn').attr('data-rel', 'back');
-        $('#popupMsgYesBtn').show();
-
-    }//if (isSubmitASuccess) {
-
-
-};//funcSubmitGamePlay
 
 });
 
