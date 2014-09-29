@@ -114,7 +114,7 @@ $(function () {
                 console.log('touchend');
                 //event.preventDefault();
                 event.stopPropagation();
-                alert('touchend');
+                //alert('touchend');
             });
 
             //sets the padding when window is resized. Not going to happen on a phone.
