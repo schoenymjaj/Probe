@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.39');
+        alert('VERSION CONTROL: Client Test Version 1.40');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -103,6 +103,11 @@ $(function () {
             $(document).on("pagechange pagebeforechange popupafteropen popupafterclose resize", function (event) {
                 console.log('event pagechange-pagebeforechange popupafteropen popupafterclose resize');
                 app.AdjustPagePaddingTop();
+            });
+
+            $(document).on("pagecontainerchange", function (event) {
+                console.log('pagecontainerchange');
+                alert('pagecontainerchange');
             });
 
             //sets the padding when window is resized. Not going to happen on a phone.
@@ -665,7 +670,9 @@ $(function () {
             var newPage = $(page);
 
             newPage.appendTo($.mobile.pageContainer);
-            $.mobile.changePage(newPage);
+            //$.mobile.changePage(newPage);
+            $(":mobile-pagecontainer").pagecontainer('change', newPage, { transition: 'none' });
+
 
         }; //app.CreateGetPlayTestPage
 
@@ -728,7 +735,8 @@ $(function () {
 
             app.SetBottomNavButtons(true, true); //set summary and submit button to enabled
 
-            $.mobile.changePage('#question', { transition: transitionType });
+            //$.mobile.changePage('#question', { transition: transitionType });
+            $(":mobile-pagecontainer").pagecontainer('change', '#question', { transition: transitionType });
 
         }; //app.SetQuestionPage
 
@@ -777,7 +785,9 @@ $(function () {
 
             app.SetBottomNavButtons(false, true); //set summary to disabled and submit button to enabled
 
-            $.mobile.changePage('#summary');
+            //$.mobile.changePage('#summary');
+            $(":mobile-pagecontainer").pagecontainer('change', '#summary');
+
 
         };//app.SetSummaryPage
 
@@ -853,7 +863,9 @@ $(function () {
 
                         app.SetHomePageStyle(false);
                         app.SetHomePageInitialDisplay();
-                        $.mobile.changePage('#home');
+                        //$.mobile.changePage('#home');
+                        $(":mobile-pagecontainer").pagecontainer('change', '#home');
+                       
                     });
 
                     //bind all "Add Game" (plus) icons events
@@ -871,7 +883,9 @@ $(function () {
                         app.SetHomePageStyle(false);
                         app.SetGamePlayCodePrompt();
                         gameState = GameState.Idle; //just added MNS 7/27
-                        $.mobile.changePage('#home'); //just added MNS 7/27
+                        //$.mobile.changePage('#home'); //just added MNS 7/27
+                        $(":mobile-pagecontainer").pagecontainer('change', '#home');
+                        
                     });
 
                     //bind all "Cancel Game" (plus) icons events
@@ -912,7 +926,8 @@ $(function () {
 
             app.SetHomePageStyle(false);
             app.SetHomePageInitialDisplay();
-            $.mobile.changePage('#home', { transition: 'none' });
+            //$.mobile.changePage('#home', { transition: 'none' });
+            $(":mobile-pagecontainer").pagecontainer('change', '#home', { transition: 'none' });
 
             $.mobile.loading('hide'); //hide the spinner
             //depending on success or failure; we display a different popup over the home page
@@ -983,7 +998,8 @@ $(function () {
             $("[data-icon='minus']").addClass('ui-disabled');
             gameState = GameState.Idle;
             app.SetHomePageInitialDisplay();
-            $.mobile.changePage('#home');
+            $(":mobile-pagecontainer").pagecontainer('change', '#home', { transition: 'none' });
+
         };
 
         /*
