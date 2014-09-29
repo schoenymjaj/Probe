@@ -111,8 +111,8 @@ $(function () {
             });
 
             $(document).on("touchend", function (event) {
-                console.log('touchend');
-                //event.preventDefault();
+                console.log('touchend no default,propagation');
+                event.preventDefault();
                 event.stopPropagation();
                 //alert('touchend');
             });
