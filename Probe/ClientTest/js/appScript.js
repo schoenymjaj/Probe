@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.41');
+        alert('VERSION CONTROL: Client Test Version 1.42');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -110,12 +110,12 @@ $(function () {
                 alert('pagecontainerchange');
             });
 
-            $(document).on("touchend", function (event) {
-                console.log('touchend no default,propagation');
-                event.preventDefault();
-                event.stopPropagation();
-                //alert('touchend');
-            });
+            //$(document).on("touchend", function (event) {
+            //    console.log('touchend no default,propagation');
+            //    event.preventDefault();
+            //    event.stopPropagation();
+            //    //alert('touchend');
+            //});
 
             //sets the padding when window is resized. Not going to happen on a phone.
             $(window).resize(function ()
@@ -218,7 +218,7 @@ $(function () {
             $('#homePageContent').html(promptforCodeHtml);
             $('#homePageContent').trigger("create");
 
-            $('#callGetPlays').click(function (event) {
+            $('#callGetPlays').vclick(function (event) {
                 gameCode = $('#gameCode').val();
                 if (gameCode.length > 0) { //check to see that a game code was entered
                     app.GetGamePlayServer($('#gameCode').val());
@@ -227,7 +227,7 @@ $(function () {
                 }
             });
 
-            $('#cancelGamePlay').click(function (event) {
+            $('#cancelGamePlay').vclick(function (event) {
                 app.CancelGame();
             });
 
@@ -576,7 +576,7 @@ $(function () {
             });
 
             //bind event handlers to the start and cancel buttons
-            $('#startGamePlay').click(function (event) {
+            $('#startGamePlay').vclick(function (event) {
 
                 //error handling 
                 if ($('#firstName').val().length < 3 ||
@@ -610,11 +610,11 @@ $(function () {
 
             });
 
-            $('#cancelGamePlay').click(function (event) {
+            $('#cancelGamePlay').vclick(function (event) {
                 app.CancelGame();
             });
 
-            $('#reportGamePlay').click(function (event) {
+            $('#reportGamePlay').vclick(function (event) {
                 app.DisplayReportPage();
             });
 
@@ -785,7 +785,7 @@ $(function () {
             //$('#questionList').listview().listview("refresh").trigger("create"); 
 
             //setup event handler for summary page listview to return to a specific question
-            $('[data-qnum]').click(function (event) {
+            $('[data-qnum]').vclick(function (event) {
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
                 app.SetQuestionPage(currentQuestionNbr, 'slide');
             });
@@ -806,7 +806,7 @@ $(function () {
 
             switch (pageSelector) {
                 case "#home":
-                    $('[data-gameplay]').click(function (event) {
+                    $('[data-gameplay]').vclick(function (event) {
 
                         if(this.attributes["data-gameplay"].value == 'active') { //is it the active game selected
                             app.ResumeGame(GameState.Active);
@@ -830,18 +830,18 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    //$('#qfooter #backButton').click(function (event) { MNS DEBUG
-                    $('#backButton').click(function (event) {
+                    //$('#qfooter #backButton').vclick(function (event) { MNS DEBUG
+                    $('#backButton').vclick(function (event) {
                             (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
                         app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
 
-                    $('.summaryButton').click(function (event) {
+                    $('.summaryButton').vclick(function (event) {
                         app.SetSummaryPage();
                     });
 
-                    //$('#qfooter #nextButton').click(function (event) { //MNS DEBUG
-                    $('#nextButton').click(function (event) {
+                    //$('#qfooter #nextButton').vclick(function (event) { //MNS DEBUG
+                    $('#nextButton').vclick(function (event) {
                             (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
@@ -849,7 +849,7 @@ $(function () {
                     break;
                 case "#summary":
 
-                    $('.submitButton').click(function (event) {
+                    $('.submitButton').vclick(function (event) {
 
                         app.confirmDialog('You are about to submit the Game \'' + gamePlayData.Name + '\'.' + '<br/>Are you sure?',
                             function () {
@@ -858,14 +858,14 @@ $(function () {
 
                         });
 
-                    });//$('.submitButton').click
+                    });//$('.submitButton').vclick
 
                     break;
 
                 case "misc":
 
                     //bind all GO HOME events
-                    $('[data-icon="home"]').click(function (event) {
+                    $('[data-icon="home"]').vclick(function (event) {
                         $('#menu').panel("close"); //if menu open
 
                         app.SetHomePageStyle(false);
@@ -876,7 +876,7 @@ $(function () {
                     });
 
                     //bind all "Add Game" (plus) icons events
-                    $("[data-icon='plus'],#newGame").click(function (event) {
+                    $("[data-icon='plus'],#newGame").vclick(function (event) {
                         $('#menu').panel("close"); //if menu open
 
                         if (app.IsGameInProgress()) {
@@ -896,7 +896,7 @@ $(function () {
                     });
 
                     //bind all "Cancel Game" (plus) icons events
-                    $("[data-icon='minus']").click(function (event) {
+                    $("[data-icon='minus']").vclick(function (event) {
 
                         if (!app.IsGameInProgress())
                         {
@@ -923,7 +923,7 @@ $(function () {
         */
         app.ConfirmSubmit = function () {
             result = app.GetResultLocalStorage();
-            console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
+            console.log('func submitButton.vclick - GamePlayId:' + result["GamePlayId"]);
             returnErrMsg = app.PostGamePlayAnswersServer();
             console.log('completed app.PostGamePlayAnswersServer');
             if (returnErrMsg == null) {
