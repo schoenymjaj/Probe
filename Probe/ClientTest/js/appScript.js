@@ -675,6 +675,8 @@ $(function () {
         app.SetQuestionPage = function (questionNbr, transitionType) {
             console.log('func app.SetQuestionPage');
 
+            $('footer').show(); //show footer nav bar on the page
+
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
 
@@ -735,6 +737,8 @@ $(function () {
         */
         app.SetSummaryPage = function () {
             console.log('func app.SetSummaryPage');
+
+            $('footer').show(); //show footer nav bar on the page
 
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
@@ -893,6 +897,9 @@ $(function () {
             }
         };//app.BindPageStaticEvents 
 
+        /*
+        Confirm Submit Logic
+        */
         app.ConfirmSubmit = function () {
             result = app.GetResultLocalStorage();
             console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
@@ -945,6 +952,8 @@ $(function () {
         */
         app.SetHomePageStyle = function (initialState) {
             console.log('func app.SetHomePageStyle');
+            $('footer').hide(); //hide footer on the page
+
             $('#home').css("padding-top", "42px");
 
             if (initialState) {
