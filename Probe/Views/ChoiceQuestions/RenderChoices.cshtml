@@ -1,0 +1,41 @@
+﻿@model Probe.Models.ChoiceQuestion
+
+<tr>
+    <td colspan="5">
+        <p>
+            @Html.ActionLink("Create New", "Create", "Choices", new { currentChoiceQuestionId = Model.Id }, null)
+        </p>
+        <table style="border-color:red; color: blue; border: solid; border-width: 1px">
+
+            <tr>
+
+                <th>
+                    Choice Name
+                </th>
+
+                <th>
+                    Choice Text
+                </th>
+
+                <th>
+                    Correct
+                </th>
+            </tr>
+
+            @foreach (var choiceItem in Model.Choices.OrderBy(c => c.OrderNbr))
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => choiceItem.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => choiceItem.Text)</td>
+                    <td>@Html.DisplayFor(modelItem => choiceItem.Correct)</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", "Choices", new { id = choiceItem.Id }, null) |
+                        @Html.ActionLink("Details", "Details", "Choices", new { id = choiceItem.Id }, null) |
+                        @Html.ActionLink("Delete", "Delete", "Choices", new { id = choiceItem.Id }, null)
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </td>
+</tr>

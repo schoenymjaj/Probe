@@ -1,0 +1,105 @@
+﻿@model Probe.Models.GamePlay
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>GamePlay</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Game
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Game.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GameUrl)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GameUrl)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SuspendMode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SuspendMode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TestMode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TestMode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClientReportAccess)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClientReportAccess)
+        </dd>
+
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index", new { SelectedGame = ViewBag.GameId.SelectedValue })
+        </div>
+    }
+</div>

@@ -1,0 +1,99 @@
+﻿@model IEnumerable<Probe.Models.Choice>
+
+@{
+    ViewBag.Title = "Index";
+}
+<script src="@Url.Content("~/Scripts/probe/probe-setup-tablesorter.js")"
+        type="text/javascript"></script>
+
+<h2>Choices</h2>
+
+@functions{
+    public bool IsQuestionActive(long? questionId)
+    {
+        bool status = true;
+        if (questionId != null)
+        {
+            status = ViewBag.DctQuestionActive[(long)questionId];
+        }
+        else
+        {
+            status = false;
+        }
+
+        return status;
+    }
+}
+
+@using (Html.BeginForm())
+{
+    <p>
+        Select Question: @Html.DropDownList("SelectedQuestion", "All")
+        <input type="submit" value="Filter" />
+    </p>
+}
+<p>
+    @if (!IsQuestionActive(ViewBag.SelectedQuestion.SelectedValue))
+    {
+        @Html.ActionLink("Create New", "Create", new { SelectedQuestion = ViewBag.SelectedQuestion.SelectedValue })
+    }
+    else
+    {
+        @:NOTE: Choices are Ready-Only (A Game Play is Active for Game)
+    }
+</p>
+<div>
+    <table class="tablesorter">
+        <thead>
+            <tr>
+                <th>
+                    Question Text
+                </th>
+                <th>
+                    Choice Name
+                </th>
+                <th>
+                   Choice Text
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Correct)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderNbr)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ChoiceQuestion.Text)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Text)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Correct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OrderNbr)
+                    </td>
+                    <td>
+                        @if (!IsQuestionActive(item.ChoiceQuestionId)) {@Html.ActionLink("Edit", "Edit", new { id = item.Id }) <span>|</span> }
+                        @Html.ActionLink("Details", "Details", new { id = item.Id })
+                        @if (!IsQuestionActive(item.ChoiceQuestionId)) {<span>|</span> @Html.ActionLink("Delete", "Delete", new { id = item.Id }) }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Partial("TablesorterPager")
+    <div style="margin-top: 20px">
+        @Html.ActionLink("Back to Question List", "Index", "ChoiceQuestions")
+    </div>
+</div>

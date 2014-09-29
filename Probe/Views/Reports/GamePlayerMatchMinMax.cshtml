@@ -1,0 +1,215 @@
+﻿@{
+    ViewBag.Title = "GamePlayerMatchMinMax";
+}
+
+<html>
+<head>
+    <title>Player Match Summary</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi "></script>
+    <script type="text/javascript">
+
+        @Html.Partial("ReportStyleJavaScript")
+
+        google.load("visualization", "1", { packages: ["corechart"] });
+
+        //google.setOnLoadCallback(drawContent);
+        $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
+            drawContent();
+        });
+        function DoesMaleExist(data) {
+            returnstatus = false;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].MaleMaxMatchedPlayerId != null || data[i].MaleMinMatchedPlayerId != null) {
+                    returnstatus = true;
+                }
+                if (returnstatus) break;
+            }
+            return returnstatus;
+        }
+
+        function DoesFemaleExist(data) {
+            var returnstatus = false;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].FemaleMaxMatchedPlayerId != null || data[i].FemaleMinMatchedPlayerId != null) {
+                    returnstatus = true;
+                }
+                if (returnstatus) break;
+            }
+            return returnstatus;
+        }
+
+        function GetNameLabel(playerName, nbrOfMatched) {
+            if (playerName != "") {
+                return playerName + '(' + nbrOfMatched + ')';
+            } else {
+                return "";
+            }
+        }
+
+
+        function drawContent() {
+            console.log('func drawContent');
+            logError('GamePlayerMatchMinMax - func drawContent start', arguments.callee.trace()); //Logging an event on the server
+
+            ActivityIndicatorOn('#spinner');
+
+            var gamePlayId = '@ViewBag.GamePlayId';
+
+            $.post('@Url.Content("~")' + 'Reports/GetGamePlayerMatchMinMaxData/' + gamePlayId, {},
+             function (data) {
+
+                 //HANDLER FOR INTERACTIVITY
+                 selectHandler = function () {
+                     console.log('selectHandler');
+                     var selectedItem = chart.getSelection()[0]; //will get the row and column. row would be the player, column would be the player match
+                     if (selectedItem) {
+                         var playerId = data[selectedItem.row].PlayerId  //get the playerId
+                         console.log('The player selected ' + playerId);
+
+                         window.location = '@Url.Content("~")' + 'Reports/PlayerMatchSummary/' + gamePlayId + '/' + playerId;
+
+                     }
+                 };
+
+                 //Let's start catching exceptions
+                 try {
+
+
+                     /*
+                     SETUP REPORT HEADER
+                     */
+                     $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName');
+
+                     /*
+                     SETUP GOOGLE CHART DATA
+                     */
+                     maxTickValue = 0;
+
+                     var dSeries = new Array(data.length + 1)
+                     rowlength = 1;
+                     if (DoesMaleExist(data)) rowlength = rowlength + 4;
+                     if (DoesFemaleExist(data)) rowlength = rowlength + 4;
+
+                     rowcount = 0;
+                     dSeries[0] = new Array(rowlength)
+                     dSeries[0][rowcount++] = 'Player';
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = 'Male Max Matches';
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = 'Male Min Matches';
+                     if (DoesMaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = 'Female Max Matches';
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = 'Female Min Matches';
+                     if (DoesFemaleExist(data)) dSeries[0][rowcount++] = { role: 'annotation' };
+
+
+                     for (var i = 0; i < data.length; i++) {
+                         rowcount = 0;
+                         dSeries[i + 1] = new Array(rowlength)
+                         dSeries[i + 1][rowcount++] = data[i].PlayerName;
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = data[i].MaleMaxNbrOfMatched;
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].MaleMaxPlayerName, data[i].MaleMaxNbrOfMatched);
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = data[i].MaleMinNbrOfMatched;
+                         if (DoesMaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].MaleMinPlayerName, data[i].MaleMinNbrOfMatched);
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = data[i].FemaleMaxNbrOfMatched;
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].FemaleMaxPlayerName, data[i].FemaleMaxNbrOfMatched);
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = data[i].FemaleMinNbrOfMatched;
+                         if (DoesFemaleExist(data)) dSeries[i + 1][rowcount++] = GetNameLabel(data[i].FemaleMinPlayerName, data[i].FemaleMinNbrOfMatched);
+
+                         maxTickValue = Math.max(maxTickValue
+                                                 , (data[i].MaleMaxNbrOfMatched != null ? data[i].MaleMaxNbrOfMatched : 0)
+                                                 , (data[i].FemaleMaxNbrOfMatched != null ? data[i].FemaleMaxNbrOfMatched : 0)
+                                                 );
+                     }
+
+                     var tableMatchMinMax = google.visualization.arrayToDataTable(dSeries);
+
+                     /*
+                     SETUP V-AXIS
+                     */
+                     var vAxisText = '# Matches out of ' + '@ViewBag.NbrQuestions';
+
+                     /*
+                     SETUP GOOGLE CHART STYLE THROUGH OPTIONS
+                     */
+
+                     //We're going use just 5 gridlines (vertical). The first will be 0 (doesn't count)
+                     //, the last will be the max
+                     tickArray = GetChartAxisTickets(0, maxTickValue, 4);
+
+                     var options = {
+                         //title: 'Game Players Match Max Min',
+                         //isStacked: true, //remove to get individual bars
+                         //width: 900,
+                         height: Math.round(250 * data.length),
+                         chartArea: { left: 200, top: 50, width: '80%', height: '85%' },
+                         vAxis: { title: 'Players', titleTextStyle: { fontSize: '25' } },
+                         hAxis: {
+                             title: vAxisText,
+                             format: '#',
+                             titleTextStyle: {
+                                 fontSize: '25'
+                             },
+                             ticks: tickArray
+                         },
+                         bar: { groupWidth: "85%" },
+                         annotations: {
+                             textStyle: {
+                                 fontName: 'Times-Roman',
+                                 fontSize: 18,
+                                 bold: true,
+                                 italic: true,
+                                 opacity: 0.8          // The transparency of the text.
+                             }
+                         },
+                         legend: { position: 'top', alignment: 'end', textStyle: { color: 'blue', fontSize: 16 } },
+                     };
+
+                     /*
+                    var options = {
+                        title: 'Game Players Match Max Min',
+                        isStacked: true,
+                        width: 900,
+                        height: Math.round(150 * data.length),
+                        chartArea: { left: 200, top: 10, width: '80%', height: '80%' },
+                        vAxis: { title: 'Players', titleTextStyle: { fontSize: '25' } },
+                        //hAxis: { title: '# Matches', format: '#', titleTextStyle: { fontSize: '25' } }
+                    };
+                     */
+
+                     var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+                     google.visualization.events.addListener(chart, 'select', selectHandler);
+
+                     chart.draw(tableMatchMinMax, options);
+
+                     ActivitySelectorOff('#spinner');
+
+                     logError('GamePlayerMatchMinMax - func drawContent end', null); //Logging an event on the server
+
+                 } catch (err) {
+                     if (arguments != null && arguments.callee != null && arguments.callee.trace) {
+                         logError(err, arguments.callee.trace());
+                     } else {
+                         logError(err, null);
+                     }
+
+                     //retry generating the report (ie.e android emulator had a problem)
+                     //window.location.reload(true); hopefully won't don't need this. loading via document ready alleviated issue
+                 }
+
+             }); //function (data) {
+        } //function drawContent() {
+    </script>
+</head>
+<body>
+    <div id='spinner'></div>
+    <div id="title" class="reportTitle">Game Match Summary Report</div>
+    <div class="reportReturnLink">@Html.ActionLink("Back to Game Plays", "Index", "GamePlays", new { SelectedGame = ViewBag.CurrentSelectedGame }, null)</div>
+    <div class="reportResetSytle"></div>
+    <div id="header" class="reportHeader"></div>
+    <div id="parent_chart_div">
+        <div id="chart_div"></div>
+    </div>
+</body>
+</html>

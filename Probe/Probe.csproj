@@ -1,0 +1,1497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1A10535E-646B-48C6-8418-4D0BE87B738A}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Probe</RootNamespace>
+    <AssemblyName>Probe</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.1.2\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.1.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.2.1.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.2.1.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.2.1.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\api\GameConfigurationsController.cs" />
+    <Compile Include="Controllers\api\GamePlayAnswersController.cs" />
+    <Compile Include="Controllers\api\GamePlaysController.cs" />
+    <Compile Include="Controllers\api\PlayersController.cs" />
+    <Compile Include="Controllers\ChoiceQuestionsController.cs" />
+    <Compile Include="Controllers\ChoicesController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\GameConfigurationsController.cs" />
+    <Compile Include="Controllers\GamePlaysController.cs" />
+    <Compile Include="Controllers\GameQuestionsController.cs" />
+    <Compile Include="Controllers\GamesController.cs" />
+    <Compile Include="Controllers\GameTypesController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PlayersController.cs" />
+    <Compile Include="Controllers\QuestionTypesController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="DAL\InitializeProbeDatabaseWithSeedData.cs" />
+    <Compile Include="DAL\ProbeDataContext.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Exceptions\ExceptionHandling.cs" />
+    <Compile Include="Helpers\Exceptions\MiscExceptions.cs" />
+    <Compile Include="Helpers\Exceptions\GamePlayExceptions.cs" />
+    <Compile Include="Helpers\Logging\EventLogging.cs" />
+    <Compile Include="Helpers\Validations\Validate.cs" />
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Choice.cs" />
+    <Compile Include="Models\ChoiceQuestion.cs" />
+    <Compile Include="Models\GameConfiguration.cs" />
+    <Compile Include="Models\GamePlayAnswerDTO.cs" />
+    <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Models\PlayerDTO.cs" />
+    <Compile Include="Models\GamePlay.cs" />
+    <Compile Include="Models\Game.cs" />
+    <Compile Include="Models\GamePlayAnswer.cs" />
+    <Compile Include="Models\GamePlayReport.cs" />
+    <Compile Include="Models\GameQuestion.cs" />
+    <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\Player.cs" />
+    <Compile Include="Models\Question.cs" />
+    <Compile Include="Models\QuestionType.cs" />
+    <Compile Include="Models\GameType.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ReportType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Readme\Elmah.txt" />
+    <Content Include="ClientiPhoneTest\css\index.html" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\index.html" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\ajax-loader.gif" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\action-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\action-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\alert-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\alert-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\audio-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\audio-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\back-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\back-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bars-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bars-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bullets-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bullets-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\calendar-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\calendar-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\camera-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\camera-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-d-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-d-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-u-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-u-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\check-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\check-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\clock-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\clock-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\cloud-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\cloud-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\comment-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\comment-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\delete-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\delete-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\edit-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\edit-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\eye-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\eye-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forbidden-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forbidden-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forward-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forward-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\gear-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\gear-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\grid-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\grid-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\heart-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\heart-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\home-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\home-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\info-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\info-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\location-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\location-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\lock-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\lock-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\mail-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\mail-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\minus-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\minus-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\navigation-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\navigation-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\phone-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\phone-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\plus-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\plus-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\power-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\power-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\recycle-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\recycle-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\refresh-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\refresh-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\search-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\search-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\shop-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\shop-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\star-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\star-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\tag-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\tag-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\user-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\user-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\video-black.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\video-white.png" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\jquery.mobile.icons.min.css" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.css" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="ClientiPhoneTest\css\style.css" />
+    <Content Include="ClientiPhoneTest\css\themes\images\ajax-loader.gif" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\action-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\action-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\alert-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\alert-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-d-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-d-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-d-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-d-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-d-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-d-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-u-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-u-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-u-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-u-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-u-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\arrow-u-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\audio-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\audio-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\back-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\back-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\bars-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\bars-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\bullets-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\bullets-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\calendar-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\calendar-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\camera-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\camera-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-d-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-d-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-l-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-l-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-r-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-r-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-u-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\carat-u-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\check-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\check-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\clock-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\clock-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\cloud-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\cloud-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\comment-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\comment-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\delete-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\delete-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\edit-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\edit-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\eye-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\eye-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\forbidden-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\forbidden-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\forward-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\forward-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\gear-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\gear-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\grid-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\grid-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\heart-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\heart-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\home-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\home-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\info-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\info-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\location-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\location-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\lock-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\lock-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\mail-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\mail-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\minus-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\minus-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\navigation-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\navigation-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\phone-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\phone-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\plus-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\plus-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\power-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\power-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\recycle-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\recycle-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\refresh-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\refresh-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\search-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\search-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\shop-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\shop-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\star-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\star-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\tag-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\tag-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\user-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\user-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\video-black.png" />
+    <Content Include="ClientiPhoneTest\css\themes\images\icons-png\video-white.png" />
+    <Content Include="ClientiPhoneTest\css\themes\jquery.mobile.icons.min.css" />
+    <Content Include="ClientiPhoneTest\css\themes\ProbeTheme.V0.1.css" />
+    <Content Include="ClientiPhoneTest\css\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="ClientiPhoneTest\images\bckground\ProbeBackground - Deprecated.jpg" />
+    <Content Include="ClientiPhoneTest\images\bckground\ProbeBackground-Opacity15.jpg" />
+    <Content Include="ClientiPhoneTest\images\bckground\ProbeBackground-Opacity3.jpg" />
+    <Content Include="ClientiPhoneTest\images\bckground\ProbeBackground-Opacity7.jpg" />
+    <Content Include="ClientiPhoneTest\images\bckground\ProbeBackground.jpg" />
+    <Content Include="ClientiPhoneTest\index.html" />
+    <Content Include="ClientiPhoneTest\js\appScript.js" />
+    <Content Include="ClientiPhoneTest\js\commonScript.js" />
+    <Content Include="ClientiPhoneTest\js\eventscript.js" />
+    <Content Include="ClientiPhoneTest\js\jqm-config.js" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile-1.4.3.js" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile-1.4.3.min.js" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.external-png-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.external-png-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.icons-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.icons-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.inline-png-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.inline-png-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.inline-svg-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.inline-svg-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.structure-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.structure-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.theme-1.4.3.css" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile.theme-1.4.3.min.css" />
+    <Content Include="ClientiPhoneTest\js\jquery\jquery-2.1.1.js" />
+    <Content Include="ClientiPhoneTest\js\jquery\jquery-2.1.1.min.js" />
+    <Content Include="ClientiPhoneTest\js\json\cycle.js" />
+    <Content Include="ClientiPhoneTest\js\json\jsonpath-0.8.0.js" />
+    <Content Include="ClientiPhoneTest\js\json\json_parse.js" />
+    <Content Include="ClientiPhoneTest\js\json\json_parse_state.js" />
+    <Content Include="ClientiPhoneTest\js\script.js" />
+    <Content Include="ClientiPhoneTest\js\set-weinre.js" />
+    <Content Include="ClientiPhoneTest\main.html" />
+    <Content Include="ClientTest\css\index.html" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\index.html" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\ajax-loader.gif" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\action-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\action-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\alert-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\alert-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-l-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-l-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-r-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-r-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-l-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-l-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-r-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-r-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-l-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-l-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-r-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-r-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\audio-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\audio-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\back-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\back-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bars-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bars-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bullets-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bullets-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\calendar-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\calendar-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\camera-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\camera-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-d-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-d-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-l-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-l-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-r-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-r-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-u-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-u-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\check-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\check-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\clock-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\clock-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\cloud-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\cloud-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\comment-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\comment-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\delete-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\delete-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\edit-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\edit-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\eye-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\eye-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forbidden-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forbidden-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forward-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forward-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\gear-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\gear-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\grid-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\grid-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\heart-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\heart-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\home-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\home-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\info-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\info-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\location-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\location-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\lock-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\lock-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\mail-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\mail-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\minus-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\minus-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\navigation-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\navigation-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\phone-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\phone-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\plus-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\plus-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\power-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\power-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\recycle-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\recycle-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\refresh-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\refresh-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\search-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\search-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\shop-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\shop-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\star-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\star-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\tag-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\tag-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\user-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\user-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\video-black.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\video-white.png" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\jquery.mobile.icons.min.css" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.css" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="ClientTest\css\style.css" />
+    <Content Include="ClientTest\css\themes\images\ajax-loader.gif" />
+    <Content Include="ClientTest\css\themes\images\icons-png\action-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\action-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\alert-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\alert-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-d-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-d-l-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-d-l-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-d-r-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-d-r-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-d-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-l-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-l-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-r-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-r-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-u-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-u-l-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-u-l-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-u-r-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-u-r-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\arrow-u-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\audio-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\audio-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\back-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\back-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\bars-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\bars-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\bullets-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\bullets-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\calendar-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\calendar-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\camera-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\camera-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-d-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-d-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-l-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-l-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-r-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-r-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-u-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\carat-u-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\check-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\check-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\clock-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\clock-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\cloud-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\cloud-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\comment-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\comment-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\delete-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\delete-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\edit-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\edit-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\eye-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\eye-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\forbidden-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\forbidden-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\forward-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\forward-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\gear-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\gear-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\grid-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\grid-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\heart-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\heart-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\home-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\home-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\info-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\info-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\location-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\location-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\lock-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\lock-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\mail-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\mail-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\minus-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\minus-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\navigation-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\navigation-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\phone-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\phone-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\plus-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\plus-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\power-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\power-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\recycle-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\recycle-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\refresh-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\refresh-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\search-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\search-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\shop-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\shop-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\star-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\star-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\tag-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\tag-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\user-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\user-white.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\video-black.png" />
+    <Content Include="ClientTest\css\themes\images\icons-png\video-white.png" />
+    <Content Include="ClientTest\css\themes\jquery.mobile.icons.min.css" />
+    <Content Include="ClientTest\css\themes\ProbeTheme.V0.1.css" />
+    <Content Include="ClientTest\css\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="ClientTest\images\bckground\ProbeBackground - Deprecated.jpg" />
+    <Content Include="ClientTest\images\bckground\ProbeBackground-Opacity15.jpg" />
+    <Content Include="ClientTest\images\bckground\ProbeBackground-Opacity3.jpg" />
+    <Content Include="ClientTest\images\bckground\ProbeBackground-Opacity7.jpg" />
+    <Content Include="ClientTest\images\bckground\ProbeBackground.jpg" />
+    <Content Include="ClientTest\index.html" />
+    <Content Include="ClientTest\js\appScript.js" />
+    <Content Include="ClientTest\js\commonScript.js" />
+    <Content Include="ClientTest\js\eventscript.js" />
+    <Content Include="ClientTest\js\jqm-config.js" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile-1.4.3.js" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile-1.4.3.min.js" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.external-png-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.external-png-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.icons-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.icons-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.inline-png-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.inline-png-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.inline-svg-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.inline-svg-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.structure-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.structure-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.theme-1.4.3.css" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile.theme-1.4.3.min.css" />
+    <Content Include="ClientTest\js\jquery\jquery-2.1.1.js" />
+    <Content Include="ClientTest\js\jquery\jquery-2.1.1.min.js" />
+    <Content Include="ClientTest\js\json\cycle.js" />
+    <Content Include="ClientTest\js\json\jsonpath-0.8.0.js" />
+    <Content Include="ClientTest\js\json\json_parse.js" />
+    <Content Include="ClientTest\js\json\json_parse_state.js" />
+    <Content Include="ClientTest\js\set-weinre.js" />
+    <Content Include="ClientTest\main.html" />
+    <Content Include="Client\ProbeClient\css\index.html" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\index.html" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\ajax-loader.gif" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\action-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\action-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\alert-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\alert-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-l-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-l-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-r-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-r-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-d-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-l-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-l-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-r-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-r-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-l-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-l-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-r-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-r-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\arrow-u-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\audio-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\audio-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\back-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\back-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bars-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bars-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bullets-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\bullets-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\calendar-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\calendar-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\camera-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\camera-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-d-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-d-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-l-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-l-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-r-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-r-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-u-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\carat-u-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\check-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\check-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\clock-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\clock-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\cloud-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\cloud-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\comment-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\comment-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\delete-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\delete-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\edit-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\edit-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\eye-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\eye-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forbidden-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forbidden-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forward-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\forward-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\gear-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\gear-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\grid-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\grid-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\heart-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\heart-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\home-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\home-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\info-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\info-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\location-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\location-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\lock-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\lock-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\mail-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\mail-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\minus-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\minus-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\navigation-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\navigation-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\phone-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\phone-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\plus-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\plus-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\power-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\power-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\recycle-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\recycle-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\refresh-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\refresh-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\search-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\search-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\shop-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\shop-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\star-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\star-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\tag-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\tag-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\user-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\user-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\video-black.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\images\icons-png\video-white.png" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\jquery.mobile.icons.min.css" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.css" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="Client\ProbeClient\css\style.css" />
+    <Content Include="Client\ProbeClient\css\themes\images\ajax-loader.gif" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\action-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\action-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\alert-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\alert-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-d-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-d-l-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-d-l-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-d-r-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-d-r-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-d-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-l-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-l-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-r-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-r-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-u-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-u-l-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-u-l-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-u-r-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-u-r-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\arrow-u-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\audio-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\audio-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\back-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\back-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\bars-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\bars-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\bullets-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\bullets-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\calendar-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\calendar-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\camera-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\camera-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-d-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-d-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-l-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-l-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-r-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-r-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-u-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\carat-u-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\check-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\check-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\clock-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\clock-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\cloud-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\cloud-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\comment-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\comment-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\delete-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\delete-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\edit-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\edit-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\eye-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\eye-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\forbidden-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\forbidden-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\forward-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\forward-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\gear-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\gear-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\grid-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\grid-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\heart-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\heart-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\home-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\home-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\info-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\info-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\location-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\location-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\lock-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\lock-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\mail-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\mail-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\minus-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\minus-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\navigation-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\navigation-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\phone-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\phone-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\plus-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\plus-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\power-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\power-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\recycle-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\recycle-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\refresh-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\refresh-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\search-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\search-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\shop-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\shop-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\star-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\star-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\tag-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\tag-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\user-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\user-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\video-black.png" />
+    <Content Include="Client\ProbeClient\css\themes\images\icons-png\video-white.png" />
+    <Content Include="Client\ProbeClient\css\themes\jquery.mobile.icons.min.css" />
+    <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.css" />
+    <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground - Deprecated.jpg" />
+    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity15.jpg" />
+    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity3.jpg" />
+    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity7.jpg" />
+    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground.jpg" />
+    <Content Include="Client\ProbeClient\index.html" />
+    <Content Include="Client\ProbeClient\js\appScript.js" />
+    <Content Include="Client\ProbeClient\js\commonScript.js" />
+    <Content Include="Client\ProbeClient\js\eventscript.js" />
+    <Content Include="Client\ProbeClient\js\jqm-config.js" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.js" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.min.js" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.external-png-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.external-png-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.icons-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.icons-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.inline-png-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.inline-png-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.inline-svg-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.inline-svg-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.structure-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.structure-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.theme-1.4.3.css" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile.theme-1.4.3.min.css" />
+    <Content Include="Client\ProbeClient\js\jquery\jquery-2.1.1.js" />
+    <Content Include="Client\ProbeClient\js\jquery\jquery-2.1.1.min.js" />
+    <Content Include="Client\ProbeClient\js\json\cycle.js" />
+    <Content Include="Client\ProbeClient\js\json\jsonpath-0.8.0.js" />
+    <Content Include="Client\ProbeClient\js\json\json_parse.js" />
+    <Content Include="Client\ProbeClient\js\json\json_parse_state.js" />
+    <Content Include="Client\ProbeClient\js\set-weinre.js" />
+    <Content Include="Client\ProbeClient\main.html" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\background\ProbeBackground.jpg" />
+    <Content Include="Content\SiteMobile.css" />
+    <Content Include="Content\themes\base\images\animated-overlay.gif" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="Content\themes\base\jquery.ui.all.css" />
+    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="Content\themes\base\jquery.ui.base.css" />
+    <Content Include="Content\themes\base\jquery.ui.button.css" />
+    <Content Include="Content\themes\base\jquery.ui.core.css" />
+    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="Content\themes\base\jquery.ui.menu.css" />
+    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="Content\themes\base\jquery.ui.slider.css" />
+    <Content Include="Content\themes\base\jquery.ui.spinner.css" />
+    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\jquery.ui.tooltip.css" />
+    <Content Include="Content\themes\base\minified\images\animated-overlay.gif" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\minified\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.accordion.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.button.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.core.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.datepicker.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.dialog.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.menu.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.progressbar.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.resizable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.selectable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.spinner.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="Content\themes\base\theme.black-ice.css" />
+    <Content Include="Content\themes\base\theme.blue.css" />
+    <Content Include="Content\themes\base\theme.bootstrap.css" />
+    <Content Include="Content\themes\base\theme.bootstrap_2.css" />
+    <Content Include="Content\themes\base\theme.dark.css" />
+    <Content Include="Content\themes\base\theme.default.css" />
+    <Content Include="Content\themes\base\theme.dropbox.css" />
+    <Content Include="Content\themes\base\theme.green.css" />
+    <Content Include="Content\themes\base\theme.grey.css" />
+    <Content Include="Content\themes\base\theme.ice.css" />
+    <Content Include="Content\themes\base\theme.jui.css" />
+    <Content Include="Content\themes\base\theme.metro-dark.css" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_glass_30_000000_1x400.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-bg_highlight-soft_30_000000_1x100.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\custom-dialog\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\custom-dialog\jquery-ui.min.css" />
+    <Content Include="Content\themes\custom-dialog\jquery-ui.structure.min.css" />
+    <Content Include="Content\themes\custom-dialog\jquery-ui.theme.min.css" />
+    <Content Include="Content\themes\Site.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\themes\base\theme.less" />
+    <Content Include="Content\themes\custom-dialog\images\Thumbs.db" />
+    <Content Include="Client\ProbeClient\css\jquery-mobile-theme-064646-0.zip" />
+    <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\jquery-mobile-theme-201531-0.zip" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.min.map" />
+    <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.zip" />
+    <Content Include="ClientiPhoneTest\css\jquery-mobile-theme-064646-0.zip" />
+    <Content Include="ClientiPhoneTest\css\OLD jquerymobile themes\jquery-mobile-theme-201531-0.zip" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile-1.4.3.min.map" />
+    <Content Include="ClientiPhoneTest\js\jqm\jquery.mobile-1.4.3.zip" />
+    <Content Include="ClientTest\css\jquery-mobile-theme-064646-0.zip" />
+    <Content Include="ClientTest\css\OLD jquerymobile themes\jquery-mobile-theme-201531-0.zip" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile-1.4.3.min.map" />
+    <Content Include="ClientTest\js\jqm\jquery.mobile-1.4.3.zip" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\DatePickerReady.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\probe\probe-reportchart-helpers.js" />
+    <Content Include="Scripts\probe\probe-setup-tablesorter.js" />
+    <Content Include="Scripts\probe\probe-helpers.js" />
+    <Content Include="Scripts\probe\stacktrace.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\spin.js" />
+    <Content Include="Scripts\spin.min.js" />
+    <Content Include="Scripts\tablesorter\addons\pager\icons\first.png" />
+    <Content Include="Scripts\tablesorter\addons\pager\icons\last.png" />
+    <Content Include="Scripts\tablesorter\addons\pager\icons\loading.gif" />
+    <Content Include="Scripts\tablesorter\addons\pager\icons\next.png" />
+    <Content Include="Scripts\tablesorter\addons\pager\icons\prev.png" />
+    <Content Include="Scripts\tablesorter\addons\pager\jquery.tablesorter.pager.css" />
+    <Content Include="Scripts\tablesorter\addons\pager\jquery.tablesorter.pager.js" />
+    <Content Include="Scripts\tablesorter\addons\pager\jquery.tablesorter.pager.min.js" />
+    <Content Include="Scripts\tablesorter\beta-testing\example-pager-custom-controls.html" />
+    <Content Include="Scripts\tablesorter\beta-testing\example-widget-column-reorder.html" />
+    <Content Include="Scripts\tablesorter\beta-testing\pager-custom-controls.js" />
+    <Content Include="Scripts\tablesorter\beta-testing\widget-reorder.js" />
+    <Content Include="Scripts\tablesorter\css\filter.formatter.css" />
+    <Content Include="Scripts\tablesorter\css\images\black-asc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\black-desc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\black-unsorted.gif" />
+    <Content Include="Scripts\tablesorter\css\images\bootstrap-black-unsorted.png" />
+    <Content Include="Scripts\tablesorter\css\images\bootstrap-white-unsorted.png" />
+    <Content Include="Scripts\tablesorter\css\images\dropbox-asc-hovered.png" />
+    <Content Include="Scripts\tablesorter\css\images\dropbox-asc.png" />
+    <Content Include="Scripts\tablesorter\css\images\dropbox-desc-hovered.png" />
+    <Content Include="Scripts\tablesorter\css\images\dropbox-desc.png" />
+    <Content Include="Scripts\tablesorter\css\images\green-asc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\green-desc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\green-header.gif" />
+    <Content Include="Scripts\tablesorter\css\images\green-unsorted.gif" />
+    <Content Include="Scripts\tablesorter\css\images\ice-asc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\ice-desc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\ice-unsorted.gif" />
+    <Content Include="Scripts\tablesorter\css\images\metro-black-asc.png" />
+    <Content Include="Scripts\tablesorter\css\images\metro-black-desc.png" />
+    <Content Include="Scripts\tablesorter\css\images\metro-loading.gif" />
+    <Content Include="Scripts\tablesorter\css\images\metro-unsorted.png" />
+    <Content Include="Scripts\tablesorter\css\images\metro-white-asc.png" />
+    <Content Include="Scripts\tablesorter\css\images\metro-white-desc.png" />
+    <Content Include="Scripts\tablesorter\css\images\white-asc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\white-desc.gif" />
+    <Content Include="Scripts\tablesorter\css\images\white-unsorted.gif" />
+    <Content Include="Scripts\tablesorter\css\theme.black-ice.css" />
+    <Content Include="Scripts\tablesorter\css\theme.blue.css" />
+    <Content Include="Scripts\tablesorter\css\theme.bootstrap.css" />
+    <Content Include="Scripts\tablesorter\css\theme.bootstrap_2.css" />
+    <Content Include="Scripts\tablesorter\css\theme.dark.css" />
+    <Content Include="Scripts\tablesorter\css\theme.default.css" />
+    <Content Include="Scripts\tablesorter\css\theme.dropbox.css" />
+    <Content Include="Scripts\tablesorter\css\theme.green.css" />
+    <Content Include="Scripts\tablesorter\css\theme.grey.css" />
+    <Content Include="Scripts\tablesorter\css\theme.ice.css" />
+    <Content Include="Scripts\tablesorter\css\theme.jui.css" />
+    <Content Include="Scripts\tablesorter\css\theme.metro-dark.css" />
+    <Content Include="Scripts\tablesorter\docs\assets\ajax-content.html" />
+    <Content Include="Scripts\tablesorter\docs\assets\build.txt" />
+    <Content Include="Scripts\tablesorter\docs\css\bootstrap.min.css" />
+    <Content Include="Scripts\tablesorter\docs\css\images\animated-overlay.gif" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_diagonals-thick_90_eeeeee_40x40.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_flat_15_cd0a0a_40x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_glass_100_e4f1fb_1x400.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_glass_50_3baae3_1x400.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_glass_80_d7ebf9_1x400.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_highlight-hard_100_f2f5f7_1x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_highlight-hard_70_000000_1x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_highlight-soft_100_deedf7_1x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_highlight-soft_25_ffef8f_1x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_222222_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_2694e8_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_3d80b3_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_72a7cf_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Scripts\tablesorter\docs\css\jq.css" />
+    <Content Include="Scripts\tablesorter\docs\css\jquery-ui.min.css" />
+    <Content Include="Scripts\tablesorter\docs\css\menu.css" />
+    <Content Include="Scripts\tablesorter\docs\css\prettify.css" />
+    <Content Include="Scripts\tablesorter\docs\css\select2-3.4.6.min.css" />
+    <Content Include="Scripts\tablesorter\docs\css\select2-spinner.gif" />
+    <Content Include="Scripts\tablesorter\docs\css\select2.png" />
+    <Content Include="Scripts\tablesorter\docs\css\select2x2.png" />
+    <Content Include="Scripts\tablesorter\docs\css\tipsy.css" />
+    <Content Include="Scripts\tablesorter\docs\example-add-rows.html" />
+    <Content Include="Scripts\tablesorter\docs\example-ajax.html" />
+    <Content Include="Scripts\tablesorter\docs\example-apply-widget.html" />
+    <Content Include="Scripts\tablesorter\docs\example-child-rows-filtered.html" />
+    <Content Include="Scripts\tablesorter\docs\example-child-rows.html" />
+    <Content Include="Scripts\tablesorter\docs\example-empty-table.html" />
+    <Content Include="Scripts\tablesorter\docs\example-extending-defaults.html" />
+    <Content Include="Scripts\tablesorter\docs\example-extractors-parsers.html" />
+    <Content Include="Scripts\tablesorter\docs\example-header-column-span.html" />
+    <Content Include="Scripts\tablesorter\docs\example-locale-sort.html" />
+    <Content Include="Scripts\tablesorter\docs\example-meta-headers.html" />
+    <Content Include="Scripts\tablesorter\docs\example-meta-parsers.html" />
+    <Content Include="Scripts\tablesorter\docs\example-meta-sort-list.html" />
+    <Content Include="Scripts\tablesorter\docs\example-method-sortreset.html" />
+    <Content Include="Scripts\tablesorter\docs\example-multiple-tbodies.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-custom-sort.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-date-format.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-debug.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-delay-init.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-digits.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-render-header.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-render-template.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-selectorsort.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-show-processing.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sort-append.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sort-empty.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sort-force.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sort-key.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sort-list.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sort-order.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-sortreset-sortrestart.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-text-extraction.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-textsorter-semver.html" />
+    <Content Include="Scripts\tablesorter\docs\example-option-theme-metro-style.html" />
+    <Content Include="Scripts\tablesorter\docs\example-options-headers-digits-strings.html" />
+    <Content Include="Scripts\tablesorter\docs\example-options-headers-locked.html" />
+    <Content Include="Scripts\tablesorter\docs\example-options-headers-order.html" />
+    <Content Include="Scripts\tablesorter\docs\example-options-headers-parser.html" />
+    <Content Include="Scripts\tablesorter\docs\example-options-headers.html" />
+    <Content Include="Scripts\tablesorter\docs\example-pager-ajax.html" />
+    <Content Include="Scripts\tablesorter\docs\example-pager-filtered.html" />
+    <Content Include="Scripts\tablesorter\docs\example-pager.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-advanced.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-class-name.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-dates.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-feet-inch-fraction.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-file-type.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-ignore-articles.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-ip-address.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-jquery-data.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-metric.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers-roman.html" />
+    <Content Include="Scripts\tablesorter\docs\example-parsers.html" />
+    <Content Include="Scripts\tablesorter\docs\example-trigger-sort.html" />
+    <Content Include="Scripts\tablesorter\docs\example-triggers.html" />
+    <Content Include="Scripts\tablesorter\docs\example-update-all.html" />
+    <Content Include="Scripts\tablesorter\docs\example-update-cell.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-align-character.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-bootstrap-theme.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-build-table.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-column-selector.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-columns.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-css-sticky-header.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-editable.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-any-match.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-custom-search.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-custom.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-external-inputs.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-formatter-1.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-formatter-2.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter-formatter-select2.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-filter.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-grouping-filter-childrows.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-grouping.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-header-titles.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-math.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-output.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-pager-ajax.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-pager.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-print.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-reflow.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-reflow1.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-reflow2.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-reflow3.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-resizable.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-savesort.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-scroller.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-static-row.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-sticky-header.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-ui-theme.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widget-zebra.html" />
+    <Content Include="Scripts\tablesorter\docs\example-widgets.html" />
+    <Content Include="Scripts\tablesorter\docs\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\tablesorter\docs\img\external.png" />
+    <Content Include="Scripts\tablesorter\docs\img\link.png" />
+    <Content Include="Scripts\tablesorter\docs\img\screens-blue.png" />
+    <Content Include="Scripts\tablesorter\docs\img\screens.png" />
+    <Content Include="Scripts\tablesorter\docs\index.html" />
+    <Content Include="Scripts\tablesorter\docs\js\bootstrap.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\chili\jquery.chili-2.2.js" />
+    <Content Include="Scripts\tablesorter\docs\js\chili\recipes.js" />
+    <Content Include="Scripts\tablesorter\docs\js\demo-build-table.js" />
+    <Content Include="Scripts\tablesorter\docs\js\docs.js" />
+    <Content Include="Scripts\tablesorter\docs\js\jquery-1.2.6.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\jquery-1.4.4.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\jquery-latest.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\jquery-ui-latest.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\jquery.jui_theme_switch.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\jquery.tipsy.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\prettify.js" />
+    <Content Include="Scripts\tablesorter\docs\js\search-ie.js" />
+    <Content Include="Scripts\tablesorter\docs\js\search.js" />
+    <Content Include="Scripts\tablesorter\docs\js\select2-3.4.6.min.js" />
+    <Content Include="Scripts\tablesorter\docs\js\sugar.min.js" />
+    <Content Include="Scripts\tablesorter\docs\themes.html" />
+    <Content Include="Scripts\tablesorter\js\extras\jquery.quicksearch.js" />
+    <Content Include="Scripts\tablesorter\js\extras\semver-mod.js" />
+    <Content Include="Scripts\tablesorter\js\extras\semver.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.metadata.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.min.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.widgets-filter-formatter-select2.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.widgets-filter-formatter.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.widgets-filter-formatter.min.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.widgets.js" />
+    <Content Include="Scripts\tablesorter\js\jquery.tablesorter.widgets.min.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-date-extract.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-date-iso8601.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-date-month.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-date-two-digit-year.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-date-weekday.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-date.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-feet-inch-fraction.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-file-type.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-ignore-articles.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-image.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-input-select.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-ipv6.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-metric.js" />
+    <Content Include="Scripts\tablesorter\js\parsers\parser-roman.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-alignChar.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-build-table.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-columnSelector.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-cssStickyHeaders.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-editable.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-grouping.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-headerTitles.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-math.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-output.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-pager.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-print.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-reflow.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-repeatheaders.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-scroller.js" />
+    <Content Include="Scripts\tablesorter\js\widgets\widget-staticRow.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
+    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\Account\ConfirmEmail.cshtml" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\GameTypes\Create.cshtml" />
+    <Content Include="Views\GameTypes\Delete.cshtml" />
+    <Content Include="Views\GameTypes\Details.cshtml" />
+    <Content Include="Views\GameTypes\Edit.cshtml" />
+    <Content Include="Views\GameTypes\Index.cshtml" />
+    <Content Include="Views\Games\Create.cshtml" />
+    <Content Include="Views\Games\Delete.cshtml" />
+    <Content Include="Views\Games\Details.cshtml" />
+    <Content Include="Views\Games\Edit.cshtml" />
+    <Content Include="Views\Games\Index.cshtml" />
+    <Content Include="Views\Players\Create.cshtml" />
+    <Content Include="Views\Players\Delete.cshtml" />
+    <Content Include="Views\Players\Details.cshtml" />
+    <Content Include="Views\Players\Edit.cshtml" />
+    <Content Include="Views\Players\Index.cshtml" />
+    <Content Include="Views\ChoiceQuestions\Create.cshtml" />
+    <Content Include="Views\ChoiceQuestions\Delete.cshtml" />
+    <Content Include="Views\ChoiceQuestions\Details.cshtml" />
+    <Content Include="Views\ChoiceQuestions\Edit.cshtml" />
+    <Content Include="Views\ChoiceQuestions\Index.cshtml" />
+    <Content Include="Views\QuestionTypes\Create.cshtml" />
+    <Content Include="Views\QuestionTypes\Delete.cshtml" />
+    <Content Include="Views\QuestionTypes\Details.cshtml" />
+    <Content Include="Views\QuestionTypes\Edit.cshtml" />
+    <Content Include="Views\QuestionTypes\Index.cshtml" />
+    <Content Include="Views\GameQuestions\Create.cshtml" />
+    <Content Include="Views\GameQuestions\Delete.cshtml" />
+    <Content Include="Views\GameQuestions\Details.cshtml" />
+    <Content Include="Views\GameQuestions\Edit.cshtml" />
+    <Content Include="Views\GameQuestions\Index.cshtml" />
+    <Content Include="Views\Choices\Create.cshtml" />
+    <Content Include="Views\Choices\Delete.cshtml" />
+    <Content Include="Views\Choices\Details.cshtml" />
+    <Content Include="Views\Choices\Edit.cshtml" />
+    <Content Include="Views\Choices\Index.cshtml" />
+    <Content Include="Views\ChoiceQuestions\RenderChoices.cshtml" />
+    <Content Include="Views\GamePlays\Create.cshtml" />
+    <Content Include="Views\GamePlays\Delete.cshtml" />
+    <Content Include="Views\GamePlays\Details.cshtml" />
+    <Content Include="Views\GamePlays\Edit.cshtml" />
+    <Content Include="Views\GamePlays\Index.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Date.cshtml" />
+    <Content Include="Views\GameConfigurations\Create.cshtml" />
+    <Content Include="Views\GameConfigurations\Delete.cshtml" />
+    <Content Include="Views\GameConfigurations\Details.cshtml" />
+    <Content Include="Views\GameConfigurations\Edit.cshtml" />
+    <Content Include="Views\GameConfigurations\Index.cshtml" />
+    <Content Include="ReportBestMatches.cshtml" />
+    <Content Include="Views\Reports\PlayerMatchSummary.cshtml" />
+    <Content Include="Views\Reports\PlayerMatchDetail.cshtml" />
+    <Content Include="Views\Reports\PlayerTestSummary.cshtml" />
+    <Content Include="Views\Home\Info.cshtml" />
+    <Content Include="Views\Reports\PlayerTestDetail.cshtml" />
+    <Content Include="Scripts\tablesorter\css\bootstrap.less" />
+    <Content Include="Scripts\tablesorter\css\metro.less" />
+    <Content Include="Scripts\tablesorter\css\psd\green-asc.psd" />
+    <Content Include="Scripts\tablesorter\css\psd\green-desc.psd" />
+    <Content Include="Scripts\tablesorter\css\psd\green-unsorted.psd" />
+    <Content Include="Scripts\tablesorter\css\psd\metro-style.psd" />
+    <Content Include="Scripts\tablesorter\css\theme.less" />
+    <Content Include="Scripts\tablesorter\docs\assets\build.json" />
+    <Content Include="Scripts\tablesorter\docs\assets\City0.json" />
+    <Content Include="Scripts\tablesorter\docs\assets\City1.json" />
+    <Content Include="Scripts\tablesorter\docs\assets\City2.json" />
+    <Content Include="Scripts\tablesorter\docs\assets\City3.json" />
+    <Content Include="Scripts\tablesorter\docs\assets\theme_switcher.json" />
+    <Content Include="Scripts\tablesorter\docs\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\tablesorter\docs\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\tablesorter\docs\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Views\Shared\TablesorterPager.cshtml" />
+    <Content Include="Views\Reports\GamePlayerMatchMinMax.cshtml" />
+    <Content Include="Views\Reports\_MobileLayout.cshtml" />
+    <Content Include="Views\Reports\ReportStyleJavaScript.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="ClientiPhoneTest\data\" />
+    <Folder Include="ClientTest\data\" />
+    <Folder Include="Client\ProbeClient\data\" />
+    <Folder Include="Views\Error\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="packages.config" />
+    <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>58161</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44300/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

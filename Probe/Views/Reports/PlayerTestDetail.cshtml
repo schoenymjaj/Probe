@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "PlayerTestDetail";
+}
+
+<html>
+<head>
+    <title>Player Test Detail</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi "></script>
+    <script type="text/javascript">
+
+    @Html.Partial("ReportStyleJavaScript")
+
+    google.load('visualization', '1', { packages: ['table'] });
+
+    //google.setOnLoadCallback(drawContent);
+    $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
+        drawContent();
+    });
+
+    function CalcTestScore(data) {
+
+        nbrCorrect = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].QuestionCorrect == 1) nbrCorrect++;
+        }
+        return Math.round(nbrCorrect * 100 / data.length);
+    }
+
+    function drawContent() {
+        console.log('func drawContent');
+        logError('PlayerTestDetail - func drawContent start', arguments.callee.trace()); //Logging an event on the server
+
+        if (!resize) ActivityIndicatorOn('#spinner');
+
+        var gamePlayId = '@ViewBag.GamePlayId';
+        var playerId = '@ViewBag.PlayerId';
+        $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gamePlayId + '/' + playerId, {},
+         function (data) {
+
+             //HANDLER FOR INTERACTIVITY
+             selectHandler = function () {
+                 console.log('selectHandler');
+                 var selectedItem = chart.getSelection()[0]; //will get question id
+                 if (selectedItem) {
+                     var questionId = data[selectedItem.row].QuestionId;
+                     console.log('The question selected ' + questionId);
+
+                     //no handling of an event at this time (9/4/14)
+                 }
+             };
+
+             //Let's start catching exceptions
+             try {
+
+                 /*
+                 SETUP REPORT HEADER
+                 If Mobile - the upper right link will go back one page in history. This would normally be the player prompt page of the Probe Client.
+                 In NOT Mobile - the upper right link will go to the TestSummary report
+                 */
+                 if (data.length >= 1) {
+                     if (DoStyleMobile()) {
+                         $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName'
+                             + '<br/><span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
+                             + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
+                         $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-1); return false;">Go Back</a>');
+                     } else {
+                         $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName'
+                             + ' <span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
+                             + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
+                         $('.reportReturnLink').html('@Html.ActionLink("Back to Player Test Scores", "PlayerTestSummary", "Reports")');
+                     }
+                 }
+
+                 /*
+                 SETUP GOOGLE TABLE DATA
+                 */
+                 var tdataCorrect = new google.visualization.DataTable();
+                 var tdataInCorrect = new google.visualization.DataTable();
+
+                 tdataCorrect.addColumn('string', 'Question');
+                 tdataCorrect.addColumn('string', 'Selections');
+                 tdataCorrect.addColumn('string', 'Choices');
+                 if (!DoStyleMobile()) tdataCorrect.addColumn('boolean', 'Correct');
+                 if (!DoStyleMobile()) tdataCorrect.addColumn('number', '% Correct');
+
+                 tdataInCorrect.addColumn('string', 'Question');
+                 tdataInCorrect.addColumn('string', 'Selections');
+                 tdataInCorrect.addColumn('string', 'Choices');
+                 if (!DoStyleMobile()) tdataInCorrect.addColumn('boolean', 'Correct');
+                 if (!DoStyleMobile()) tdataInCorrect.addColumn('number', '% Correct');
+
+                 (!DoStyleMobile()) ? rowlength = 5 : rowlength = 3;
+                 rowVector = new Array(rowlength);
+
+                 for (var i = 0; i < data.length; i++) {
+                     row = 0;
+                     rowVector[row++] = data[i].Question;
+                     rowVector[row++] = data[i].SelectedChoices;
+                     rowVector[row++] = data[i].CorrectChoices;
+                     if (!DoStyleMobile()) rowVector[row++] = (data[i].QuestionCorrect == 1)
+                     if (!DoStyleMobile()) rowVector[row++] = data[i].PercentCorrect;
+
+                     if (data[i].QuestionCorrect == 1) {
+                         tdataCorrect.addRow(rowVector);
+                     } else {
+                         tdataInCorrect.addRow(rowVector);
+                     }
+                 }
+
+                 var tableCorrect = new google.visualization.Table(document.getElementById('tableCorrect_div'));
+                 google.visualization.events.addListener(tableCorrect, 'select', selectHandler);
+                 tableCorrect.draw(tdataCorrect);
+
+                 var tableInCorrect = new google.visualization.Table(document.getElementById('tableInCorrect_div'));
+                 google.visualization.events.addListener(tableInCorrect, 'select', selectHandler);
+                 tableInCorrect.draw(tdataInCorrect);
+
+                 if (!resize) ActivitySelectorOff('#spinner');
+                 logError('PlayerTestDetail - func drawContent end', null); //Logging an event on the server
+
+             } catch (err) {
+                 if (arguments != null && arguments.callee != null && arguments.callee.trace) {
+                     logError(err, arguments.callee.trace());
+                 } else {
+                     logError(err, null);
+                 }
+
+                 //retry generating the report (ie.e android emulator had a problem)
+                 //window.location.reload(true); hopefully won't don't need this. loading via document ready alleviated issue
+             }
+
+         });
+    }
+    </script>
+</head>
+<body>
+    <div id='spinner'></div>
+    <div id="title" class="reportTitle">Player Test Details Report</div>
+    <div class="reportReturnLink"></div>
+    <div class="reportResetSytle"></div>
+    <div id="header" class="reportHeader"></div>
+    <div class="positiveTableHeader">Correct Answered Questions</div>
+    <div id="tableCorrect_div"></div>
+    <div class="negativeTableHeader">Incorrect Answered Questions</div>
+    <div id="tableInCorrect_div"></div>
+</body>
+</html>
