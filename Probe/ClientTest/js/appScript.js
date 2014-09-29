@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.30');
+        alert('VERSION CONTROL: Client Test Version 1.37');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -97,23 +97,18 @@ $(function () {
 
             }); //$(document).on
 
+
             //We needed to do this because mysteriously the page padding was dynamically changing to a value of 2.xxx
             //Don't know why.
-            $(document).on("pagechange", function (event) {
-                console.log('event pagechange');
+            $(document).on("pagechange pagebeforechange popupafteropen popupafterclose resize", function (event) {
+                console.log('event pagechange-pagebeforechange popupafteropen popupafterclose resize');
+                app.AdjustPagePaddingTop();
+            });
 
-                switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id'))
-                {
-                    case "home":
-                        $('#home').css("padding-top", "42px");
-                        break;
-                    case "question":
-                        $('#question').css("padding-top", "42px");
-                        break;
-                    case "summary":
-                        $('#summary').css("padding-top", "42px");
-                        break;
-                }
+            //sets the padding when window is resized. Not going to happen on a phone.
+            $(window).resize(function ()
+            {
+                app.AdjustPagePaddingTop();
             });
 
             /*
@@ -216,11 +211,7 @@ $(function () {
                 if (gameCode.length > 0) { //check to see that a game code was entered
                     app.GetGamePlayServer($('#gameCode').val());
                 } else {
-                    popupArgs = new PopupArgs();
-                    popupArgs.header = 'Error';
-                    popupArgs.msg1 = 'The game code cannot be blank.';
-                    popupArgs.msg2 = 'Please enter a game code.';
-                    app.popUp(popupArgs);
+                    app.popUpHelper('Error', 'The game code cannot be blank.', 'Please enter a game code.');
                 }
             });
 
@@ -265,19 +256,11 @@ $(function () {
                                         app.InitalizeGamePlay(gamePlayData);
                                         app.SetGamePlayPlayerPrompt(); //SUCCESS - NEXT STEP IS FOR PLAYER TO ENTER PLAYER INFO
                                     } else {
-                                        popupArgs = new PopupArgs();
-                                        popupArgs.header = 'Error';
-                                        popupArgs.msg1 = 'The Game \'' + gamePlayData.Name + '\' has already been submitted.'
-                                        popupArgs.msg2 = 'A device cannot submit the same game twice for this game type.';
-                                        app.popUp(popupArgs);
+                                        app.popUpHelper('Error', 'The Game \'' + gamePlayData.Name + '\' has already been submitted.', 'A device cannot submit the same game twice for this game type.');
                                     }//if (!app.IsGameSubmitted(gamePlayData.Id))
 
                                 } else {
-                                    popupArgs = new PopupArgs();
-                                    popupArgs.header = "Error";
-                                    popupArgs.msg1 = 'Configuration could not be found for Game \'' + gamePlayData.Name + '\'';
-                                    app.popUp(popupArgs);
-
+                                    app.popUpHelper("Error", 'Configuration could not be found for Game \'' + gamePlayData.Name + '\'',null);
                                 }//if (gameConfig = {})
 
                             })
@@ -290,11 +273,8 @@ $(function () {
                                     probeError = "The Probe web server could not be found. There may be connectivity issues."
                                 }
                                 var err = textStatus + ", " + probeError;
-                                popupArgs = new PopupArgs();
-                                popupArgs.header = "Error";
-                                popupArgs.msg1 = 'Request Failed:' + err;
-                                app.popUp(popupArgs);
 
+                                app.popUpHelper("Error", 'Request Failed:' + err,null);
                             });
                         
                     } else {
@@ -312,11 +292,7 @@ $(function () {
                                 errorMessage = gamePlayData.errormessage;
                                 break;
                         }
-                        popupArgs = new PopupArgs();
-                        popupArgs.header = 'Error';
-                        popupArgs.msg1 = errorMessage;
-                        popupArgs.msg2 = 'Please enter the correct code.';
-                        app.popUp(popupArgs);
+                        app.popUpHelper('Error', errorMessage, 'Please enter the correct code.');
                     }
 
                 }) //done
@@ -329,11 +305,7 @@ $(function () {
                       probeError = "The Probe web server could not be found. There may be connectivity issues."
                   }
                   var err = textStatus + ", " + probeError;
-                  popupArgs = new PopupArgs();
-                  popupArgs.header = "Error";
-                  popupArgs.msg1 = 'Request Failed:' + err;
-                  app.popUp(popupArgs);
-
+                  app.popUpHelper("Error", 'Request Failed:' + err,null);
               }); //fail
 
         };//app.GetGamePlayServer
@@ -382,10 +354,7 @@ $(function () {
                               errorMessage = gamePlayStatusData.errormessage;
                               break;
                       }
-                      popupArgs = new PopupArgs();
-                      popupArgs.header = 'Error';
-                      popupArgs.msg1 = errorMessage;
-                      app.popUp(popupArgs);
+                      app.popUpHelper('Error', errorMessage,null);
                   }
 
               }) //done
@@ -398,11 +367,7 @@ $(function () {
                       probeError = "The Probe web server could not be found. There may be connectivity issues."
                   }
                   var err = textStatus + ", " + probeError;
-                  popupArgs = new PopupArgs();
-                  popupArgs.header = "Error";
-                  popupArgs.msg1 = 'Request Failed:' + err;
-                  app.popUp(popupArgs);
-
+                  app.popUpHelper("Error", 'Request Failed:' + err,null);
               }); //fail
         };//app.GetGamePlayStatusServer
 
@@ -517,7 +482,7 @@ $(function () {
                 '<div style="margin-top: 10px; font-weight:bold">' +
                 '(' + gamePlayData.GameType + ') Game Type<br/><br/>' +
                 '<label for="gpName">Game Name / (Desc)</label>' +
-                '<textarea name="gpName" id="gpName" class="ui-disabled">' + gamePlayData.Name + ' (' +
+                '<textarea name="gpName" id="gpName" disabled="disabled">' + gamePlayData.Name + ' (' +
                 gamePlayData.Description + ')</textarea>' +
                 '<label for="C">First Name</label>' +
                 '<input name="firstName" id="firstName" type="text" value="" data-clear-btn="true">' +
@@ -541,8 +506,8 @@ $(function () {
             /*
             Dynamically update the Player Prompt based on the GameState
             */
-            $('#firstName').removeClass('ui-disabled');
-            $('#nickName').removeClass('ui-disabled');
+            //$('#firstName').attr("disabled", "");
+            //$('#nickName').attr("disabled", "");
             $('#reportGamePlay').hide();
             if (gameState != GameState.Idle) {
                 $("input[name='firstName']").attr('value', result.FirstName);
@@ -556,8 +521,8 @@ $(function () {
                 }
 
                 if (gameState == GameState.ReadOnly) {
-                    $('#firstName').addClass('ui-disabled')
-                    $('#nickName').addClass('ui-disabled')
+                    $('#firstName').attr("disabled", "disabled");
+                    $('#nickName').attr("disabled", "disabled");
 
                     /*
                     Display the Report Button - it will only be enabled if the GamePlay.ClientReportAccess 
@@ -581,6 +546,10 @@ $(function () {
             }//if (gameState != GameState.Idle)
 
             $('#homePageContent').trigger("create");
+            if (gameState == GameState.ReadOnly) {
+                $('#startGamePlay,#cancelGamePlay,#reportGamePlay').addClass('GameReadOnlyButtons');
+            }
+
             $('#firstName').focus(); //put the focus on the firstname text input
 
             //toggle the sex radio boxes
@@ -601,24 +570,16 @@ $(function () {
                 if ($('#firstName').val().length < 3 ||
                     $('#firstName').val().length > 10 ||
                     $('#firstName').val().indexOf(" ") != -1)
-                    {
-                    popupArgs = new PopupArgs();
-                    popupArgs.header = 'Error';
-                    popupArgs.msg1 = 'The first name must be between 3 and 10 characters and contain no spaces.';
-                    popupArgs.msg2 = 'Please enter a first name again.';
-                    app.popUp(popupArgs);
+                {
+                    app.popUpHelper('Error', 'The first name must be between 3 and 10 characters and contain no spaces.', 'Please enter a first name again.');
                     return;
                 }
 
                 if ($('#nickName').val().length < 3 ||
                     $('#nickName').val().length > 10 ||
                     $('#nickName').val().indexOf(" ") != -1)
-                    {
-                    popupArgs = new PopupArgs();
-                    popupArgs.header = 'Error';
-                    popupArgs.msg1 = 'The nick name must be between 3 and 10 characters and contain no spaces.';
-                    popupArgs.msg2 = 'Please enter a nick name again.';
-                    app.popUp(popupArgs);
+                {
+                    app.popUpHelper('Error', 'The nick name must be between 3 and 10 characters and contain no spaces.', 'Please enter a nick name again.');
                     return;
                 }
 
@@ -711,7 +672,7 @@ $(function () {
         /*
         Render the question page for the GameQuestion[questionNbr] in the GamePlay dataset
         */
-        app.SetQuestionPage = function (questionNbr) {
+        app.SetQuestionPage = function (questionNbr, transitionType) {
             console.log('func app.SetQuestionPage');
 
             gamePlayData = app.GetGamePlayLocalStorage();
@@ -765,7 +726,7 @@ $(function () {
 
             app.SetBottomNavButtons(true, true); //set summary and submit button to enabled
 
-            $.mobile.changePage('#question');
+            $.mobile.changePage('#question', { transition: transitionType });
 
         }; //app.SetQuestionPage
 
@@ -807,7 +768,7 @@ $(function () {
             //setup event handler for summary page listview to return to a specific question
             $('[data-qnum]').click(function (event) {
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
-                app.SetQuestionPage(currentQuestionNbr);
+                app.SetQuestionPage(currentQuestionNbr, 'slide');
             });
 
             app.SetBottomNavButtons(false, true); //set summary to disabled and submit button to enabled
@@ -851,7 +812,7 @@ $(function () {
                     //$('#qfooter #backButton').click(function (event) { MNS DEBUG
                     $('#backButton').click(function (event) {
                             (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
-                        app.SetQuestionPage(currentQuestionNbr);
+                        app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
 
                     $('.summaryButton').click(function (event) {
@@ -861,7 +822,7 @@ $(function () {
                     //$('#qfooter #nextButton').click(function (event) { //MNS DEBUG
                     $('#nextButton').click(function (event) {
                             (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
-                        app.SetQuestionPage(currentQuestionNbr);
+                        app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
 
                     break;
@@ -872,34 +833,7 @@ $(function () {
                         app.confirmDialog('You are about to submit the Game \'' + gamePlayData.Name + '\'.' + '<br/>Are you sure?',
                             function () {
                                 $.mobile.loading('show'); //to show the spinner
-
-                                result = app.GetResultLocalStorage();
-                                console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
-                                returnErrMsg = app.PostGamePlayAnswersServer();
-                                console.log('completed app.PostGamePlayAnswersServer');
-                                if (returnErrMsg == null) {
-                                    app.SubmitSuccess();
-                                    console.log('success - all done');
-                                }
-
-                                $.mobile.loading('hide'); //hide the spinner
-
-                                app.SetHomePageStyle(false);
-                                app.SetHomePageInitialDisplay();
-                                $.mobile.changePage('#home', { transition: 'none' });
-
-                                //depending on success or failure; we display a different popup over the home page
-                                if (returnErrMsg == null) {
-                                    popupArgs = new PopupArgs();
-                                    popupArgs.header = 'Info';
-                                    popupArgs.msg1 = 'The submission of the Game \'' + gamePlayData.Name + '\' was successful.';
-                                    app.popUp(popupArgs);
-                                } else {
-                                    popupArgs = new PopupArgs();
-                                    popupArgs.header = 'Error';
-                                    popupArgs.msg1 = 'The submission of the Game \'' + gamePlayData.Name + '\' was NOT successful.<br/>' + returnErrMsg;
-                                    app.popUp(popupArgs);                                    
-                                }
+                                setTimeout(function () { app.ConfirmSubmit(); }, 5000);
 
                         });
 
@@ -924,11 +858,7 @@ $(function () {
 
                         if (app.IsGameInProgress()) {
                             gamePlayData = app.GetGamePlayLocalStorage();
-                            popupArgs = new PopupArgs();
-                            popupArgs.header = 'Error';
-                            popupArgs.msg1 = 'There is a Game \'' + gamePlayData.Name + '\' that is in progress';
-                            popupArgs.msg2 = 'You must cancel this game first to start a new game.';
-                            app.popUp(popupArgs);
+                            app.popUpHelper('Error', 'There is a Game \'' + gamePlayData.Name + '\' that is in progress', 'You must cancel this game first to start a new game.');
                             return;
                         }
 
@@ -945,11 +875,7 @@ $(function () {
 
                         if (!app.IsGameInProgress())
                         {
-                            popupArgs = new PopupArgs();
-                            popupArgs.header = 'Error';
-                            popupArgs.msg1 = 'There is no Game in progress';
-                            popupArgs.msg2 = undefined;
-                            app.popUp(popupArgs);
+                            app.popUpHelper('Error', 'There is no Game in progress',null);
                             return
                         } else {
                             gamePlayData = app.GetGamePlayLocalStorage();
@@ -967,6 +893,50 @@ $(function () {
             }
         };//app.BindPageStaticEvents 
 
+        app.ConfirmSubmit = function () {
+            result = app.GetResultLocalStorage();
+            console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
+            returnErrMsg = app.PostGamePlayAnswersServer();
+            console.log('completed app.PostGamePlayAnswersServer');
+            if (returnErrMsg == null) {
+                app.SubmitSuccess();
+                console.log('success - all done');
+            }
+
+            app.SetHomePageStyle(false);
+            app.SetHomePageInitialDisplay();
+            $.mobile.changePage('#home', { transition: 'none' });
+
+            $.mobile.loading('hide'); //hide the spinner
+            //depending on success or failure; we display a different popup over the home page
+            if (returnErrMsg == null) {
+                app.popUpHelper('Info', 'The submission of the Game \'' + gamePlayData.Name + '\' was successful.', null);
+            } else {
+                app.popUpHelper('Error', 'The submission of the Game \'' + gamePlayData.Name + '\' was NOT successful.<br/>' + returnErrMsg, null);
+            }
+        }//app.ConfirmSubmit
+
+        /*
+        AdjustPagePaddingTop
+        */
+        app.AdjustPagePaddingTop = function () {
+            console.log('func AdjustPagePaddingTop');
+
+            switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id')) {
+                case "home":
+                    console.log('change the padding to 44px for home');
+                    $('#home').css("padding-top", "42px");
+                    break;
+                case "question":
+                    $('#question').css("padding-top", "42px");
+                    break;
+                case "summary":
+                    $('#summary').css("padding-top", "42px");
+                    break;
+            }
+
+        }
+
         /*
         Setup home page
         arguments
@@ -975,6 +945,7 @@ $(function () {
         */
         app.SetHomePageStyle = function (initialState) {
             console.log('func app.SetHomePageStyle');
+            $('#home').css("padding-top", "42px");
 
             if (initialState) {
                 $('#home').css('background-image', 'url(./images/bckground/ProbeBackground.jpg)');
@@ -1022,7 +993,7 @@ $(function () {
                 gameState = GameState.ReadOnly;
             }
             currentQuestionNbr = questionNbr;
-            app.SetQuestionPage(currentQuestionNbr)
+            app.SetQuestionPage(currentQuestionNbr, 'none')
         };
 
         /*
@@ -1037,6 +1008,9 @@ $(function () {
             app.SetGamePlayPlayerPrompt();
         };
 
+        /*
+        Display the report page
+        */
         app.DisplayReportPage = function () {
             console.log('func app.DisplayReportPage');
 
@@ -1169,6 +1143,22 @@ $(function () {
         };//app.IsGameSubmitted 
 
         /*
+        Popup Helper
+        */
+        app.popUpHelper = function (header, msg1, msg2) {
+            /*
+            if msg2 is null, then it won't be displayed
+            */
+
+            console.log('func app.popUpHelper')
+            popupArgs = new PopupArgs();
+            popupArgs.header = header;
+            popupArgs.msg1 = msg1;
+            popupArgs.msg2 = msg2;
+            app.popUp(popupArgs);
+        }
+
+        /*
         Setup and display popup
         */
         app.popUp = function (popupArgs) { //(header, msg1, msg2, btnYesHandler, btnNoHandler) {
@@ -1194,9 +1184,14 @@ $(function () {
             $('#popupMsgYesBtn').attr('data-rel', 'back')
 
             //display popup
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" }); 
+            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" });
+
+            app.AdjustPagePaddingTop();
         };
 
+        /*
+        Confirmation Dialog
+        */
         app.confirmDialog = function (text, callback) {
             console.log('func app.confirmDialog');
 
@@ -1208,15 +1203,15 @@ $(function () {
                     <div role="main" class="ui-content" data-theme="a">\
                         <h3 class="ui-title">' + text + '</h3>\
                         <div style="text-align:right">\
-                        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b optionConfirm" data-rel="back" data-theme="a">Yes</a>\
-                        <a "href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b optionCancel" data-rel="back" data-transition="flow" data-theme="a">No</a>\
+                        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a optionConfirm" data-rel="back" data-theme="a">Yes</a>\
+                        <a "href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a optionCancel" data-rel="back" data-transition="flow" data-theme="a">No</a>\
                         <\div>\
                     </div>\
                 </div>')
                 .appendTo($.mobile.pageContainer);
             var popupDialogObj = $('#' + popupDialogId);
             popupDialogObj.trigger('create');
-            popupDialogObj.popup({
+            popupDialogObj.popup({ theme: "a" }).popup({
                 afterclose: function (event, ui) {
                     popupDialogObj.find(".optionConfirm").first().off('click');
                     var isConfirmed = popupDialogObj.attr('data-confirmed') === 'yes' ? true : false;
@@ -1225,7 +1220,7 @@ $(function () {
                         callback();
                     }
                 }
-            });
+                });
             popupDialogObj.popup('open');
             popupDialogObj.find(".optionConfirm").first().on('click', function () {
                 popupDialogObj.attr('data-confirmed', 'yes');
