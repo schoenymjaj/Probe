@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.40');
+        alert('VERSION CONTROL: Client Test Version 1.41');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -108,6 +108,12 @@ $(function () {
             $(document).on("pagecontainerchange", function (event) {
                 console.log('pagecontainerchange');
                 alert('pagecontainerchange');
+            });
+
+            $(document).on("touchend", function (event) {
+                console.log('touchend');
+                event.preventDefault();
+                alert('touchend');
             });
 
             //sets the padding when window is resized. Not going to happen on a phone.
