@@ -112,7 +112,7 @@ $(function () {
 
             $(document).on("touchend", function (event) {
                 console.log('touchend');
-                event.preventDefault();
+                //event.preventDefault();
                 alert('touchend');
             });
 
