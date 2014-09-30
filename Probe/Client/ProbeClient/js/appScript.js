@@ -716,7 +716,7 @@ $(function () {
             fieldset += '</fieldset>'
 
             $('#questionText h2').html(questionText + '?');
-            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' out of ' + app.NbrQuestions());
+            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' of ' + app.NbrQuestions());
             $('#choiceList').html(fieldset);
 
             if (gameState != GameState.ReadOnly)
