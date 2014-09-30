@@ -70,8 +70,8 @@ $(function () {
             //});
 
             $('#buttonOnHome').touchend(function (event) {
-                alert('touchend thrown');
-                //$(":mobile-pagecontainer").pagecontainer('change', '#page2');
+                console.log('touchend thrown');
+                $(":mobile-pagecontainer").pagecontainer('change', '#page2');
             });
 
             $('#buttonOnPage2').click(function (event) {
