@@ -329,6 +329,8 @@
     <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.css" />
     <Content Include="ClientTest\css\OLD jquerymobile themes\V0.1\themes\ProbeTheme.V0.1.min.css" />
     <Content Include="ClientTest\css\style.css" />
+    <Content Include="ClientTest\css\themes\HailMary.css" />
+    <Content Include="ClientTest\css\themes\HailMary.min.css" />
     <Content Include="ClientTest\css\themes\images\ajax-loader.gif" />
     <Content Include="ClientTest\css\themes\images\icons-png\action-black.png" />
     <Content Include="ClientTest\css\themes\images\icons-png\action-white.png" />
@@ -431,8 +433,6 @@
     <Content Include="ClientTest\css\themes\images\icons-png\video-black.png" />
     <Content Include="ClientTest\css\themes\images\icons-png\video-white.png" />
     <Content Include="ClientTest\css\themes\jquery.mobile.icons.min.css" />
-    <Content Include="ClientTest\css\themes\ProbeTheme.V0.1.css" />
-    <Content Include="ClientTest\css\themes\ProbeTheme.V0.1.min.css" />
     <Content Include="ClientTest\images\bckground\ProbeBackground - Deprecated.jpg" />
     <Content Include="ClientTest\images\bckground\ProbeBackground-Opacity15.jpg" />
     <Content Include="ClientTest\images\bckground\ProbeBackground-Opacity3.jpg" />
