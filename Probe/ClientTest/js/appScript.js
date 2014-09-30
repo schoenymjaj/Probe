@@ -22,7 +22,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.01');
+        alert('VERSION CONTROL: Client Test Version 1.02');
 
 
         app.init = function () {
@@ -64,9 +64,9 @@ $(function () {
 
             $(document).on("touchend", function (event) {
                 console.log('touchend no default,propagation');
-                event.preventDefault();
+            //    event.preventDefault();
             //    event.stopPropagation();
-            //    //alert('touchend');
+            //    alert('touchend');
             });
 
             $('#buttonOnHome').click(function (event) {
