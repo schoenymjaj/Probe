@@ -60,15 +60,14 @@ $(function () {
 
             $(document).on("pagecontainerchange", function (event) {
                 console.log('pagecontainerchange');
-                //alert('pagecontainerchange');
             });
 
-            //$(document).on("touchend", function (event) {
-            //    console.log('touchend no default,propagation');
-            //    event.preventDefault();
+            $(document).on("touchend", function (event) {
+                console.log('touchend no default,propagation');
+                event.preventDefault();
             //    event.stopPropagation();
             //    //alert('touchend');
-            //});
+            });
 
             $('#buttonOnHome').click(function (event) {
                 $(":mobile-pagecontainer").pagecontainer('change', '#page2');
