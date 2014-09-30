@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: removed event.preventDefault');
+        alert('VERSION CONTROL: Client Test Version 1.42');
         root = GetRootUrl();
 
         var ProbeAPIurl = root + "api/";
@@ -97,23 +97,30 @@ $(function () {
 
             }); //$(document).on
 
+
             //We needed to do this because mysteriously the page padding was dynamically changing to a value of 2.xxx
             //Don't know why.
-            $(document).on("pagechange", function (event) {
-                console.log('event pagechange');
+            $(document).on("pagechange pagebeforechange popupafteropen popupafterclose resize", function (event) {
+                console.log('event pagechange-pagebeforechange popupafteropen popupafterclose resize');
+                app.AdjustPagePaddingTop();
+            });
 
-                switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id'))
-                {
-                    case "home":
-                        $('#home').css("padding-top", "42px");
-                        break;
-                    case "question":
-                        $('#question').css("padding-top", "42px");
-                        break;
-                    case "summary":
-                        $('#summary').css("padding-top", "42px");
-                        break;
-                }
+            //$(document).on("pagecontainerchange", function (event) {
+            //    console.log('pagecontainerchange');
+            //    alert('pagecontainerchange');
+            //});
+
+            //$(document).on("touchend", function (event) {
+            //    console.log('touchend no default,propagation');
+            //    event.preventDefault();
+            //    event.stopPropagation();
+            //    //alert('touchend');
+            //});
+
+            //sets the padding when window is resized. Not going to happen on a phone.
+            $(window).resize(function ()
+            {
+                app.AdjustPagePaddingTop();
             });
 
             /*
@@ -140,12 +147,13 @@ $(function () {
             listViewHtml = '';
 
             if (app.IsGameInProgress() || gamePlayListQueue.length > 0) {
+                app.SetHomePageStyle(false);
+
                 listViewHtml += '<ul id="gameList" data-role="listview" data-inset="true">';
 
                 if (app.IsGameInProgress()) {
                     $("[data-icon='plus']").addClass('ui-disabled');
                     $("[data-icon='minus']").removeClass('ui-disabled');
-                    app.SetHomePageStyle(false);
 
                     gamePlayData = app.GetGamePlayLocalStorage();
                     result = app.GetResultLocalStorage();
@@ -175,6 +183,9 @@ $(function () {
                 listViewHtml += '</ul>';
 
             }// if (app.IsGameInProgress() || gamePlayListQueue > 0) {
+            else {
+                app.SetHomePageStyle(true); //the only time we set bckground image to full opacity -first time
+            }
 
             $('#homePageContent').html(listViewHtml);
             $('#gameList').listview().listview("refresh").trigger("create");
@@ -212,11 +223,7 @@ $(function () {
                 if (gameCode.length > 0) { //check to see that a game code was entered
                     app.GetGamePlayServer($('#gameCode').val());
                 } else {
-                    popupArgs = new PopupArgs();
-                    popupArgs.header = 'Error';
-                    popupArgs.msg1 = 'The game code cannot be blank.';
-                    popupArgs.msg2 = 'Please enter a game code.';
-                    app.popUp(popupArgs);
+                    app.popUpHelper('Error', 'The game code cannot be blank.', 'Please enter a game code.');
                 }
             });
 
@@ -261,19 +268,11 @@ $(function () {
                                         app.InitalizeGamePlay(gamePlayData);
                                         app.SetGamePlayPlayerPrompt(); //SUCCESS - NEXT STEP IS FOR PLAYER TO ENTER PLAYER INFO
                                     } else {
-                                        popupArgs = new PopupArgs();
-                                        popupArgs.header = 'Error';
-                                        popupArgs.msg1 = 'The Game \'' + gamePlayData.Name + '\' has already been submitted.'
-                                        popupArgs.msg2 = 'A device cannot submit the same game twice for this game type.';
-                                        app.popUp(popupArgs);
+                                        app.popUpHelper('Error', 'The Game \'' + gamePlayData.Name + '\' has already been submitted.', 'A device cannot submit the same game twice for this game type.');
                                     }//if (!app.IsGameSubmitted(gamePlayData.Id))
 
                                 } else {
-                                    popupArgs = new PopupArgs();
-                                    popupArgs.header = "Error";
-                                    popupArgs.msg1 = 'Configuration could not be found for Game \'' + gamePlayData.Name + '\'';
-                                    app.popUp(popupArgs);
-
+                                    app.popUpHelper("Error", 'Configuration could not be found for Game \'' + gamePlayData.Name + '\'',null);
                                 }//if (gameConfig = {})
 
                             })
@@ -286,11 +285,8 @@ $(function () {
                                     probeError = "The Probe web server could not be found. There may be connectivity issues."
                                 }
                                 var err = textStatus + ", " + probeError;
-                                popupArgs = new PopupArgs();
-                                popupArgs.header = "Error";
-                                popupArgs.msg1 = 'Request Failed:' + err;
-                                app.popUp(popupArgs);
 
+                                app.popUpHelper("Error", 'Request Failed:' + err,null);
                             });
                         
                     } else {
@@ -308,11 +304,7 @@ $(function () {
                                 errorMessage = gamePlayData.errormessage;
                                 break;
                         }
-                        popupArgs = new PopupArgs();
-                        popupArgs.header = 'Error';
-                        popupArgs.msg1 = errorMessage;
-                        popupArgs.msg2 = 'Please enter the correct code.';
-                        app.popUp(popupArgs);
+                        app.popUpHelper('Error', errorMessage, 'Please enter the correct code.');
                     }
 
                 }) //done
@@ -325,11 +317,7 @@ $(function () {
                       probeError = "The Probe web server could not be found. There may be connectivity issues."
                   }
                   var err = textStatus + ", " + probeError;
-                  popupArgs = new PopupArgs();
-                  popupArgs.header = "Error";
-                  popupArgs.msg1 = 'Request Failed:' + err;
-                  app.popUp(popupArgs);
-
+                  app.popUpHelper("Error", 'Request Failed:' + err,null);
               }); //fail
 
         };//app.GetGamePlayServer
@@ -378,10 +366,7 @@ $(function () {
                               errorMessage = gamePlayStatusData.errormessage;
                               break;
                       }
-                      popupArgs = new PopupArgs();
-                      popupArgs.header = 'Error';
-                      popupArgs.msg1 = errorMessage;
-                      app.popUp(popupArgs);
+                      app.popUpHelper('Error', errorMessage,null);
                   }
 
               }) //done
@@ -394,11 +379,7 @@ $(function () {
                       probeError = "The Probe web server could not be found. There may be connectivity issues."
                   }
                   var err = textStatus + ", " + probeError;
-                  popupArgs = new PopupArgs();
-                  popupArgs.header = "Error";
-                  popupArgs.msg1 = 'Request Failed:' + err;
-                  app.popUp(popupArgs);
-
+                  app.popUpHelper("Error", 'Request Failed:' + err,null);
               }); //fail
         };//app.GetGamePlayStatusServer
 
@@ -409,8 +390,6 @@ $(function () {
             console.log('app.PostGamePlayAnswersServer');
 
             returnErrMsg = null;
-
-            $.mobile.loading('show'); //to show the spinner
 
             //create player object for POST
             player = {};
@@ -449,12 +428,10 @@ $(function () {
                     } else
                     {
                         //THERE WAS A PROBE BUSINESS ERROR
-                        $.mobile.loading('hide'); //to hide the spinner
-
                         switch (playerDTO.errorid) {
                             case 3:
-                                errorMessage = 'Your player name (first name + nickname) is already in use. ' + 
-                                    'Please enter another nickname to be unique for the game. Use Menu => Home option (upper right icon). Select Active Game and modify your nickname';
+                                errorMessage = 'Your player name (first name - nickname) is already in use. ' + 
+                                    'Please enter another nickname for this game. Select the active game, modify your nickname, and resubmit';
                                 break;
                             default:
                                 errorMessage = playerDTO.errormessage;
@@ -473,10 +450,8 @@ $(function () {
                                 //SUCCESS
 
                                 returnErrMsg = null; //successful return
-                                $.mobile.loading('hide'); //to hide the spinner
                             } else {
                                 //THERE WAS A PROBE BUSINESS ERROR
-                                $.mobile.loading('hide'); //to hide the spinner
                                 return returnErrMsg = gamePlayAnswers.errormessage + '(Error #: ' + gamePlayAnswers.errorid + ')';
 
                             }//if (gamePlayAnswers.errorid == undefined) {
@@ -485,7 +460,6 @@ $(function () {
                         .fail(function (jqxhr, textStatus, error) {
                             console.log('return POSTGamePlayAnswers fail');
 
-                            $.mobile.loading('hide'); //to hide the spinner
                             probeError = error;
                             if (probeError == "") {
                                 probeError = "The Probe web server could not be found. There may be connectivity issues."
@@ -496,7 +470,6 @@ $(function () {
                 .fail(function (jqxhr, textStatus, error) {
                     console.log('return POSTPlayer fail');
 
-                    $.mobile.loading('hide'); //to hide the spinner
                     probeError = error;
                     if (probeError == "") {
                         probeError = "The Probe web server could not be found. There may be connectivity issues."
@@ -519,11 +492,10 @@ $(function () {
 
             promptforPlayerHtml =
                 '<div style="margin-top: 10px; font-weight:bold">' +
-                '(' + gamePlayData.GameType + ') Game Type<br/><br/>' +
-                '<label for="gpName">Game Name</label>' +
-                '<textarea name="gpName" id="gpName" class="ui-disabled">' + gamePlayData.Name + '</textarea>' +
-                '<label for="gpDesc">Game Description</label>' +
-                '<textarea name="gpDesc" id="gpDesc" class="ui-disabled">' + gamePlayData.Description + '</textarea>' +
+                '<label for="gpName"><b>(' + gamePlayData.GameType + ' Game)</b>' +
+                '</label>' +
+                '<textarea name="gpName" id="gpName" disabled="disabled">' + gamePlayData.Name + ' (' +
+                gamePlayData.Description + ')</textarea>' +
                 '<label for="C">First Name</label>' +
                 '<input name="firstName" id="firstName" type="text" value="" data-clear-btn="true">' +
                 '<label for="nickName">Nick Name</label>' +
@@ -546,8 +518,8 @@ $(function () {
             /*
             Dynamically update the Player Prompt based on the GameState
             */
-            $('#firstName').removeClass('ui-disabled');
-            $('#nickName').removeClass('ui-disabled');
+            //$('#firstName').attr("disabled", "");
+            //$('#nickName').attr("disabled", "");
             $('#reportGamePlay').hide();
             if (gameState != GameState.Idle) {
                 $("input[name='firstName']").attr('value', result.FirstName);
@@ -561,8 +533,8 @@ $(function () {
                 }
 
                 if (gameState == GameState.ReadOnly) {
-                    $('#firstName').addClass('ui-disabled')
-                    $('#nickName').addClass('ui-disabled')
+                    $('#firstName').attr("disabled", "disabled");
+                    $('#nickName').attr("disabled", "disabled");
 
                     /*
                     Display the Report Button - it will only be enabled if the GamePlay.ClientReportAccess 
@@ -586,6 +558,10 @@ $(function () {
             }//if (gameState != GameState.Idle)
 
             $('#homePageContent').trigger("create");
+            if (gameState == GameState.ReadOnly) {
+                $('#startGamePlay,#cancelGamePlay,#reportGamePlay').addClass('GameReadOnlyButtons');
+            }
+
             $('#firstName').focus(); //put the focus on the firstname text input
 
             //toggle the sex radio boxes
@@ -606,24 +582,16 @@ $(function () {
                 if ($('#firstName').val().length < 3 ||
                     $('#firstName').val().length > 10 ||
                     $('#firstName').val().indexOf(" ") != -1)
-                    {
-                    popupArgs = new PopupArgs();
-                    popupArgs.header = 'Error';
-                    popupArgs.msg1 = 'The first name must be between 3 and 10 characters and contain no spaces.';
-                    popupArgs.msg2 = 'Please enter a first name again.';
-                    app.popUp(popupArgs);
+                {
+                    app.popUpHelper('Error', 'The first name must be between 3 and 10 characters and contain no spaces.', 'Please enter a first name again.');
                     return;
                 }
 
                 if ($('#nickName').val().length < 3 ||
                     $('#nickName').val().length > 10 ||
                     $('#nickName').val().indexOf(" ") != -1)
-                    {
-                    popupArgs = new PopupArgs();
-                    popupArgs.header = 'Error';
-                    popupArgs.msg1 = 'The nick name must be between 3 and 10 characters and contain no spaces.';
-                    popupArgs.msg2 = 'Please enter a nick name again.';
-                    app.popUp(popupArgs);
+                {
+                    app.popUpHelper('Error', 'The nick name must be between 3 and 10 characters and contain no spaces.', 'Please enter a nick name again.');
                     return;
                 }
 
@@ -709,15 +677,19 @@ $(function () {
             var newPage = $(page);
 
             newPage.appendTo($.mobile.pageContainer);
-            $.mobile.changePage(newPage);
+            //$.mobile.changePage(newPage);
+            $(":mobile-pagecontainer").pagecontainer('change', newPage, { transition: 'none' });
+
 
         }; //app.CreateGetPlayTestPage
 
         /*
         Render the question page for the GameQuestion[questionNbr] in the GamePlay dataset
         */
-        app.SetQuestionPage = function (questionNbr) {
+        app.SetQuestionPage = function (questionNbr, transitionType) {
             console.log('func app.SetQuestionPage');
+
+            $('footer').show(); //show footer nav bar on the page
 
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
@@ -725,8 +697,7 @@ $(function () {
             question = gamePlayData.GameQuestions[questionNbr].Question;
             questionText = question.Text;
 
-            fieldset = '<fieldset data-role="controlgroup"><legend>Question #' + (questionNbr + 1) + ' of ' +
-                        app.NbrQuestions() + ' - Please select one answer</legend>';
+            fieldset = '<fieldset data-role="controlgroup">';
             question.Choices.forEach(function (value, index, ar) {
                 choiceText = value.Text;
                 choiceName = value.Name;
@@ -744,16 +715,15 @@ $(function () {
             fieldset += '</fieldset>'
 
             $('#questionText h2').html(questionText + '?');
+            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' out of ' + app.NbrQuestions());
             $('#choiceList').html(fieldset);
 
             if (gameState != GameState.ReadOnly)
             {
                 $("input[name ='choice']").checkboxradio().checkboxradio('enable').trigger("create");
-                $('#submitButton').removeClass('ui-disabled');
 
             } else {
                 $("input[name ='choice']").checkboxradio().checkboxradio('disable').trigger("create");
-                $('#submitButton').addClass('ui-disabled');
             }
 
             $('#question').trigger('create');
@@ -766,10 +736,14 @@ $(function () {
                 //set choice number of answer
                 result["GameQuestions"][currentQuestionNbr]["SelChoiceId"] = radioButtonSelectedID.substr(7, radioButtonSelectedID.length - 6);
                 app.PutResultLocalStorage(result);
+                app.SetBottomNavButtons(true, true);
 
             }); //$("input[name ='choice']").on('change', function () {
 
-            $.mobile.changePage('#question');
+            app.SetBottomNavButtons(true, true); //set summary and submit button to enabled
+
+            //$.mobile.changePage('#question', { transition: transitionType });
+            $(":mobile-pagecontainer").pagecontainer('change', '#question', { transition: transitionType });
 
         }; //app.SetQuestionPage
 
@@ -778,6 +752,8 @@ $(function () {
         */
         app.SetSummaryPage = function () {
             console.log('func app.SetSummaryPage');
+
+            $('footer').show(); //show footer nav bar on the page
 
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
@@ -808,29 +784,17 @@ $(function () {
             //don't need the refresh. In fact is creates a mysterious scroll bar
             //$('#questionList').listview().listview("refresh").trigger("create"); 
 
-            /*
-            user can't submit a game play unless they have completed all the questions
-            */
-            if (app.IsAllQuestionsAnswered() && gameState != GameState.ReadOnly) {
-                if ($('#submitButton').hasClass('ui-disabled')) {
-                    $('#submitButton').removeClass('ui-disabled');
-                }
-            } else {
-                if (!$('#submitButton').hasClass('ui-disabled')) {
-                    $('#submitButton').addClass('ui-disabled');
-                }
-            }
-
-
-
             //setup event handler for summary page listview to return to a specific question
             $('[data-qnum]').click(function (event) {
-                app.SetNavBars(true, false);
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
-                app.SetQuestionPage(currentQuestionNbr);
+                app.SetQuestionPage(currentQuestionNbr, 'slide');
             });
 
-            $.mobile.changePage('#summary');
+            app.SetBottomNavButtons(false, true); //set summary to disabled and submit button to enabled
+
+            //$.mobile.changePage('#summary');
+            $(":mobile-pagecontainer").pagecontainer('change', '#summary');
+
 
         };//app.SetSummaryPage
 
@@ -866,57 +830,35 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    $('#qfooter #backButton').click(function (event) {
-                        (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
-                        app.SetQuestionPage(currentQuestionNbr);
+                    //$('#qfooter #backButton').click(function (event) { MNS DEBUG
+                    $('#backButton').click(function (event) {
+                            (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
+                        app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
 
-                    $('#qfooter #summaryButton').click(function (event) {
-                        app.SetNavBars(false, true);
+                    $('.summaryButton').click(function (event) {
                         app.SetSummaryPage();
                     });
 
-                    $('#qfooter #nextButton').click(function (event) {
-                        (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
-                        app.SetQuestionPage(currentQuestionNbr);
-                    });
-
-                    //MNS DEBUG
-                    $('#debugButton').click(function (event) {
-                        app.SetNavBars(false, true);
-                        app.SetSummaryPage();
+                    //$('#qfooter #nextButton').click(function (event) { //MNS DEBUG
+                    $('#nextButton').click(function (event) {
+                            (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
+                        app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
 
                     break;
                 case "#summary":
 
-                    $('#submitButton').click(function (event) {
+                    $('.submitButton').click(function (event) {
 
-                        //MNS - REMOVE POPUP FROM SUBMISSION EQUATION
-                        //popupArgs = new PopupArgs();
-                        //popupArgs.header = 'Confirmation';
-                        //popupArgs.msg1 = 'Are you sure you want to submit the Game \'' + gamePlayData.Name + '\'.';
-                        //popupArgs.msg2 = 'You will not be able to edit your answers once you submit.';
-                        //popupArgs.btnYesHandler = 'funcSubmitGamePlay';
-                        //popupArgs.btnNoHandler = 'back';
-                        //popupArgs.btnYesLabel = 'Yes';
-                        //popupArgs.btnNoLabel = 'No';
-                        //app.popUp(popupArgs);
+                        app.confirmDialog('You are about to submit the Game \'' + gamePlayData.Name + '\'.' + '<br/>Are you sure?',
+                            function () {
+                                $.mobile.loading('show'); //to show the spinner
+                                setTimeout(function () { app.ConfirmSubmit(); }, 1000); //give a 1 second delay. So the user see's the spinner when submitting
 
-                        //MNS - ALL CODE BELOW IS DEBUG TO REMOVE POPUPS FROM THE EQUATION FOR IPHONE DEBUG TEST
-                        result = app.GetResultLocalStorage();
-                        console.log('func #submitButton.click - GamePlayId:' + result["GamePlayId"]);
-                        returnErrMsg = app.PostGamePlayAnswersServer();
-                        console.log('completed app.PostGamePlayAnswersServer' );
-                        if (returnErrMsg == null) {
-                            app.SubmitSuccess();
-                            console.log('success - all done');
-                        }
-                        //MNS - ALL CODE TO HERE
+                        });
 
-
-
-                    });
+                    });//$('.submitButton').click
 
                     break;
 
@@ -926,10 +868,11 @@ $(function () {
                     $('[data-icon="home"]').click(function (event) {
                         $('#menu').panel("close"); //if menu open
 
-                        app.SetNavBars(false, false);
                         app.SetHomePageStyle(false);
                         app.SetHomePageInitialDisplay();
-                        $.mobile.changePage('#home');
+                        //$.mobile.changePage('#home');
+                        $(":mobile-pagecontainer").pagecontainer('change', '#home');
+                       
                     });
 
                     //bind all "Add Game" (plus) icons events
@@ -938,21 +881,18 @@ $(function () {
 
                         if (app.IsGameInProgress()) {
                             gamePlayData = app.GetGamePlayLocalStorage();
-                            popupArgs = new PopupArgs();
-                            popupArgs.header = 'Error';
-                            popupArgs.msg1 = 'There is a Game \'' + gamePlayData.Name + '\' that is in progress';
-                            popupArgs.msg2 = 'You must cancel this game first to start a new game.';
-                            app.popUp(popupArgs);
+                            app.popUpHelper('Error', 'There is a Game \'' + gamePlayData.Name + '\' that is in progress', 'You must cancel this game first to start a new game.');
                             return;
                         }
 
                         $("[data-icon='plus']").addClass('ui-disabled');
                         $("[data-icon='minus']").removeClass('ui-disabled');
-                        app.SetNavBars(false, false);
                         app.SetHomePageStyle(false);
                         app.SetGamePlayCodePrompt();
                         gameState = GameState.Idle; //just added MNS 7/27
-                        $.mobile.changePage('#home'); //just added MNS 7/27
+                        //$.mobile.changePage('#home'); //just added MNS 7/27
+                        $(":mobile-pagecontainer").pagecontainer('change', '#home');
+                        
                     });
 
                     //bind all "Cancel Game" (plus) icons events
@@ -960,23 +900,16 @@ $(function () {
 
                         if (!app.IsGameInProgress())
                         {
-                            popupArgs = new PopupArgs();
-                            popupArgs.header = 'Error';
-                            popupArgs.msg1 = 'There is no Game in progress';
-                            popupArgs.msg2 = undefined;
-                            app.popUp(popupArgs);
+                            app.popUpHelper('Error', 'There is no Game in progress',null);
                             return
                         } else {
                             gamePlayData = app.GetGamePlayLocalStorage();
-                            popupArgs = new PopupArgs();
-                            popupArgs.header = 'Confirmation';
-                            popupArgs.msg1 = 'Are you sure you want to cancel the Game \'' + gamePlayData.Name + '\' that is in progress?';
-                            popupArgs.btnYesHandler = 'funcCancelGamePlay';
-                            popupArgs.btnNoHandler = 'back';
-                            popupArgs.btnYesLabel = 'Yes';
-                            popupArgs.btnNoLabel = 'No';
-                            app.popUp(popupArgs);
-                            //return
+
+                            app.confirmDialog('Are you sure you want to cancel the Game \'' + gamePlayData.Name + '\' that is in progress?',
+                                function () {
+                                    app.CancelGame();
+                            });
+
                         }
 
                     });
@@ -986,6 +919,54 @@ $(function () {
         };//app.BindPageStaticEvents 
 
         /*
+        Confirm Submit Logic
+        */
+        app.ConfirmSubmit = function () {
+            result = app.GetResultLocalStorage();
+            console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
+            returnErrMsg = app.PostGamePlayAnswersServer();
+            console.log('completed app.PostGamePlayAnswersServer');
+            if (returnErrMsg == null) {
+                app.SubmitSuccess();
+                console.log('success - all done');
+            }
+
+            app.SetHomePageStyle(false);
+            app.SetHomePageInitialDisplay();
+            //$.mobile.changePage('#home', { transition: 'none' });
+            $(":mobile-pagecontainer").pagecontainer('change', '#home', { transition: 'none' });
+
+            $.mobile.loading('hide'); //hide the spinner
+            //depending on success or failure; we display a different popup over the home page
+            if (returnErrMsg == null) {
+                app.popUpHelper('Info', 'The submission of the Game \'' + gamePlayData.Name + '\' was successful.', null);
+            } else {
+                app.popUpHelper('Error', 'The submission of the Game \'' + gamePlayData.Name + '\' was NOT successful.<br/>' + returnErrMsg, null);
+            }
+        }//app.ConfirmSubmit
+
+        /*
+        AdjustPagePaddingTop
+        */
+        app.AdjustPagePaddingTop = function () {
+            console.log('func AdjustPagePaddingTop');
+
+            switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id')) {
+                case "home":
+                    console.log('change the padding to 44px for home');
+                    $('#home').css("padding-top", "42px");
+                    break;
+                case "question":
+                    $('#question').css("padding-top", "42px");
+                    break;
+                case "summary":
+                    $('#summary').css("padding-top", "42px");
+                    break;
+            }
+
+        }
+
+        /*
         Setup home page
         arguments
         initialState = true   //setup for original
@@ -993,6 +974,9 @@ $(function () {
         */
         app.SetHomePageStyle = function (initialState) {
             console.log('func app.SetHomePageStyle');
+            $('footer').hide(); //hide footer on the page
+
+            $('#home').css("padding-top", "42px");
 
             if (initialState) {
                 $('#home').css('background-image', 'url(./images/bckground/ProbeBackground.jpg)');
@@ -1000,6 +984,9 @@ $(function () {
             } else {
                 $('#home').css('background-image', 'url(./images/bckground/ProbeBackground-Opacity3.jpg)');
             }
+
+            app.SetBottomNavButtons(false, false); //From the home page. Always set the bottom nav bar bottoms to disabled.
+
         };
 
         /*
@@ -1018,7 +1005,8 @@ $(function () {
             $("[data-icon='minus']").addClass('ui-disabled');
             gameState = GameState.Idle;
             app.SetHomePageInitialDisplay();
-            $.mobile.changePage('#home');
+            $(":mobile-pagecontainer").pagecontainer('change', '#home', { transition: 'none' });
+
         };
 
         /*
@@ -1026,8 +1014,6 @@ $(function () {
         */
         app.StartGame = function (questionNbr) {
             console.log('func app.StartGame');
-
-            app.SetNavBars(true, false);
 
             /*
             we are starting up the game. If the game state is original idle; then we
@@ -1039,7 +1025,7 @@ $(function () {
                 gameState = GameState.ReadOnly;
             }
             currentQuestionNbr = questionNbr;
-            app.SetQuestionPage(currentQuestionNbr)
+            app.SetQuestionPage(currentQuestionNbr, 'none')
         };
 
         /*
@@ -1054,6 +1040,9 @@ $(function () {
             app.SetGamePlayPlayerPrompt();
         };
 
+        /*
+        Display the report page
+        */
         app.DisplayReportPage = function () {
             console.log('func app.DisplayReportPage');
 
@@ -1186,6 +1175,22 @@ $(function () {
         };//app.IsGameSubmitted 
 
         /*
+        Popup Helper
+        */
+        app.popUpHelper = function (header, msg1, msg2) {
+            /*
+            if msg2 is null, then it won't be displayed
+            */
+
+            console.log('func app.popUpHelper')
+            popupArgs = new PopupArgs();
+            popupArgs.header = header;
+            popupArgs.msg1 = msg1;
+            popupArgs.msg2 = msg2;
+            app.popUp(popupArgs);
+        }
+
+        /*
         Setup and display popup
         */
         app.popUp = function (popupArgs) { //(header, msg1, msg2, btnYesHandler, btnNoHandler) {
@@ -1195,69 +1200,7 @@ $(function () {
             header = header of popup
             msg1 = first cell of a one column table
             msg2 = second cell of a one column table (if null, it won't display)
-            btnYesHandler = the function that is called when yes button is clicked //if back then will use data-rel="back"
-            btnNoHandler = the function that is called when no button is clicked //if back then will use data-rel="back"
-            btnYesLabel = label of yes button //default is OK
-            btnNoLabel = label of no button //default is No
-
-            Note: if btnYesHandler and buttonNoHandler are both null, then the yes button will be displayed with data-rel="back"
-
-            Note: the function handlers should have a convention fnc<name of function) to be written outside of the app, and theire
-            arguments are button, theApp
-
-            Note: within handler, the popup can be closed by:
-            $('#popupMsg').enhanceWithin().popup().popup("close", { transition: "slide" });
-
             */
-
-
-            /*
-            Set visibility of buttons and event handlers based on the eventhandler property arg
-            */
-            $('#popupMsgYesBtn').hide();
-            $('#popupMsgYesBtn').attr('data-rel', '');
-            $('#popupMsgNoBtn').hide();
-            $('#popupMsgNoBtn').attr('data-rel', '');
-            if (popupArgs.btnYesHandler != null) {
-                if (popupArgs.btnYesHandler == 'back') {
-                    $('#popupMsgYesBtn').attr('data-rel', 'back');
-                } else {
-                    //BIG BUG: event handler - gets called for each time the app.popup is called in a browser session. Can't seem to 
-                    //find a fix for this.
-                    $('#popupMsgYesBtn').click(function (event) {
-                        window[popupArgs.btnYesHandler](this, app);
-                    });
-                }
-                $('#popupMsgYesBtn').show();
-            }//if (popupArgs.btnYesHandler != null) {
-
-            if (popupArgs.btnNoHandler != null) {
-                $('#popupMsgNoBtn').show();
-                if (popupArgs.btnNoHandler == 'back') {
-                    $('#popupMsgNoBtn').attr('data-rel', 'back');
-                } else {
-                    //event handler
-                    $('#popupMsgNoBtn').click(function (event) {
-                        window[popupArgs.btnNoHandler](this, app);
-                    });
-                }
-            }// if (popupArgs.btnNoHandler != null) {
-
-            if (popupArgs.btnYesHandler == null && popupArgs.btnNoHandler == null) {
-                $('#popupMsgYesBtn').attr('data-rel', 'back')
-                $('#popupMsgYesBtn').show();
-            }
-
-            /*
-            Set text of buttons
-            */
-            if (popupArgs.btnYesLabel != null) {
-                $('#popupMsgYesBtn').text(popupArgs.btnYesLabel);
-            }
-            if (popupArgs.btnNoLabel != null) {
-                $('#popupMsgNoBtn').text(popupArgs.btnNoLabel);
-            }
-
 
             /*
             Set the the content of the popup
@@ -1269,10 +1212,52 @@ $(function () {
             $('#popMsgHeader').html(popupArgs.header); //set header
             $('#popupMsgContent').html(contentHtml); //set content
 
+            $('#popupMsgYesBtn').show();
+            $('#popupMsgYesBtn').attr('data-rel', 'back')
+
             //display popup
-            $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" }); 
             $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" });
+
+            app.AdjustPagePaddingTop();
         };
+
+        /*
+        Confirmation Dialog
+        */
+        app.confirmDialog = function (text, callback) {
+            console.log('func app.confirmDialog');
+
+            var popupDialogId = 'popupDialog';
+            $('<div data-role="popup" id="' + popupDialogId + '" data-confirmed="no" data-transition="fade" data-overlay-theme="a" data-theme="a" data-dismissible="false" style="max-width:500px;"> \
+                    <div data-role="header" data-theme="a">\
+                        <h1>Question</h1>\
+                    </div>\
+                    <div role="main" class="ui-content" data-theme="a">\
+                        <h3 class="ui-title">' + text + '</h3>\
+                        <div style="text-align:right">\
+                        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a optionConfirm" data-rel="back" data-theme="a">Yes</a>\
+                        <a "href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a optionCancel" data-rel="back" data-transition="flow" data-theme="a">No</a>\
+                        <\div>\
+                    </div>\
+                </div>')
+                .appendTo($.mobile.pageContainer);
+            var popupDialogObj = $('#' + popupDialogId);
+            popupDialogObj.trigger('create');
+            popupDialogObj.popup({ theme: "a" }).popup({
+                afterclose: function (event, ui) {
+                    popupDialogObj.find(".optionConfirm").first().off('click');
+                    var isConfirmed = popupDialogObj.attr('data-confirmed') === 'yes' ? true : false;
+                    $(event.target).remove();
+                    if (isConfirmed && callback) {
+                        callback();
+                    }
+                }
+                });
+            popupDialogObj.popup('open');
+            popupDialogObj.find(".optionConfirm").first().on('click', function () {
+                popupDialogObj.attr('data-confirmed', 'yes');
+            });
+        }//app.confirmDialog 
 
         /*
         GetConfigurationValue
@@ -1296,28 +1281,41 @@ $(function () {
         };//app.GetConfigValue
 
         /*
-        Set Nav Bars
-        qNavInd = true or false (true - show question nav bar)
-        sNavIdn = true or false (true - show summary nav bar)
+        Set Bottom Nav Bar Buttons (set them to true will enable them).Note the arguments set to false
+        will override all other conditions. i.e if submit is set to true, but not all questions have been
+        answered then submit be disabled. If set to false, it will be disabled no matter what.
         */
-        app.SetNavBars = function (qNavInd, sNavInd) {
-            console.log('func app.SetNavBars qNavInd:' + qNavInd + ' sNavInd:' + sNavInd);
+        app.SetBottomNavButtons = function (summaryButtonInd, submitButtonInd) {
+            console.log('func app.SetBottomNavButtons');
 
-            if (qNavInd) {
-                $('#qfooter nav').navbar().removeClass('ui-fixed-hidden'); //shouldn't have to do this, but remove this to make sure
-                $('#qfooter nav').navbar().show()
+            if (summaryButtonInd) {
+
+                if ($('.summaryButton').hasClass('ui-disabled')) {
+                    $('.summaryButton').removeClass('ui-disabled');
+                }
+
             } else {
-                $('#qfooter nav').navbar().hide()
-            }
 
-            if (sNavInd) {
-                $('#sfooter nav').navbar().removeClass('ui-fixed-hidden'); //shouldn't have to do this, but remove this to make sure
-                $('#sfooter nav').navbar().show()
+                if (!$('.summaryButton').hasClass('ui-disabled')) {
+                    $('.summaryButton').addClass('ui-disabled');
+                }
+            }//if (summaryButtonInd)
+
+
+            if (submitButtonInd && app.IsAllQuestionsAnswered() && gameState != GameState.ReadOnly) {
+
+                if ($('.submitButton').hasClass('ui-disabled')) {
+                    $('.submitButton').removeClass('ui-disabled');
+                }
+
             } else {
-                $('#sfooter nav').navbar().hide()
-            }
 
-        };//app.SetNavBars 
+                if (!$('.submitButton').hasClass('ui-disabled')) {
+                    $('.submitButton').addClass('ui-disabled');
+                }
+            }//if (submitButtonInd)
+
+    }//app.SetBottomNavButtons
 
         /*
         submit success
@@ -1333,26 +1331,13 @@ $(function () {
             gameState = GameState.ReadOnly;
 
             //set summary page for read-only game state
-            $('#submitButton').addClass('ui-disabled');
+            app.SetBottomNavButtons(false, false);
 
             //set the newgame and cancel game buttons (enable new game, disable cancel game)
             $("[data-icon='plus']").removeClass('ui-disabled');
             $("[data-icon='minus']").addClass('ui-disabled');
 
             app.QueueGamePlays();
-
-            //MNS COMMENT OUT ALL THE POPUP FOR IPHONE DEBUG TEST
-            //update the current pop-up to a successful submission (a little bit of a hack, but couldn't put
-            //another popup display. This doesn't work
-            //$('#popMsgHeader').html('Informational'); //set header
-            //$('#popupMsgContent').html('The submission of the Game \'' + gamePlayData.Name + '\' was successful.');
-            //$('#popupMsgNoBtn').hide();
-            //$('#popupMsgYesBtn').remove();
-
-            //$mybutton = $('<a id="popupMsgYesBtn" href="#" data-role="button" data-inline="true" style="display:none" class="ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all" role="button">OK</a>');
-            //$mybutton.prependTo('#popupMsg div .buttonRight');
-            //$('#popupMsgYesBtn').attr('data-rel', 'back');
-            //$('#popupMsgYesBtn').show();
 
         };//app.SubmitSuccess
 
@@ -1465,35 +1450,6 @@ $(function () {
 
 
 })(probeApp); //app
-
-funcCancelGamePlay = function (button, theApp) {
-    theApp.CancelGame();
-    $('#popupMsg').enhanceWithin().popup().popup("close", { transition: "slide" });
-};
-
-funcSubmitGamePlay = function (button, theApp) {
-    result = theApp.GetResultLocalStorage();
-    console.log('func funcSubmitGamePlay - GamePlayId:' + result["GamePlayId"]);
-
-    returnErrMsg = theApp.PostGamePlayAnswersServer();
-
-    if (returnErrMsg == null) {
-        theApp.SubmitSuccess();
-    } else {
-        $('#popMsgHeader').html('Error'); //set header
-        $('#popupMsgContent').html('The submission of the Game \'' + gamePlayData.Name + '\' was NOT successful.<br/>' + returnErrMsg);
-        $('#popupMsgNoBtn').hide();
-        $('#popupMsgYesBtn').remove();
-
-        $mybutton = $('<a id="popupMsgYesBtn" href="#" data-role="button" data-inline="true" style="display:none" class="ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all" role="button">OK</a>');
-        $mybutton.prependTo('#popupMsg div .buttonRight');
-        $('#popupMsgYesBtn').attr('data-rel', 'back');
-        $('#popupMsgYesBtn').show();
-
-    }//if (isSubmitASuccess) {
-
-
-};//funcSubmitGamePlay
 
 });
 

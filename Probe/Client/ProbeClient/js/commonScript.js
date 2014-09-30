@@ -118,7 +118,7 @@ Get root url
 GetRootUrl = function () {
 
     fullUrlSansQueryString = window.location.href.split('?')[0];
-    originalRoot = fullUrlSansQueryString.substr(0, fullUrlSansQueryString.length - 28);
+    originalRoot = fullUrlSansQueryString.substr(0, fullUrlSansQueryString.length - 28); //was 20 for clienttest
 
     //SETUP URLs FOR AJAX CALLS TO PROBE SERVER
     if ($('body').data('env') == 'production') {

@@ -218,7 +218,7 @@ $(function () {
             $('#homePageContent').html(promptforCodeHtml);
             $('#homePageContent').trigger("create");
 
-            $('#callGetPlays').vclick(function (event) {
+            $('#callGetPlays').click(function (event) {
                 gameCode = $('#gameCode').val();
                 if (gameCode.length > 0) { //check to see that a game code was entered
                     app.GetGamePlayServer($('#gameCode').val());
@@ -227,7 +227,7 @@ $(function () {
                 }
             });
 
-            $('#cancelGamePlay').vclick(function (event) {
+            $('#cancelGamePlay').click(function (event) {
                 app.CancelGame();
             });
 
@@ -576,7 +576,7 @@ $(function () {
             });
 
             //bind event handlers to the start and cancel buttons
-            $('#startGamePlay').vclick(function (event) {
+            $('#startGamePlay').click(function (event) {
 
                 //error handling 
                 if ($('#firstName').val().length < 3 ||
@@ -610,11 +610,11 @@ $(function () {
 
             });
 
-            $('#cancelGamePlay').vclick(function (event) {
+            $('#cancelGamePlay').click(function (event) {
                 app.CancelGame();
             });
 
-            $('#reportGamePlay').vclick(function (event) {
+            $('#reportGamePlay').click(function (event) {
                 app.DisplayReportPage();
             });
 
@@ -785,7 +785,7 @@ $(function () {
             //$('#questionList').listview().listview("refresh").trigger("create"); 
 
             //setup event handler for summary page listview to return to a specific question
-            $('[data-qnum]').vclick(function (event) {
+            $('[data-qnum]').click(function (event) {
                 currentQuestionNbr = parseInt(this.attributes["data-qnum"].value);
                 app.SetQuestionPage(currentQuestionNbr, 'slide');
             });
@@ -806,7 +806,7 @@ $(function () {
 
             switch (pageSelector) {
                 case "#home":
-                    $('[data-gameplay]').vclick(function (event) {
+                    $('[data-gameplay]').click(function (event) {
 
                         if(this.attributes["data-gameplay"].value == 'active') { //is it the active game selected
                             app.ResumeGame(GameState.Active);
@@ -830,18 +830,18 @@ $(function () {
                 case "#question":
 
                     //FYI. jquery would not work with #question as a pre-cursor to #backButton
-                    //$('#qfooter #backButton').vclick(function (event) { MNS DEBUG
-                    $('#backButton').vclick(function (event) {
+                    //$('#qfooter #backButton').click(function (event) { MNS DEBUG
+                    $('#backButton').click(function (event) {
                             (currentQuestionNbr == 0) ? currentQuestionNbr = result.GameQuestions.length - 1 : currentQuestionNbr--;
                         app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
 
-                    $('.summaryButton').vclick(function (event) {
+                    $('.summaryButton').click(function (event) {
                         app.SetSummaryPage();
                     });
 
-                    //$('#qfooter #nextButton').vclick(function (event) { //MNS DEBUG
-                    $('#nextButton').vclick(function (event) {
+                    //$('#qfooter #nextButton').click(function (event) { //MNS DEBUG
+                    $('#nextButton').click(function (event) {
                             (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr, 'slide');
                     });
@@ -849,7 +849,7 @@ $(function () {
                     break;
                 case "#summary":
 
-                    $('.submitButton').vclick(function (event) {
+                    $('.submitButton').click(function (event) {
 
                         app.confirmDialog('You are about to submit the Game \'' + gamePlayData.Name + '\'.' + '<br/>Are you sure?',
                             function () {
@@ -858,14 +858,14 @@ $(function () {
 
                         });
 
-                    });//$('.submitButton').vclick
+                    });//$('.submitButton').click
 
                     break;
 
                 case "misc":
 
                     //bind all GO HOME events
-                    $('[data-icon="home"]').vclick(function (event) {
+                    $('[data-icon="home"]').click(function (event) {
                         $('#menu').panel("close"); //if menu open
 
                         app.SetHomePageStyle(false);
@@ -876,7 +876,7 @@ $(function () {
                     });
 
                     //bind all "Add Game" (plus) icons events
-                    $("[data-icon='plus'],#newGame").vclick(function (event) {
+                    $("[data-icon='plus'],#newGame").click(function (event) {
                         $('#menu').panel("close"); //if menu open
 
                         if (app.IsGameInProgress()) {
@@ -896,7 +896,7 @@ $(function () {
                     });
 
                     //bind all "Cancel Game" (plus) icons events
-                    $("[data-icon='minus']").vclick(function (event) {
+                    $("[data-icon='minus']").click(function (event) {
 
                         if (!app.IsGameInProgress())
                         {
@@ -923,7 +923,7 @@ $(function () {
         */
         app.ConfirmSubmit = function () {
             result = app.GetResultLocalStorage();
-            console.log('func submitButton.vclick - GamePlayId:' + result["GamePlayId"]);
+            console.log('func submitButton.click - GamePlayId:' + result["GamePlayId"]);
             returnErrMsg = app.PostGamePlayAnswersServer();
             console.log('completed app.PostGamePlayAnswersServer');
             if (returnErrMsg == null) {
