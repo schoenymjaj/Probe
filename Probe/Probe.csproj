@@ -678,10 +678,7 @@
     <Content Include="Client\ProbeClient\css\themes\jquery.mobile.icons.min.css" />
     <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.css" />
     <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.min.css" />
-    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground - Deprecated.jpg" />
-    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity15.jpg" />
     <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity3.jpg" />
-    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity7.jpg" />
     <Content Include="Client\ProbeClient\images\bckground\ProbeBackground.jpg" />
     <Content Include="Client\ProbeClient\index.html" />
     <Content Include="Client\ProbeClient\js\appScript.js" />
