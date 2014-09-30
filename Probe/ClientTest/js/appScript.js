@@ -22,7 +22,7 @@ $(function () {
         /*
         Globals
         */
-        alert('VERSION CONTROL: Client Test Version 1.02');
+        alert('VERSION CONTROL: Client Test Version 1.05');
 
 
         app.init = function () {
@@ -62,14 +62,14 @@ $(function () {
                 console.log('pagecontainerchange');
             });
 
-            $(document).on("touchend", function (event) {
-                console.log('touchend no default,propagation');
-            //    event.preventDefault();
-            //    event.stopPropagation();
-            //    alert('touchend');
-            });
+            //$(document).on("touchend", function (event) {
+            //    console.log('touchend no default,propagation');
+            ////    event.preventDefault();
+            ////    event.stopPropagation();
+            ////    alert('touchend');
+            //});
 
-            $('#buttonOnHome').click(function (event) {
+            $('#buttonOnHome').touchend(function (event) {
                 $(":mobile-pagecontainer").pagecontainer('change', '#page2');
             });
 
