@@ -678,7 +678,6 @@ $(function () {
             var newPage = $(page);
 
             newPage.appendTo($.mobile.pageContainer);
-            //$.mobile.changePage(newPage);
             $(":mobile-pagecontainer").pagecontainer('change', newPage, { transition: 'none' });
 
 
@@ -743,7 +742,6 @@ $(function () {
 
             app.SetBottomNavButtons(true, true); //set summary and submit button to enabled
 
-            //$.mobile.changePage('#question', { transition: transitionType });
             $(":mobile-pagecontainer").pagecontainer('change', '#question', { transition: transitionType });
 
         }; //app.SetQuestionPage
@@ -793,7 +791,6 @@ $(function () {
 
             app.SetBottomNavButtons(false, true); //set summary to disabled and submit button to enabled
 
-            //$.mobile.changePage('#summary');
             $(":mobile-pagecontainer").pagecontainer('change', '#summary');
 
 
@@ -871,7 +868,6 @@ $(function () {
 
                         app.SetHomePageStyle(false);
                         app.SetHomePageInitialDisplay();
-                        //$.mobile.changePage('#home');
                         $(":mobile-pagecontainer").pagecontainer('change', '#home');
                        
                     });
@@ -891,7 +887,6 @@ $(function () {
                         app.SetHomePageStyle(false);
                         app.SetGamePlayCodePrompt();
                         gameState = GameState.Idle; //just added MNS 7/27
-                        //$.mobile.changePage('#home'); //just added MNS 7/27
                         $(":mobile-pagecontainer").pagecontainer('change', '#home');
                         
                     });
@@ -934,7 +929,6 @@ $(function () {
 
             app.SetHomePageStyle(false);
             app.SetHomePageInitialDisplay();
-            //$.mobile.changePage('#home', { transition: 'none' });
             $(":mobile-pagecontainer").pagecontainer('change', '#home', { transition: 'none' });
 
             $.mobile.loading('hide'); //hide the spinner
