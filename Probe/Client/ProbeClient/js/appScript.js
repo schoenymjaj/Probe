@@ -105,6 +105,7 @@ $(function () {
                 app.AdjustPagePaddingTop();
             });
 
+            //THESE ARE DEBUG STATEMENTS BELOW
             //$(document).on("pagecontainerchange", function (event) {
             //    console.log('pagecontainerchange');
             //    alert('pagecontainerchange');
