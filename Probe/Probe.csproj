@@ -680,6 +680,36 @@
     <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.min.css" />
     <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity3.jpg" />
     <Content Include="Client\ProbeClient\images\bckground\ProbeBackground.jpg" />
+    <Content Include="Client\ProbeClient\images\icon\android\icon-144-xxhdpi.png" />
+    <Content Include="Client\ProbeClient\images\icon\android\icon-36-ldpi.png" />
+    <Content Include="Client\ProbeClient\images\icon\android\icon-48-mdpi.png" />
+    <Content Include="Client\ProbeClient\images\icon\android\icon-72-hdpi.png" />
+    <Content Include="Client\ProbeClient\images\icon\android\icon-96-xhdpi.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-120.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-152.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-57-2x.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-57.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-72-2x.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-72.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-76.png" />
+    <Content Include="Client\ProbeClient\images\icon\ios\icon-76~imageoptim.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-hdpi-landscape.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-hdpi-portrait.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-ldpi-landscape.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-ldpi-portrait.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-mdpi-landscape.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-mdpi-portrait.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-xhdpi-landscape.png" />
+    <Content Include="Client\ProbeClient\images\screen\android\screen-xhdpi-portrait.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-ipad-landscape-2x.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-ipad-landscape.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-ipad-portrait-2x.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-ipad-portrait.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-landscape-2x.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-landscape.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait-2x.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait-568h-2x.png" />
+    <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait.png" />
     <Content Include="Client\ProbeClient\index.html" />
     <Content Include="Client\ProbeClient\js\appScript.js" />
     <Content Include="Client\ProbeClient\js\commonScript.js" />
@@ -1196,6 +1226,8 @@
     <Folder Include="App_Data\" />
     <Folder Include="ClientTest\data\" />
     <Folder Include="Client\ProbeClient\data\" />
+    <Folder Include="Client\ProbeClient\images\icon\windows\" />
+    <Folder Include="Client\ProbeClient\images\screen\windows\" />
     <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>
