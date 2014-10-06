@@ -18,7 +18,7 @@ namespace Probe.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "This is the Probe Internet Game Application. " +
+            ViewBag.Message = "This is the Probe Internet Game Application (Version v0.55). " +
             "An authorized user (registered and logged in) may configure and publish a game to be played on any device connected to the internet. " +
             "A game requires all players to answer a series of questions designed by the user and is contested by the specific rules of the game type.  " +
             "Current game types available are 'Match' and 'Test'. " +
