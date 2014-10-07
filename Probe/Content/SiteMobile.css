@@ -82,7 +82,7 @@ textarea {
 /*Reports*/
 .reportTitle {
     margin-top: 0px;
-    font-size:  1.2em;
+    font-size:  1.1em;
     font-weight: bold;
     color: blue;
     float: left; 
@@ -97,13 +97,13 @@ textarea {
 }
 
 .reportHeader {
-    font-size: 1em;
+    font-size: .9em;
     font-weight: bold;
     color: black;
 }
 
 .reportLabel {
-    font-size: 1em;
+    font-size: .9em;
     color: blue;
 }
 
