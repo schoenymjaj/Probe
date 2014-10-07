@@ -69,15 +69,15 @@
                     tdataMatch.addColumn('string', 'Question');
                     tdataMatch.addColumn('string', 'Player Choice');
                     tdataMatch.addColumn('string', 'Matchup Choice');
-                    if (!DoStyleMobile()) tdataMatch.addColumn('boolean', 'Match');
-                    tdataMatch.addColumn('number', '% Choice');
+                    if (!DoStyleMobile()) tdataMatch.addColumn('boolean', 'Player Match');
+                    tdataMatch.addColumn('number', 'Percnt Choice');
 
                     //tdataNonMatch.addColumn('string', 'Player');
                     tdataNonMatch.addColumn('string', 'Question');
                     tdataNonMatch.addColumn('string', 'Player Choice');
                     tdataNonMatch.addColumn('string', 'Matchup Choice');
-                    if (!DoStyleMobile()) tdataNonMatch.addColumn('boolean', 'Match');
-                    tdataNonMatch.addColumn('number', '% Choice');
+                    if (!DoStyleMobile()) tdataNonMatch.addColumn('boolean', 'Player Match');
+                    tdataNonMatch.addColumn('number', 'Percnt Choice');
 
                     (!DoStyleMobile()) ? rowlength = 5 : rowlength = 4;
                     rowVector = new Array(rowlength);
@@ -97,13 +97,23 @@
                         }
                     }
 
+                    var options = {
+                        allowHtml: true,
+                        cssClassNames: {
+                            headerCell: 'googleReportTableHeader',
+                            tableCell: 'googleReportTableNonHeader',
+                            tableRow: 'googleReportTableNonHeader'
+                    }
+                    };
+
+
                     var tableMatch = new google.visualization.Table(document.getElementById('tableMatch_div'));
                     google.visualization.events.addListener(tableMatch, 'select', selectHandler);
-                    tableMatch.draw(tdataMatch);
+                    tableMatch.draw(tdataMatch, options);
 
                     var tableNonMatch = new google.visualization.Table(document.getElementById('tableNonMatch_div'));
                     google.visualization.events.addListener(tableNonMatch, 'select', selectHandler);
-                    tableNonMatch.draw(tdataNonMatch);
+                    tableNonMatch.draw(tdataNonMatch, options);
 
                     if (!resize) ActivitySelectorOff('#spinner');
 
@@ -125,10 +135,10 @@
 </head>
 <body>
     <div id='spinner'></div>
-    <div id="title" class="reportTitle">Player - Player Match Details Report</div>
+    <div id="title" class="reportTitle">Player - Player Match Details</div>
     <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
-    <div class="reportGameHeader"><span class="reportLabel">Game: </span>@ViewBag.GamePlayName</div>
+    <div class="reportGameHeader"><span class="reportLabel">Game : </span>@ViewBag.GamePlayName</div>
     <div id="header" class="reportHeader"></div>
     <div class="positiveTableHeader">Matched Questions</div>
     <div id="tableMatch_div" class="tableMatch"></div>

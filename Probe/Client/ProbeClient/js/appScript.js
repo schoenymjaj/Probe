@@ -493,12 +493,15 @@ $(function () {
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
 
+            gameDescription = 'No Description';
+            if (gamePlayData.Description != null) gameDescription = gamePlayData.Description;
+
             promptforPlayerHtml =
                 '<div style="margin-top: 10px; font-weight:bold">' +
                 '<label for="gpName"><b>(' + gamePlayData.GameType + ' Game)</b>' +
                 '</label>' +
                 '<textarea name="gpName" id="gpName" disabled="disabled">' + gamePlayData.Name + ' (' +
-                gamePlayData.Description + ')</textarea>' +
+                gameDescription + ')</textarea>' +
                 '<label for="C">First Name</label>' +
                 '<input name="firstName" id="firstName" type="text" value="" data-clear-btn="true">' +
                 '<label for="nickName">Nick Name</label>' +

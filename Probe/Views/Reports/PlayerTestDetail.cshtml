@@ -82,13 +82,13 @@
                  tdataCorrect.addColumn('string', 'Selections');
                  tdataCorrect.addColumn('string', 'Choices');
                  if (!DoStyleMobile()) tdataCorrect.addColumn('boolean', 'Correct');
-                 if (!DoStyleMobile()) tdataCorrect.addColumn('number', '% Correct');
+                 if (!DoStyleMobile()) tdataCorrect.addColumn('number', 'Percnt Correct');
 
                  tdataInCorrect.addColumn('string', 'Question');
                  tdataInCorrect.addColumn('string', 'Selections');
                  tdataInCorrect.addColumn('string', 'Choices');
                  if (!DoStyleMobile()) tdataInCorrect.addColumn('boolean', 'Correct');
-                 if (!DoStyleMobile()) tdataInCorrect.addColumn('number', '% Correct');
+                 if (!DoStyleMobile()) tdataInCorrect.addColumn('number', 'Percnt Correct');
 
                  (!DoStyleMobile()) ? rowlength = 5 : rowlength = 3;
                  rowVector = new Array(rowlength);
@@ -108,13 +108,23 @@
                      }
                  }
 
+                 var options = {
+                     allowHtml: true,
+                     cssClassNames: {
+                         headerCell: 'googleReportTableHeader',
+                         tableCell: 'googleReportTableNonHeader',
+                         tableRow: 'googleReportTableNonHeader'
+                     }
+                 };
+
+
                  var tableCorrect = new google.visualization.Table(document.getElementById('tableCorrect_div'));
                  google.visualization.events.addListener(tableCorrect, 'select', selectHandler);
-                 tableCorrect.draw(tdataCorrect);
+                 tableCorrect.draw(tdataCorrect, options);
 
                  var tableInCorrect = new google.visualization.Table(document.getElementById('tableInCorrect_div'));
                  google.visualization.events.addListener(tableInCorrect, 'select', selectHandler);
-                 tableInCorrect.draw(tdataInCorrect);
+                 tableInCorrect.draw(tdataInCorrect, options);
 
                  if (!resize) ActivitySelectorOff('#spinner');
                  logError('PlayerTestDetail - func drawContent end', null); //Logging an event on the server
@@ -136,7 +146,7 @@
 </head>
 <body>
     <div id='spinner'></div>
-    <div id="title" class="reportTitle">Player Test Details Report</div>
+    <div id="title" class="reportTitle">Player Test Details</div>
     <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
     <div id="header" class="reportHeader"></div>

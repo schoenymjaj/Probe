@@ -82,7 +82,7 @@ textarea {
 /*Reports*/
 .reportTitle {
     margin-top: 0px;
-    font-size:  1em;
+    font-size:  1.2em;
     font-weight: bold;
     color: blue;
     float: left; 
@@ -132,6 +132,17 @@ textarea {
     font-size: 1em;
     font-weight: bold;
     color: red;
+}
+
+.googleReportTableHeader {
+    font-weight: bold;
+    color: black;
+    text-align: left;
+    vertical-align: top;
+}
+
+.googleReportTableNonHeader {
+    text-align: left;
 }
 
 .tableMatch {

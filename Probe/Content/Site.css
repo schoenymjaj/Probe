@@ -86,11 +86,11 @@ textarea {
 
 .reportTitle {
     margin-top: 10px;
-    font-size:  2em;
+    font-size:  2.3em;
     font-weight: bold;
     color: blue;
     float: left; 
-    width: 70%
+    width: 70%;
     /*text-align: center;*/
 }
 
@@ -136,6 +136,17 @@ textarea {
     font-size: 1.2em;
     font-weight: bold;
     color: red;
+}
+
+.googleReportTableHeader {
+    font-weight: bold;
+    color: black;
+    text-align: left;
+    vertical-align: top;
+}
+
+.googleReportTableNonHeader {
+    text-align: left;
 }
 
 /*
