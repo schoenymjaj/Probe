@@ -61,7 +61,7 @@
                             $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-2); return false;">Go Back</a>');
 
                         } else {
-                            $('#header').html('<span class="reportLabel">Player:</span> ' + data[0].PlayerName + ' <span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
+                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + ' <span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
                             $('.reportReturnLink').html('@Html.ActionLink("Back to Player Match Totals", "PlayerMatchSummary", "Reports")');
                         }
                     }
