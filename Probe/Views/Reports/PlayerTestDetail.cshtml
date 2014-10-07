@@ -38,6 +38,12 @@
         $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gamePlayId + '/' + playerId, {},
          function (data) {
 
+             //SET COLUMN WIDTHS
+             setColumnWidths = function () {
+                 $('.googleReportTableHeader:contains("Percnt Correct")').css('width', '50px'); //set the width of the percent choice column
+                 $('.googleReportTableHeader:contains("Correct")').css('width', '50px'); //set the width of the percent choice column
+             };
+
              //HANDLER FOR INTERACTIVITY
              selectHandler = function () {
                  console.log('selectHandler');
@@ -119,10 +125,12 @@
 
 
                  var tableCorrect = new google.visualization.Table(document.getElementById('tableCorrect_div'));
+                 google.visualization.events.addListener(tableCorrect, 'ready', setColumnWidths);
                  google.visualization.events.addListener(tableCorrect, 'select', selectHandler);
                  tableCorrect.draw(tdataCorrect, options);
 
                  var tableInCorrect = new google.visualization.Table(document.getElementById('tableInCorrect_div'));
+                 google.visualization.events.addListener(tableInCorrect, 'ready', setColumnWidths);
                  google.visualization.events.addListener(tableInCorrect, 'select', selectHandler);
                  tableInCorrect.draw(tdataInCorrect, options);
 

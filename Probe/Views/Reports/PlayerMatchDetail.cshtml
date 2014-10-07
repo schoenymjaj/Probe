@@ -30,6 +30,13 @@
             $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchDetailData/' + gamePlayId + '/' + playerId + '/' + matchedPlayerId, {},
             function (data) {
 
+
+                //SET COLUMN WIDTHS
+                setColumnWidths = function () {
+                    $('.googleReportTableHeader:contains("Percnt Choice")').css('width', '40px'); //set the width of the percent choice column
+                    $('.googleReportTableHeader:contains("Player Match")').css('width', '50px'); //set the width of the percent choice column
+                };
+
                 //HANDLER FOR INTERACTIVITY
                 selectHandler = function () {
                     console.log('selectHandler');
@@ -50,7 +57,7 @@
                     */
                     if (data.length >= 1) {
                         if (DoStyleMobile()) {
-                            $('#header').html('<span class="reportLabel">Player:</span> ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
+                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
                             $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-2); return false;">Go Back</a>');
 
                         } else {
@@ -108,10 +115,12 @@
 
 
                     var tableMatch = new google.visualization.Table(document.getElementById('tableMatch_div'));
+                    google.visualization.events.addListener(tableMatch, 'ready', setColumnWidths);
                     google.visualization.events.addListener(tableMatch, 'select', selectHandler);
                     tableMatch.draw(tdataMatch, options);
 
                     var tableNonMatch = new google.visualization.Table(document.getElementById('tableNonMatch_div'));
+                    google.visualization.events.addListener(tableNonMatch, 'ready', setColumnWidths);
                     google.visualization.events.addListener(tableNonMatch, 'select', selectHandler);
                     tableNonMatch.draw(tdataNonMatch, options);
 
@@ -138,7 +147,7 @@
     <div id="title" class="reportTitle">Player - Player Match Details</div>
     <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
-    <div class="reportGameHeader"><span class="reportLabel">Game : </span>@ViewBag.GamePlayName</div>
+    <div class="reportGameHeader"><span class="reportLabel" style="margin-right: 20px">Game</span>: @ViewBag.GamePlayName</div>
     <div id="header" class="reportHeader"></div>
     <div class="positiveTableHeader">Matched Questions</div>
     <div id="tableMatch_div" class="tableMatch"></div>
