@@ -91,19 +91,19 @@ textarea {
 }
 
 .reportGameHeader {
-    font-size: .9em;
+    font-size: 1em;
     font-weight: bold;
     color: black;
 }
 
 .reportHeader {
-    font-size: .9em;
+    font-size: 1em;
     font-weight: bold;
     color: black;
 }
 
 .reportLabel {
-    font-size: .9em;
+    font-size: 1em;
     color: blue;
 }
 
