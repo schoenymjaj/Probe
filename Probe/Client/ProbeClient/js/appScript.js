@@ -31,7 +31,8 @@ $(function () {
         
         root = GetRootUrl();
 
-        var probeVersion = '0.55';
+        var probeVersion = '0.56';
+        alert('Probe Version: ' + probeVersion);
         var ProbeAPIurl = root + "api/";
         var ProbeMatchReporturl = root + "Reports/PlayerMatchSummary/";
         var ProbeTestReporturl = root + "Reports/PlayerTestDetail/";
@@ -78,7 +79,12 @@ $(function () {
                 }
 
                 if (codeFromURL == undefined) {
-                        app.SetHomePageInitialDisplay();
+                    app.SetHomePageInitialDisplay();
+                    //gameInstructions = "Welcome to the Probe Party Game Application. You will need a game code from the game organizer, in order to play. " +
+                    //                    " You may have to wait a few moments after you enter you code for Probe to retrieve your game. " +
+                    //                    " Answer each of the questions and submit. Your game organizer will provide you with access to the game results.";
+                    //app.popUpHelper("Info", gameInstructions);
+
                 }
 
 
@@ -95,6 +101,7 @@ $(function () {
                     app.SetHomePageStyle(false);
                     app.GetGamePlayServer(codeFromURL);
                 }
+
 
 
             }); //$(document).on
