@@ -131,13 +131,6 @@ textarea {
     color: green;
 }
 
-.negativeTableHeader {
-    margin-top: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: red;
-}
-
 .googleReportTableHeader {
     font-weight: bold;
     color: black;
