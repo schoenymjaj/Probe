@@ -124,7 +124,7 @@ textarea {
     clear:both;
 }
 
-.positiveTableHeader {
+.tableHeader {
     margin-top: 10px;
     font-size: 1.2em;
     font-weight: bold;
@@ -147,6 +147,14 @@ textarea {
 
 .googleReportTableNonHeader {
     text-align: left;
+}
+
+.googleReportCellYES {
+    color: green;
+}
+
+.googleReportCellNO {
+    color: red;
 }
 
 /*

@@ -41,7 +41,6 @@
              //SET COLUMN WIDTHS
              setColumnWidths = function () {
                  $('.googleReportTableHeader:contains("Percnt Correct")').css('width', '50px'); //set the width of the percent choice column
-                 $('.googleReportTableHeader:contains("Correct")').css('width', '50px'); //set the width of the percent choice column
              };
 
              //HANDLER FOR INTERACTIVITY
@@ -81,38 +80,39 @@
                  /*
                  SETUP GOOGLE TABLE DATA
                  */
-                 var tdataCorrect = new google.visualization.DataTable();
-                 var tdataInCorrect = new google.visualization.DataTable();
+                 var tdata = new google.visualization.DataTable();
 
-                 tdataCorrect.addColumn('string', 'Question');
-                 tdataCorrect.addColumn('string', 'Selections');
-                 tdataCorrect.addColumn('string', 'Correct Choices');
-                 if (!DoStyleMobile()) tdataCorrect.addColumn('boolean', 'Correct');
-                 if (!DoStyleMobile()) tdataCorrect.addColumn('number', 'Percnt Correct');
+                 tdata.addColumn('string', 'Question');
+                 tdata.addColumn('string', 'Selections');
+                 tdata.addColumn('string', 'Correct Choices');
+                 if (!DoStyleMobile()) tdata.addColumn('number', 'Percnt Correct');
 
-                 tdataInCorrect.addColumn('string', 'Question');
-                 tdataInCorrect.addColumn('string', 'Selections');
-                 tdataInCorrect.addColumn('string', 'Choices');
-                 if (!DoStyleMobile()) tdataInCorrect.addColumn('boolean', 'Correct');
-                 if (!DoStyleMobile()) tdataInCorrect.addColumn('number', 'Percnt Correct');
 
-                 (!DoStyleMobile()) ? rowlength = 5 : rowlength = 3;
+                 (!DoStyleMobile()) ? rowlength = 4 : rowlength = 3;
                  rowVector = new Array(rowlength);
 
+                 correctCount = 0;
                  for (var i = 0; i < data.length; i++) {
-                     row = 0;
-                     rowVector[row++] = data[i].Question;
-                     rowVector[row++] = data[i].SelectedChoices;
-                     rowVector[row++] = data[i].CorrectChoices;
-                     if (!DoStyleMobile()) rowVector[row++] = (data[i].QuestionCorrect == 1)
-                     if (!DoStyleMobile()) rowVector[row++] = data[i].PercentCorrect;
 
+                     cellClassName = 'googleReportCellNO';
                      if (data[i].QuestionCorrect == 1) {
-                         tdataCorrect.addRow(rowVector);
+                         cellClassName = 'googleReportCellYES'
+                         correctCount++;
                      } else {
-                         tdataInCorrect.addRow(rowVector);
+                         cellClassName = 'googleReportCellNO';
                      }
+
+                     row = 0;
+                     rowVector[row++] = { v: data[i].Question, p: { 'className': cellClassName } };
+                     rowVector[row++] = { v: data[i].SelectedChoices, p: { 'className': cellClassName } };
+                     rowVector[row++] = { v: data[i].CorrectChoices, p: { 'className': cellClassName } };
+                     if (!DoStyleMobile()) rowVector[row++] = { v: data[i].PercentCorrect, p: { 'className': cellClassName } };
+
+                     tdata.addRow(rowVector);
                  }
+
+                 $('.tableHeader').html(correctCount + ' Correct out of ' + data.length + ' Questions');
+
 
                  var options = {
                      allowHtml: true,
@@ -124,15 +124,10 @@
                  };
 
 
-                 var tableCorrect = new google.visualization.Table(document.getElementById('tableCorrect_div'));
-                 google.visualization.events.addListener(tableCorrect, 'ready', setColumnWidths);
-                 google.visualization.events.addListener(tableCorrect, 'select', selectHandler);
-                 tableCorrect.draw(tdataCorrect, options);
-
-                 var tableInCorrect = new google.visualization.Table(document.getElementById('tableInCorrect_div'));
-                 google.visualization.events.addListener(tableInCorrect, 'ready', setColumnWidths);
-                 google.visualization.events.addListener(tableInCorrect, 'select', selectHandler);
-                 tableInCorrect.draw(tdataInCorrect, options);
+                 var tableAll = new google.visualization.Table(document.getElementById('table_div'));
+                 google.visualization.events.addListener(tableAll, 'ready', setColumnWidths);
+                 google.visualization.events.addListener(tableAll, 'select', selectHandler);
+                 tableAll.draw(tdata, options);
 
                  if (!resize) ActivitySelectorOff('#spinner');
                  logError('PlayerTestDetail - func drawContent end', null); //Logging an event on the server
@@ -158,9 +153,7 @@
     <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
     <div id="header" class="reportHeader"></div>
-    <div class="positiveTableHeader">Correct Answered Questions</div>
-    <div id="tableCorrect_div"></div>
-    <div class="negativeTableHeader">Incorrect Answered Questions</div>
-    <div id="tableInCorrect_div"></div>
+    <div class="tableHeader"></div>
+    <div id="table_div"></div>
 </body>
 </html>

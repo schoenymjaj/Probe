@@ -247,7 +247,7 @@ namespace Probe.Controllers
 
             var result = db.Database.SqlQuery<PlayerMatchDetailData>
                                              ("exec GetPlayerMatchDetail " + gameplayid + "," + playerid + ","
-                                             + matchedplayerid + "," + filterType + ",'order by QTally.Match desc, OrderNbr asc'").ToList();
+                                             + matchedplayerid + "," + filterType + ",'order by OrderNbr asc'").ToList();
 
 
             List<PlayerMatchDetailReturn> reportData = new List<PlayerMatchDetailReturn>();

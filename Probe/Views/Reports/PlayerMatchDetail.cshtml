@@ -69,41 +69,37 @@
                     /*
                     SETUP GOOGLE TABLE DATA
                     */
-                    var tdataMatch = new google.visualization.DataTable();
-                    var tdataNonMatch = new google.visualization.DataTable();
+                    var tdata = new google.visualization.DataTable();
 
-                    //tdataMatch.addColumn('string', 'Player');
-                    tdataMatch.addColumn('string', 'Question');
-                    tdataMatch.addColumn('string', 'Player Choice');
-                    tdataMatch.addColumn('string', 'Matchup Choice');
-                    if (!DoStyleMobile()) tdataMatch.addColumn('boolean', 'Player Match');
-                    tdataMatch.addColumn('number', 'Percnt Choice');
+                    tdata.addColumn('string', 'Question');
+                    tdata.addColumn('string', 'Player Choice');
+                    tdata.addColumn('string', 'Matchup Choice');
+                    tdata.addColumn('number', 'Percnt Choice');
 
-                    //tdataNonMatch.addColumn('string', 'Player');
-                    tdataNonMatch.addColumn('string', 'Question');
-                    tdataNonMatch.addColumn('string', 'Player Choice');
-                    tdataNonMatch.addColumn('string', 'Matchup Choice');
-                    if (!DoStyleMobile()) tdataNonMatch.addColumn('boolean', 'Player Match');
-                    tdataNonMatch.addColumn('number', 'Percnt Choice');
-
-                    (!DoStyleMobile()) ? rowlength = 5 : rowlength = 4;
+                    rowlength = 4;
                     rowVector = new Array(rowlength);
 
-                    alert('data.length:' + data.length);
+                    matchCount = 0;
                     for (var i = 0; i < data.length; i++) {
-                        row = 0;
-                        rowVector[row++] = data[i].Question;
-                        rowVector[row++] = data[i].PlayerChoice;
-                        rowVector[row++] = data[i].MatchedPlayerChoice;
-                        if (!DoStyleMobile()) rowVector[row++] = (data[i].Match == 1)
-                        rowVector[row++] = data[i].PercentChosen;
-
+                        
+                        cellClassName = 'googleReportCellNO';
                         if (data[i].Match == 1) {
-                            tdataMatch.addRow(rowVector);
+                            cellClassName = 'googleReportCellYES'
+                            matchCount++;
                         } else {
-                            tdataNonMatch.addRow(rowVector);
+                            cellClassName = 'googleReportCellNO';
                         }
+
+                        row = 0;
+                        rowVector[row++] = { v: data[i].Question, p: { 'className': cellClassName } };
+                        rowVector[row++] = { v:data[i].PlayerChoice, p: { 'className': cellClassName } };
+                        rowVector[row++] = { v:data[i].MatchedPlayerChoice, p: { 'className': cellClassName } };
+                        rowVector[row++] = { v: data[i].PercentChosen, p: { 'className': cellClassName } };
+
+                        tdata.addRow(rowVector);
                     }
+
+                    $('.tableHeader').html(matchCount + ' Matches out of ' + data.length + ' Questions');
 
                     var options = {
                         allowHtml: true,
@@ -115,15 +111,10 @@
                     };
 
 
-                    var tableMatch = new google.visualization.Table(document.getElementById('tableMatch_div'));
-                    google.visualization.events.addListener(tableMatch, 'ready', setColumnWidths);
-                    google.visualization.events.addListener(tableMatch, 'select', selectHandler);
-                    tableMatch.draw(tdataMatch, options);
-
-                    var tableNonMatch = new google.visualization.Table(document.getElementById('tableNonMatch_div'));
-                    google.visualization.events.addListener(tableNonMatch, 'ready', setColumnWidths);
-                    google.visualization.events.addListener(tableNonMatch, 'select', selectHandler);
-                    tableNonMatch.draw(tdataNonMatch, options);
+                    var tableAll = new google.visualization.Table(document.getElementById('table_div'));
+                    google.visualization.events.addListener(tableAll, 'ready', setColumnWidths);
+                    google.visualization.events.addListener(tableAll, 'select', selectHandler);
+                    tableAll.draw(tdata, options);
 
                     if (!resize) ActivitySelectorOff('#spinner');
 
@@ -150,9 +141,7 @@
     <div class="reportResetSytle"></div>
     <div class="reportGameHeader"><span class="reportLabel" style="margin-right: 20px">Game</span>: @ViewBag.GamePlayName</div>
     <div id="header" class="reportHeader"></div>
-    <div class="positiveTableHeader">Matched Questions</div>
-    <div id="tableMatch_div" class="tableMatch"></div>
-    <div class="negativeTableHeader">Non Matched Questions</div>
-    <div id="tableNonMatch_div" class="tableNonMatch"></div>
+    <div class="tableHeader"></div>
+    <div id="table_div" class="tableMatch"></div>
 </body>
 </html>
