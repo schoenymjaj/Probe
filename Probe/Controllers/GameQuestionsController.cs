@@ -66,8 +66,10 @@ namespace Probe.Controllers
         // GET: GameQuestions/Create
         public ActionResult Create(int? SelectedGame)
         {
+            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name",SelectedGame);
-            ViewBag.QuestionId = new SelectList(db.Question, "Id", "Name");
+            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name");
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
             return View();
         }
