@@ -889,6 +889,7 @@
     <Content Include="Client\ProbeClient\css\themes\jquery.mobile.icons.min.css" />
     <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.css" />
     <Content Include="Client\ProbeClient\css\themes\ProbeTheme.V0.1.min.css" />
+    <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity20.jpg" />
     <Content Include="Client\ProbeClient\images\bckground\ProbeBackground-Opacity3.jpg" />
     <Content Include="Client\ProbeClient\images\bckground\ProbeBackground.jpg" />
     <Content Include="Client\ProbeClient\images\icon\android\icon-144-xxhdpi.png" />
@@ -921,6 +922,7 @@
     <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait-2x.png" />
     <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait-568h-2x.png" />
     <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait.png" />
+    <Content Include="Client\ProbeClient\images\screen\windows\screen-480-800.jpg" />
     <Content Include="Client\ProbeClient\index.html" />
     <Content Include="Client\ProbeClient\js\appScript.js" />
     <Content Include="Client\ProbeClient\js\commonScript.js" />
