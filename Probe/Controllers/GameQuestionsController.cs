@@ -90,7 +90,7 @@ namespace Probe.Controllers
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
             }
 
-            ViewBag.QuestionId = new SelectList(db.Question, "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
             return View(gameQuestion);
         }
 
