@@ -80,7 +80,7 @@
                         @Html.DisplayFor(modelItem => item.EndDate)
                     </td>
                     <td>
-                        @if (item.Players.Count > 1) { 
+                        @if (item.Players.Count > 0) { 
                         <a class="playersDialogLink" data-gameplayid="@item.Id" data-gametype="@item.Game.GameType.Name"  
                            href="#">@Html.DisplayFor(modelItem => item.Players.Count)</a>
                         }
