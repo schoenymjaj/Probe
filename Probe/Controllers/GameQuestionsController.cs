@@ -79,6 +79,8 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
         {
+            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
 
             if (ModelState.IsValid)
@@ -95,6 +97,8 @@ namespace Probe.Controllers
         // GET: GameQuestions/Edit/5
         public ActionResult Edit(long? id)
         {
+            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -105,7 +109,7 @@ namespace Probe.Controllers
                 return HttpNotFound();
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(db.Question, "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
 
             return View(gameQuestion);
@@ -118,6 +122,8 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
         {
+            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
             if (ModelState.IsValid)
             {
                 db.Entry(gameQuestion).State = EntityState.Modified;
@@ -127,7 +133,7 @@ namespace Probe.Controllers
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(db.Question, "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
             return View(gameQuestion);
         }
 
