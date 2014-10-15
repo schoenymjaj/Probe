@@ -468,6 +468,9 @@
     <Content Include="ClientTest\js\set-weinre.js" />
     <Content Include="ClientTest\main.html" />
     <Content Include="Client\ProbeClient\config.xml" />
+    <Content Include="Client\ProbeClient\css\icon-pack\jqm-icon-pack-fa-builder.css" />
+    <Content Include="Client\ProbeClient\css\icon-pack\jqm-icon-pack-fa.css" />
+    <Content Include="Client\ProbeClient\css\icon-pack\png\bar-chart-o.png" />
     <Content Include="Client\ProbeClient\css\index.html" />
     <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1 9-29-14\index.html" />
     <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\V0.1 9-29-14\themes\images\ajax-loader.gif" />
@@ -1062,6 +1065,7 @@
     <Content Include="Client\ProbeClient\css\OLD jquerymobile themes\jquery-mobile-theme-201531-0.zip" />
     <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.min.map" />
     <Content Include="Client\ProbeClient\js\jqm\jquery.mobile-1.4.3.zip" />
+    <Content Include="Client\ProbeClient\css\icon-pack\jqm-icon-pack-fa.scss" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\DatePickerReady.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
