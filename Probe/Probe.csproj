@@ -927,6 +927,8 @@
     <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait.png" />
     <Content Include="Client\ProbeClient\images\screen\windows\screen-480-800.jpg" />
     <Content Include="Client\ProbeClient\index.html" />
+    <Content Include="Client\ProbeClient\js\3party\iframe-resizer\iframeResizer.contentWindow.min.js" />
+    <Content Include="Client\ProbeClient\js\3party\iframe-resizer\iframeResizer.min.js" />
     <Content Include="Client\ProbeClient\js\appScript.js" />
     <Content Include="Client\ProbeClient\js\commonScript.js" />
     <Content Include="Client\ProbeClient\js\eventscript.js" />
@@ -1068,6 +1070,8 @@
     <Content Include="Client\ProbeClient\css\icon-pack\jqm-icon-pack-fa.scss" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\DatePickerReady.js" />
+    <Content Include="Scripts\iframe-resizer\iframeResizer.contentWindow.min.js" />
+    <Content Include="Scripts\iframe-resizer\iframeResizer.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
