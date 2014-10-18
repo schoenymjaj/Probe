@@ -17,6 +17,15 @@ $(window).resize(function () {
     drawContent();
 });
 
+IsActivitySelector = function (resize) {
+    activityStatus = false;
+    if (!resize || !DoStyleMobile()) {
+        activityStatus = true;
+    }
+
+    return activityStatus;
+}
+
 
 
 

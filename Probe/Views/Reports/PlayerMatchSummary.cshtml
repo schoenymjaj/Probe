@@ -22,7 +22,7 @@
             console.log('func drawContent');
             logError('PlayerMatchSummary - func drawContent start', arguments.callee.trace()); //Logging an event on the server
 
-            if (!resize) ActivityIndicatorOn('#spinner');
+            if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
             var gamePlayId = '@ViewBag.GamePlayId';
             var playerId = '@ViewBag.PlayerId';
@@ -151,7 +151,7 @@
                     google.visualization.events.addListener(chart, 'select', selectHandler);
                     chart.draw(tdata, options);
 
-                    if (!resize) ActivitySelectorOff('#spinner');
+                    if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
 
                     logError('PlayerMatchSummary - func drawContent end', null); //Logging an event on the server
 

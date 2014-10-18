@@ -21,7 +21,7 @@
             console.log('func drawContent');
             logError('PlayerTestSummary - func drawContent start', arguments.callee.trace()); //Logging an event on the server
 
-            if (!resize) ActivityIndicatorOn('#spinner');
+            if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
             var gamePlayId = '@ViewBag.GamePlayId';
 
@@ -150,7 +150,7 @@
                      google.visualization.events.addListener(chart, 'select', selectHandler);
                      chart.draw(tdata, options);
 
-                     if (!resize) ActivitySelectorOff('#spinner');
+                     if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
 
                      logError('PlayerTestSummary - func drawContent end', null); //Logging an event on the server
 
