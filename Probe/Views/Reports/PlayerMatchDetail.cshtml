@@ -54,11 +54,15 @@
 
                     /*
                     SETUP REPORT HEADER
+                    Header will be different - dependent on the mobile indicator
+                    Back button will not exist if report loads within an iFrame (then its in mobile mode)
                     */
                     if (data.length >= 1) {
                         if (DoStyleMobile()) {
                             $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
-                            $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-2); return false;">Go Back</a>');
+                            if (!isInIFrame) {
+                                $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-2); return false;">Go Back</a>');
+                            }
 
                         } else {
                             $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + ' <span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);

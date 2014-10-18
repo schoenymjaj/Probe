@@ -47,10 +47,13 @@
 
                      /*
                      SETUP REPORT HEADER
+                    Back button will not exist if report loads within an iFrame (then its in mobile mode)
                      */
                      $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName');
                      if (DoStyleMobile()) {
-                         $('.reportReturnLink').html('<a href="#" onClick="javascript:GoBack()">Go Back</a>');
+                         if (!isInIFrame) {
+                             $('.reportReturnLink').html('<a href="#" onClick="javascript:GoBack()">Go Back</a>');
+                         }
                      } else {
                          $('.reportReturnLink').html('@Html.ActionLink("Back to Game Plays", "Index", "GamePlays", new { SelectedGame = ViewBag.CurrentSelectedGame },null)');
                      }

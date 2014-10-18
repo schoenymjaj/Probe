@@ -31,7 +31,7 @@ $(function () {
         
         root = GetRootUrl();
 
-        var probeVersion = '0.57';
+        var probeVersion = '0.60';
         //alert('Probe Version: ' + probeVersion);
         var ProbeAPIurl = root + "api/";
         var ProbeMatchReporturl = root + "Reports/PlayerMatchSummary/";
@@ -1162,7 +1162,7 @@ $(function () {
 
                 iFrameResize({
                     //log: true,                  // Enable console logging
-                    enablePublicMethods: true,  // Enable methods within iframe hosted page
+                    enablePublicMethods: false,  // Enable methods within iframe hosted page
                     autoResize: true
                 });
             }, 500);

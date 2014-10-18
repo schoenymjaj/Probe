@@ -49,13 +49,15 @@
 
                     /*
                     SETUP REPORT HEADER
-                    If Mobile - the upper right link will go back one page in history. This would normally be the player prompt page of the Probe Client.
-                    In NOT Mobile - the upper right link will go to the MatchSummary report
+                    Header will be different - dependent on the mobile indicator
+                    Back button will not exist if report loads within an iFrame (then its in mobile mode)
                     */
                     if (DoStyleMobile()) {
                         $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
-                        $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-1); return false;">Go Back</a>');
-                    } else {
+                        if (!isInIFrame) {
+                            $('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-1); return false;">Go Back</a>');
+                        }
+                        } else {
                         $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
                         $('.reportReturnLink').html('@Html.ActionLink("Back to Game Match Summary", "GamePlayerMatchMinMax", "Reports")');
                     }

@@ -10,6 +10,8 @@ DoStyleMobile = function () {
     }
 }
 
+var isInIFrame = (window.location != window.parent.location);
+
 $(window).resize(function () {
     resize = true;
     drawContent();
