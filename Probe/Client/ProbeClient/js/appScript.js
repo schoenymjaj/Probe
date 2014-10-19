@@ -1160,11 +1160,6 @@ $(function () {
                 $(':mobile-pagecontainer').pagecontainer('change', '#report', { transition: 'none' });
                 $('#report').css("padding-top", "42px"); //MNS
 
-                iFrameResize({
-                    //log: true,                  // Enable console logging
-                    enablePublicMethods: false,  // Enable methods within iframe hosted page
-                    autoResize: true
-                });
             }, 500);
 
             //window.location = url; //MNS COMMENTED OUT
