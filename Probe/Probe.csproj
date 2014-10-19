@@ -927,8 +927,8 @@
     <Content Include="Client\ProbeClient\images\screen\ios\screen-iphone-portrait.png" />
     <Content Include="Client\ProbeClient\images\screen\windows\screen-480-800.jpg" />
     <Content Include="Client\ProbeClient\index.html" />
-    <Content Include="Client\ProbeClient\js\3party\iframe-resizer\iframeResizer.contentWindow.min.js" />
-    <Content Include="Client\ProbeClient\js\3party\iframe-resizer\iframeResizer.min.js" />
+    <Content Include="Client\ProbeClient\js\3party\iframe-autoheight\jquery.browser.min.js" />
+    <Content Include="Client\ProbeClient\js\3party\iframe-autoheight\jquery.iframe-auto-height.plugin.js" />
     <Content Include="Client\ProbeClient\js\appScript.js" />
     <Content Include="Client\ProbeClient\js\commonScript.js" />
     <Content Include="Client\ProbeClient\js\eventscript.js" />
