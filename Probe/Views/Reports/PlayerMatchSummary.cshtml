@@ -54,10 +54,10 @@
                 */
                 if (DoStyleMobile()) {
                     $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
-                    //$('#appHome').click(function (event) {
-                    //    window.history.go(-1);
-                    //});
-                    //$('.reportReturnLink').hide();
+                    $('#appHome').click(function (event) {
+                        window.history.go(-1);
+                    });
+                    $('.reportReturnLink').hide();
                 } else {
                     $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
                     $('.reportReturnLink').html('@Html.ActionLink("Back to Game Match Summary", "GamePlayerMatchMinMax", "Reports")');
