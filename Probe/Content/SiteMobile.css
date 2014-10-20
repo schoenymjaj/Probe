@@ -18,6 +18,13 @@ textarea {
     max-width: 280px;
 }
 
+.insetBug {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
 /*START bootstrap nav bar*/
 .dropdown-submenu {
     position: relative;
@@ -118,6 +125,10 @@ textarea {
 
 .reportResetSytle {
     clear:both;
+}
+
+.chartDiv {
+    overflow: hidden; /*avoid unneeded scrollbars*/
 }
 
 .tableHeader {

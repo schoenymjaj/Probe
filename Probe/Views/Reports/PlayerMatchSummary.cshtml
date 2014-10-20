@@ -54,7 +54,10 @@
                 */
                 if (DoStyleMobile()) {
                     $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
-                    //$('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-1); return false;">Go Back</a>');
+                    //$('#appHome').click(function (event) {
+                    //    window.history.go(-1);
+                    //});
+                    //$('.reportReturnLink').hide();
                 } else {
                     $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
                     $('.reportReturnLink').html('@Html.ActionLink("Back to Game Match Summary", "GamePlayerMatchMinMax", "Reports")');
@@ -175,7 +178,7 @@
     <div class="reportResetSytle"></div>
     <div id="header" class="reportHeader"></div>
     <div id="parent_chart_div">
-        <div id="chart_div"></div>
+        <div id="chart_div" class="chartDiv"></div>
     </div>
 </body>
 </html>

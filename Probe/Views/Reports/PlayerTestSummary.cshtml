@@ -51,7 +51,10 @@
                      */
                      $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName');
                      if (DoStyleMobile()) {
-                         //$('.reportReturnLink').html('<a href="#" onClick="javascript:GoBack()">Go Back</a>');
+                         $('#appHome').click(function (event) {
+                             GoBack();
+                         });
+                         $('.reportReturnLink').hide();
                      } else {
                          $('.reportReturnLink').html('@Html.ActionLink("Back to Game Plays", "Index", "GamePlays", new { SelectedGame = ViewBag.CurrentSelectedGame },null)');
                      }
@@ -174,7 +177,7 @@
     <div class="reportResetSytle"></div>
     <div id="header" class="reportHeader"></div>
     <div id="parent_chart_div">
-        <div id="chart_div"></div>
+        <div id="chart_div" class="chartDiv"></div>
     </div>
 </body>
 </html>

@@ -68,7 +68,10 @@
                          $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName'
                              + '<br/><span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
                              + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
-                         //$('.reportReturnLink').html('<a href="#" onclick="javascript: window.history.go(-1); return false;">Go Back</a>');
+                         $('#appHome').click(function (event) {
+                             window.history.go(-1);
+                         });
+                         $('.reportReturnLink').hide();
                      } else {
                          $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName'
                              + ' <span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
