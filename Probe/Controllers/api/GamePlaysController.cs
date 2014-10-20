@@ -34,13 +34,27 @@ namespace Probe.Controllers.api
             db.Configuration.LazyLoadingEnabled = false;
 
             /*
-             * Given a GamePlay ID. We return the GamePlay ONLY
+             * Given a GamePlay ID. We return the GamePlay and Player Count for GamePlay
              */
 
             try
             {
                 var gamePlay = db.GamePlay
-                                 .Where(gp => gp.Id == id).Single();
+                                 .Select(gp => new
+                                 {
+                                     gp.Id,
+                                     gp.GameId,
+                                     gp.Name,
+                                     gp.Description,
+                                     gp.Code,
+                                     gp.GameUrl,
+                                     gp.StartDate,
+                                     gp.EndDate,
+                                     gp.SuspendMode,
+                                     gp.ClientReportAccess,
+                                     gp.TestMode,
+                                     PlayerCount = gp.Players.Count()
+                                 }).Where(gp => gp.Id == id).Single();
 
                 return Ok(gamePlay);
 
