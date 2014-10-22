@@ -71,6 +71,16 @@ namespace Probe.Controllers
             {
                 db.Game.Add(game);
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+
+                GameConfiguration gc = new GameConfiguration
+                {
+                    GameId = game.Id,
+                    Name = "DeviceCanPlayGameOnlyOnce",
+                    Value = "false"
+                };
+                GameConfigurationsController gcc = new GameConfigurationsController();
+                gcc.Create(gc);
+
                 return RedirectToAction("Index");
             }
 

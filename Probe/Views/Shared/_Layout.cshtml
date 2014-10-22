@@ -50,10 +50,29 @@
 @functions{
     public bool IsUserLoggedIn()
     {
-        bool status = System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
-        
-        return status;
+        bool returnStatus = System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
+
+        return returnStatus;
     }
+
+    public bool IsUserInRole(string roleName)
+    {
+        bool returnStatus = false;
+        if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+        {
+            Probe.Models.ApplicationDbContext dbIdentity = new Probe.Models.ApplicationDbContext();
+            string userName = System.Web.HttpContext.Current.User.Identity.Name;
+            Probe.Models.ApplicationUser user = dbIdentity.Users.Where(u => u.UserName == userName).Single();
+            var role = dbIdentity.Roles.Where(r => r.Name == roleName).Single();
+
+            returnStatus = user.Roles.Where(r => r.RoleId == role.Id).Count() > 0;
+            
+        }
+
+        return returnStatus;
+    }
+     
+    
     
     public string GetControllerName()
     {
@@ -81,8 +100,11 @@
                                 <a tabindex="-1" href="#">Game Setup</a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        @Html.ActionLink("Game Type Setup", "Index", "GameTypes")
-                                        @Html.ActionLink("Game Configuration Setup", "Index", "GameConfigurations")
+                                        @if (IsUserInRole("Admin"))
+                                        {
+                                            @Html.ActionLink("Game Type Setup", "Index", "GameTypes")
+                                            @Html.ActionLink("Game Configuration Setup", "Index", "GameConfigurations")
+                                        }
                                         @if (IsUserLoggedIn()) {
                                             @Html.ActionLink("My Games", "Index", "Games")
                                             @Html.ActionLink("My Games - Manage Their Questions", "Index", "GameQuestions")
@@ -106,7 +128,10 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Question<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>
+                                @if (IsUserInRole("Admin"))
+                                { 
                                 @Html.ActionLink("Question Type Setup", "Index", "QuestionTypes")
+                                }
                                 @if (IsUserLoggedIn()) {
                                     @Html.ActionLink("My Question Library", "Index", "ChoiceQuestions")
                                     @Html.ActionLink("My Question Choices", "Index", "Choices")

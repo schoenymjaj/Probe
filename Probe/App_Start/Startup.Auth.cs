@@ -46,18 +46,19 @@ namespace Probe
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "1480986485523830",
+               appSecret: "3bd0653eb6996924fa1b8e0504691803");
 
-            /*GOOGLE OAUTH2 IS COMMENTED OUT. THIS CODE WORKS - JUST COMMENTING THIS OUT UNTIL THE REST
-             *OF THE APP IS DEBUGGED, TESTED, AND THEN ADDED ADMIN ROLE.
+            /*google app return html is setup for production (probe.azurewebsites.com). so this 
+             will not work on the development machine
+             */
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
                 ClientId = "344585073313-e0k59lhd4la1u6qdvvd4blliv4qbnc3t.apps.googleusercontent.com",
                 ClientSecret = "FE1yJJ4GaK3y8fv9A76EcDgJ"
             });
-             */
+
         }
     }
 }

@@ -16,12 +16,14 @@ namespace Probe.Controllers
         private ProbeDataContext db = new ProbeDataContext();
 
         // GET: QuestionTypes
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             return View(db.QuestionType.ToList());
         }
 
         // GET: QuestionTypes/Details/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Details(long? id)
         {
             if (id == null)
@@ -37,6 +39,7 @@ namespace Probe.Controllers
         }
 
         // GET: QuestionTypes/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             return View();
@@ -45,6 +48,7 @@ namespace Probe.Controllers
         // POST: QuestionTypes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Description")] QuestionType questionType)
@@ -60,6 +64,7 @@ namespace Probe.Controllers
         }
 
         // GET: QuestionTypes/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(long? id)
         {
             if (id == null)
@@ -77,6 +82,7 @@ namespace Probe.Controllers
         // POST: QuestionTypes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Description")] QuestionType questionType)
@@ -91,6 +97,7 @@ namespace Probe.Controllers
         }
 
         // GET: QuestionTypes/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(long? id)
         {
             if (id == null)
@@ -106,6 +113,7 @@ namespace Probe.Controllers
         }
 
         // POST: QuestionTypes/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         //[ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)

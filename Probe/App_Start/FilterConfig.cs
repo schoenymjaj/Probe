@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Mvc;
 using Probe.Helpers.Exceptions;
 using Probe.Helpers.Logging;
+using Probe.Helpers.Authorize;
 
 namespace Probe
 {
@@ -11,7 +12,8 @@ namespace Probe
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new System.Web.Mvc.AuthorizeAttribute());
-//            filters.Add(new HandleErrorAttribute());
+            //filters.Add(new RoleAuthorizeAttribute());
+            //filters.Add(new HandleErrorAttribute());
             filters.Add(new ElmahHandleErrorAttribute());
 
             bool logMvcActionInd = false;

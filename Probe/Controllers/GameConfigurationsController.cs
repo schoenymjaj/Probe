@@ -17,13 +17,7 @@ namespace Probe.Controllers
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        //// GET: GameConfigurations
-        //public ActionResult Index()
-        //{
-        //    var gameConfiguration = db.GameConfiguration.Include(g => g.Game);
-        //    return View(gameConfiguration.ToList());
-        //}
-
+        [Authorize(Roles = "Admin")]
         public ActionResult Index(int? SelectedGame)
         {
             //limit the games to only what the user possesses
@@ -41,6 +35,7 @@ namespace Probe.Controllers
         }
 
         // GET: GameConfigurations/Details/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Details(long? id)
         {
             if (id == null)
@@ -58,6 +53,7 @@ namespace Probe.Controllers
         }
 
         // GET: GameConfigurations/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create(int? SelectedGame)
         {
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", SelectedGame);
@@ -67,6 +63,7 @@ namespace Probe.Controllers
         // POST: GameConfigurations/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,GameId,Name,Description,Value")] GameConfiguration gameConfiguration)
@@ -85,6 +82,7 @@ namespace Probe.Controllers
         }
 
         // GET: GameConfigurations/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(long? id)
         {
             if (id == null)
@@ -103,6 +101,7 @@ namespace Probe.Controllers
         // POST: GameConfigurations/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,GameId,Name,Description,Value")] GameConfiguration gameConfiguration)
@@ -120,6 +119,7 @@ namespace Probe.Controllers
         }
 
         // GET: GameConfigurations/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(long? id)
         {
             if (id == null)
@@ -137,6 +137,7 @@ namespace Probe.Controllers
         }
 
         // POST: GameConfigurations/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
