@@ -57,16 +57,26 @@
 
     public bool IsUserInRole(string roleName)
     {
-        bool returnStatus = false;
-        if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-        {
-            Probe.Models.ApplicationDbContext dbIdentity = new Probe.Models.ApplicationDbContext();
-            string userName = System.Web.HttpContext.Current.User.Identity.Name;
-            Probe.Models.ApplicationUser user = dbIdentity.Users.Where(u => u.UserName == userName).Single();
-            var role = dbIdentity.Roles.Where(r => r.Name == roleName).Single();
 
-            returnStatus = user.Roles.Where(r => r.RoleId == role.Id).Count() > 0;
-            
+        bool returnStatus = false;
+
+        try
+        {
+            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            {
+                Probe.Models.ApplicationDbContext dbIdentity = new Probe.Models.ApplicationDbContext();
+                string userName = System.Web.HttpContext.Current.User.Identity.Name;
+                Probe.Models.ApplicationUser user = dbIdentity.Users.Where(u => u.UserName == userName).Single();
+                var role = dbIdentity.Roles.Where(r => r.Name == roleName).Single();
+
+                returnStatus = user.Roles.Where(r => r.RoleId == role.Id).Count() > 0;
+
+            }
+
+        }
+        catch
+        {
+            returnStatus = false; //if there is an issue; we will just not give the user access
         }
 
         return returnStatus;
