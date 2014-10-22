@@ -13,7 +13,7 @@ namespace Probe.Controllers
     public class AdminController : Controller
     {
         // GET: Admin
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             //HACK TO BE RUN ONCE.
