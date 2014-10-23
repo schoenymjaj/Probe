@@ -4,23 +4,41 @@
     ViewBag.Title = "Index";
 }
 
+@* TABLESORTER INITIALIZE SCRIPT OVERRIDEN BELOW. NEEDED TO SORT DIFFERENTLY
 <script src="@Url.Content("~/Scripts/probe/probe-setup-tablesorter.js")"
         type="text/javascript"></script>
+*@
+<script type="text/javascript">
+    $(function () {
+        $("table.tablesorter").tablesorter({
+            widthFixed: true,
+            sortList: [[4, 0]],
+            widgets: ['zebra', 'columns'],
+            usNumberFormat: false,
+            sortReset: true,
+            sortRestart: true
+        })
+        .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+
+    });
+</script>
+
+
 
 @functions{
     public bool IsGameActive(int? gameId)
     {
-        bool status = true;
+        bool returnStatus = true;
         if (gameId != null)
         {
-            status = ViewBag.DctGameActive[(long)gameId];
+            returnStatus = ViewBag.DctGameActive[(long)gameId];
         }
         else
         {
-            status = false;
+            returnStatus = false;
         }
 
-        return status;
+        return returnStatus;
     }
 }
 

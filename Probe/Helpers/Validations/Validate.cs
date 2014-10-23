@@ -133,6 +133,20 @@ namespace Probe.Helpers.Validations
 
         #endregion
 
+        #region GameQuestions Validations
+
+        public static bool IsGameQuestionExist(long gameId, long questionId)
+        {
+            bool status = false;
+
+            var db = new ProbeDataContext();
+            status = db.GameQuestion.Where(gq => gq.GameId == gameId && gq.QuestionId == questionId).Count() > 0;
+
+            return status;
+        }
+
+        #endregion
+
         #region Question Validations
 
         public static bool IsQuestionUsedByActivatedGamePlay(Question question)

@@ -177,6 +177,7 @@
     <Compile Include="Controllers\api\GamePlayAnswersController.cs" />
     <Compile Include="Controllers\api\GamePlaysController.cs" />
     <Compile Include="Controllers\api\PlayersController.cs" />
+    <Compile Include="Controllers\api\QuestionsController.cs" />
     <Compile Include="Controllers\ChoiceQuestionsController.cs" />
     <Compile Include="Controllers\ChoicesController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />

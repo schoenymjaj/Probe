@@ -69,9 +69,16 @@ namespace Probe.Controllers
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name",SelectedGame);
-            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name");
+
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)SelectedGame,loggedInUserId), "Id", "Name");
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
-            return View();
+
+            GameQuestion gq = new GameQuestion
+            {
+                OrderNbr = GetNextOrderNbr((long)SelectedGame)
+            };
+
+            return View(gq);
         }
 
         // POST: GameQuestions/Create
@@ -92,7 +99,7 @@ namespace Probe.Controllers
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
             }
 
-            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)gameQuestion.GameId, loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
             return View(gameQuestion);
         }
 
@@ -111,7 +118,7 @@ namespace Probe.Controllers
                 return HttpNotFound();
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
 
             return View(gameQuestion);
@@ -135,7 +142,7 @@ namespace Probe.Controllers
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(db.Question.Where(q => q.AspNetUsersId == loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
             return View(gameQuestion);
         }
 
@@ -169,6 +176,39 @@ namespace Probe.Controllers
             db.GameQuestion.Remove(gameQuestion);
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
             return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
+        }
+
+        private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId)
+        {
+
+            IQueryable<Probe.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
+            switch (db.Game.Find(SelectedGame).GameType.Name)
+            {
+                case "Test":
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && cq.Choices.Any(c => c.Correct));
+                    break;
+                case "Match":
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId);
+                    break;
+                default:
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId);
+                    break;
+                
+            }
+            var usedQuestions = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.QuestionId);
+            return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).ToList();
+
+        }
+
+        private int GetNextOrderNbr(long SelectedGame) {
+            if (db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Count() > 0)
+            {
+                return (int)db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Max(gq => gq.OrderNbr) + 1;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         protected override void Dispose(bool disposing)
