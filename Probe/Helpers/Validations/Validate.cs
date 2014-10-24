@@ -68,7 +68,6 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
-
         public static bool IsGamePlayActive(GamePlay gp)
         {
             bool status = false;
@@ -219,6 +218,25 @@ namespace Probe.Helpers.Validations
             status = db.Game.Where(g => g.Name == gameName && g.AspNetUsersId == AspNetUsersId && g.Id != gameId).Count() > 0;
 
             return status;
+        }
+
+        public static bool DoesGameHaveQuestions(long gameId)
+        {
+            bool status = false;
+            var db = new ProbeDataContext();
+            int recordCount = db.Game.Find(gameId).GameQuestions.Count();
+            if (recordCount > 0)
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
+
+            return status;
+
+
         }
 
         public static bool IsGameUsedByActivatedGamePlay(Game game)

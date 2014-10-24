@@ -1205,6 +1205,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\probe\probe-api-functions.js" />
     <Content Include="Scripts\probe\probe-reportchart-helpers.js" />
     <Content Include="Scripts\probe\probe-setup-tablesorter.js" />
     <Content Include="Scripts\probe\probe-helpers.js" />

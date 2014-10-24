@@ -70,7 +70,7 @@ namespace Probe.Controllers
 
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name",SelectedGame);
 
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)SelectedGame,loggedInUserId), "Id", "Name");
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)SelectedGame,loggedInUserId, null), "Id", "Name");
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
 
             GameQuestion gq = new GameQuestion
@@ -99,7 +99,7 @@ namespace Probe.Controllers
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
             }
 
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)gameQuestion.GameId, loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)gameQuestion.GameId, loggedInUserId, gameQuestion.Id), "Id", "Name", gameQuestion.QuestionId);
             return View(gameQuestion);
         }
 
@@ -118,7 +118,7 @@ namespace Probe.Controllers
                 return HttpNotFound();
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId,id), "Id", "Name", gameQuestion.QuestionId);
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
 
             return View(gameQuestion);
@@ -142,7 +142,7 @@ namespace Probe.Controllers
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId), "Id", "Name", gameQuestion.QuestionId);
+            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId, gameQuestion.Id), "Id", "Name", gameQuestion.QuestionId);
             return View(gameQuestion);
         }
 
@@ -178,7 +178,7 @@ namespace Probe.Controllers
             return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
         }
 
-        private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId)
+        private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
         {
 
             IQueryable<Probe.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
@@ -196,7 +196,17 @@ namespace Probe.Controllers
                 
             }
             var usedQuestions = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.QuestionId);
-            return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).ToList();
+
+            if (gameQuestionId != null)
+            {
+                //include the question for the current GameQuestion
+                long currentQuestionId = db.GameQuestion.Find(gameQuestionId).Question.Id;
+                return allQuestions.Where(aq => (aq.Id == currentQuestionId) || (!usedQuestions.Contains(aq.Id))).ToList();
+            }
+            else
+            {
+                return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).ToList();
+            }
 
         }
 
