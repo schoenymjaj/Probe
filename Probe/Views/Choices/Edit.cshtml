@@ -39,6 +39,7 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <div>The key to the choice</div>
             </div>
         </div>
 
@@ -47,6 +48,7 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Text, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+                <div>The actual text of the choice that will be displayed during the game. Attention: Be as precise with your choice. The smaller the text the better for mobile devices. Under 20 characters plays the best.</div>
             </div>
         </div>
 

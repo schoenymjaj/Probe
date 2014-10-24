@@ -80,6 +80,7 @@ namespace Probe.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
         {
+            if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
             if (ModelState.IsValid)
             {
                 db.Choice.Add(choice);
@@ -114,6 +115,7 @@ namespace Probe.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
         {
+            if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
             if (ModelState.IsValid)
             {
                 db.Entry(choice).State = EntityState.Modified;
@@ -148,6 +150,16 @@ namespace Probe.Controllers
             db.Choice.Remove(choice);
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
             return RedirectToAction("Index", "ChoiceQuestions");
+        }
+
+        private void ValidateChoice(long questionId)
+        {
+            //GamePlay Business Rules
+            if (ProbeValidate.IsQuestionPossessCorrectChoice(questionId))
+            {
+                ModelState.AddModelError("Correct", "The question can only have one correct choice.");
+            }
+
         }
 
         protected override void Dispose(bool disposing)

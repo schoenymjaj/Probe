@@ -73,6 +73,7 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,QuestionTypeId,Name,Text,OneChoice,AspNetUsersId")] ChoiceQuestion choiceQuestion)
         {
+            choiceQuestion.OneChoice = true; //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
             ValidateQuestionCreate(choiceQuestion);
             if (ModelState.IsValid)
             {
@@ -108,6 +109,7 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,QuestionTypeId,Name,Text,OneChoice,AspNetUsersId")] ChoiceQuestion choiceQuestion)
         {
+            choiceQuestion.OneChoice = true; //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
             ValidateQuestionEdit(choiceQuestion);
             if (ModelState.IsValid)
             {

@@ -192,6 +192,13 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
+        public static bool IsQuestionPossessCorrectChoice(long questionId)
+        {
+            ProbeDataContext db = new ProbeDataContext();
+            return db.ChoiceQuestion.Find(questionId).Choices.Count() > 0;
+
+        }
+
         #endregion
 
         #region Game Validations

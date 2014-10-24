@@ -30,6 +30,7 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <div>The key to the question</div>
             </div>
         </div>
 
@@ -38,6 +39,7 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Text, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+                <div>The actual text of the question that will be displayed during the game. Note: The question mark does not need to be added here, it is added automatically during game time.  Attention: Be precise with your question. The smaller the text the better for mobile devices. Under 45 characters plays the best.</div>
             </div>
         </div>
 
@@ -45,7 +47,7 @@
             @Html.LabelFor(model => model.OneChoice, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
-                    @Html.EditorFor(model => model.OneChoice)
+                    @Html.CheckBoxFor(model => model.OneChoice, htmlAttributes: new { disabled = "disabled" })
                     @Html.ValidationMessageFor(model => model.OneChoice, "", new { @class = "text-danger" })
                 </div>
             </div>
