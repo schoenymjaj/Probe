@@ -181,9 +181,9 @@ namespace Probe.Controllers
             {
                 ModelState.AddModelError("Name", "The game play name already exists for the logged in user.");
             }
-            if (ProbeValidate.DoesGameHaveQuestions(gamePlay.GameId))
+            if (!ProbeValidate.DoesGameHaveQuestions(gamePlay.GameId))
             {
-                ModelState.AddModelError("Game", "The game for a game play must have at least one question.");
+                ModelState.AddModelError("GameId", "The game for a game play must have at least one question.");
             }
 
         }
@@ -198,9 +198,9 @@ namespace Probe.Controllers
             {
                 ModelState.AddModelError("Name", "The game play name already exists for the logged in user.");
             }
-            if (ProbeValidate.DoesGameHaveQuestions(gamePlay.GameId))
+            if (!ProbeValidate.DoesGameHaveQuestions(gamePlay.GameId))
             {
-                ModelState.AddModelError("Game", "The game for a game play must have at least one question.");
+                ModelState.AddModelError("GameId", "The game for a game play must have at least one question.");
             }
 
 

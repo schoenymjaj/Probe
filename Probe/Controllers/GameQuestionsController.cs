@@ -201,11 +201,11 @@ namespace Probe.Controllers
             {
                 //include the question for the current GameQuestion
                 long currentQuestionId = db.GameQuestion.Find(gameQuestionId).Question.Id;
-                return allQuestions.Where(aq => (aq.Id == currentQuestionId) || (!usedQuestions.Contains(aq.Id))).ToList();
+                return allQuestions.Where(aq => (aq.Id == currentQuestionId) || (!usedQuestions.Contains(aq.Id))).OrderBy(aq => aq.Name).ToList();
             }
             else
             {
-                return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).ToList();
+                return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).OrderBy(aq => aq.Name).ToList();
             }
 
         }
