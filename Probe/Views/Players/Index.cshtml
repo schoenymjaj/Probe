@@ -13,13 +13,18 @@
     @*Html.ActionLink("Create New", "Create")*@
 </p>
 
+@using (Html.BeginForm())
+{
+    <p>
+        Select Game Play: @Html.DropDownList("SelectedGamePlay")
+        <input type="submit" value="Filter" />
+    </p>
+}
+
 <div>
     <table class="tablesorter">
         <thead>
             <tr>
-                <th>
-                    Game Play
-                </th>
                 <th>
                     @Html.DisplayNameFor(model => model.FirstName)
                 </th>
@@ -27,16 +32,16 @@
                     @Html.DisplayNameFor(model => model.NickName)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(model => model.Sex)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.LastName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.MiddleName)
+                    @Html.DisplayNameFor(model => model.SubmitDate)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.EmailAddr)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.MobileNbr)
+                    @Html.DisplayNameFor(model => model.SubmitTime)
                 </th>
                 <th></th>
             </tr>
@@ -46,30 +51,30 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.GamePlay.Name)
-                    </td>
-                    <td>
                         @Html.DisplayFor(modelItem => item.FirstName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NickName)
                     </td>
                     <td>
+                        @Html.DisplayFor(modelItem => item.Sex)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.LastName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.MiddleName)
+                        @Html.DisplayFor(modelItem => item.SubmitDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.EmailAddr)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.MobileNbr)
+                        @Html.DisplayFor(modelItem => item.SubmitTime)
                     </td>
                     <td>
                         @*Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
                         @Html.ActionLink("Details", "Details", new { id = item.Id }) @*|*@
-                        @*@Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+                        @if (!ViewBag.DctGamePlayActive[ViewBag.SelectedGamePlay.SelectedValue])
+                        {<span>|</span> @Html.ActionLink("Edit", "Edit", new { id = item.Id })}
+                        @if (!ViewBag.DctGamePlayActive[ViewBag.SelectedGamePlay.SelectedValue])
+                        {<span>|</span> @Html.ActionLink("Delete", "Delete", new { id = item.Id })}
                     </td>
                 </tr>
             }
@@ -77,4 +82,7 @@
         </tbody>
     </table>
     @Html.Partial("TablesorterPager")
+    <div style="margin-top: 20px">
+        @Html.ActionLink("Back to Game Play List", "Index", "GamePlays", new { SelectedGame = ViewBag.SelectedGame }, null)
+    </div>
 </div>

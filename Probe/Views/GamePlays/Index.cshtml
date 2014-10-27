@@ -21,10 +21,10 @@
             <option>Selection</option>
             @if (ViewBag.DctGamePlayActive[item.Id])
             {<option>Preview</option>}
-            @if (item.Players.Count > 0) {<option>Report</option>}
+            @if (item.Players.Count > 0) {<option>Players</option><option>Report</option>}
             <option>Edit</option>
             <option>Details</option>
-            @if (!ViewBag.DctGamePlayActive[item.Id])
+            @if (!ViewBag.DctGamePlayActive[item.Id] && item.Players.Count == 0)
             {<option>Delete</option>}
         </select>
     </div>
@@ -195,6 +195,9 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
             switch ($(this).val()) {
                 case 'Preview':
                     ShowPreviewDialog(code,'TestName','TestName')
+                    break;
+                case 'Players':
+                    window.location = 'Players?SelectedGamePlay=' + gamePlayId;
                     break;
                 case 'Report':
                     ShowReportDialog(gamePlayId, gameType, playerCount);

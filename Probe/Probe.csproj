@@ -200,6 +200,7 @@
     <Compile Include="Helpers\Exceptions\MiscExceptions.cs" />
     <Compile Include="Helpers\Exceptions\GamePlayExceptions.cs" />
     <Compile Include="Helpers\Logging\EventLogging.cs" />
+    <Compile Include="Helpers\Mics\EnumHelper.cs" />
     <Compile Include="Helpers\Validations\Validate.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Choice.cs" />

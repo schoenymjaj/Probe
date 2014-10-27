@@ -29,7 +29,6 @@ namespace Probe.Controllers
             ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
             ViewBag.DctGamePlayActive = ProbeValidate.GetAllGamePlaysStatus();
 
-
             var games = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).OrderBy(g => g.Name).ToList();
             ViewBag.SelectedGame = new SelectList(games, "Id", "Name", SelectedGame);
             int gameId = SelectedGame.GetValueOrDefault();

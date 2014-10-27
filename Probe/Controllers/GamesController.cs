@@ -24,6 +24,8 @@ namespace Probe.Controllers
         {
             //limit the games to only what the user possesses
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+            ViewBag.DctGameActive = ProbeValidate.GetAllGamesActiveStatus();
            
             var game = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).Include(g => g.GameType);
             return View(game.ToList());

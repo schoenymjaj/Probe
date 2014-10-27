@@ -8,17 +8,36 @@ using System.Web;
 using System.Web.Mvc;
 using Probe.DAL;
 using Probe.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Probe.Helpers.Validations;
+using Probe.Helpers.Mics;
+using Probe.Models;
 
 namespace Probe.Controllers
 {
     public class PlayersController : Controller
     {
         private ProbeDataContext db = new ProbeDataContext();
-
+         
         // GET: Players
-        public ActionResult Index()
+        public ActionResult Index(int? SelectedGamePlay)
         {
-            return View(db.Player.ToList());
+            ViewBag.DctGamePlayActive = ProbeValidate.GetAllGamePlaysStatus();
+
+            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+            var gamePlays = db.GamePlay
+                .Where(gp => gp.Game.AspNetUsersId == loggedInUserId)
+                .OrderBy(gp => gp.Name);
+
+            if (gamePlays.Count() > 0 && !SelectedGamePlay.HasValue)
+            {
+                SelectedGamePlay = (int)gamePlays.First().Id;
+            }
+
+            ViewBag.SelectedGamePlay = new SelectList(gamePlays, "Id", "Name", SelectedGamePlay);
+
+            return View(db.Player.Where(p => p.GamePlayId == SelectedGamePlay || !SelectedGamePlay.HasValue).ToList());
         }
 
         // GET: Players/Details/5
@@ -71,6 +90,9 @@ namespace Probe.Controllers
             {
                 return HttpNotFound();
             }
+
+            ViewBag.Sex = EnumHelper.SelectListFor<Person.SexType>(player.Sex);
+
             return View(player);
         }
 
@@ -79,13 +101,15 @@ namespace Probe.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,LastName,FirstName,MiddleName,EmailAddr,MobileNbr")] Player player)
+        public ActionResult Edit([Bind(Include = "Id,GamePlayId,LastName,FirstName,MiddleName,EmailAddr,MobileNbr,NickName,Sex,SubmitDate,SubmitTime")] Player player)
         {
             if (ModelState.IsValid)
             {
+                long gamePlayId = player.GamePlayId;
+
                 db.Entry(player).State = EntityState.Modified;
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { SelectedGamePlay = gamePlayId });
             }
             return View(player);
         }
@@ -110,10 +134,20 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
+            //will delete the game play submissions of the player and then the player.
             Player player = db.Player.Find(id);
+
+            long gamePlayId = player.GamePlayId;
+
+            var gpas = db.GamePlayAnswer.Where(gpa => gpa.PlayerId == player.Id);
+            foreach (GamePlayAnswer gpa in gpas)
+            {
+                db.GamePlayAnswer.Remove(gpa);
+            }
             db.Player.Remove(player);
+
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { SelectedGamePlay = gamePlayId});
         }
 
         protected override void Dispose(bool disposing)
