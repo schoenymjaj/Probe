@@ -242,8 +242,23 @@ namespace Probe.Helpers.Validations
             }
 
             return status;
+        }
 
+        public static bool DoesGameHaveAGamePlay(long gameId)
+        {
+            bool status = false;
+            var db = new ProbeDataContext();
+            int recordCount = db.Game.Find(gameId).GamePlays.Count();
+            if (recordCount > 0)
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
 
+            return status;
         }
 
         public static bool IsGameUsedByActivatedGamePlay(Game game)
@@ -358,6 +373,43 @@ namespace Probe.Helpers.Validations
 
         }// public static Dictionary<long, bool> GetQuestionsStatus()
 
+        public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
+        {
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            //All Games
+            ProbeDataContext db = new ProbeDataContext();
+
+            //All Games - Active or Inactive (GameId, true or false)
+            return db.Game
+                      .Where(g => g.AspNetUsersId == AspNetUsersId)
+                      .Select(g => new
+                      {
+                          Id = g.Id,
+                          DoesHaveQuestions = g.GameQuestions.Count() > 0
+                      }).ToDictionary(gq => gq.Id, gq => gq.DoesHaveQuestions);
+
+        }//public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
+
+        public static Dictionary<long, bool> GetAllGamesHaveGamePlays()
+        {
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            //All Games
+            ProbeDataContext db = new ProbeDataContext();
+
+            //All Games - Active or Inactive (GameId, true or false)
+            return db.Game
+                      .Where(g => g.AspNetUsersId == AspNetUsersId)
+                      .Select(g => new
+                      {
+                          Id = g.Id,
+                          DoesHaveGamePlays = g.GamePlays.Count() > 0
+                      }).ToDictionary(gp => gp.Id, gp => gp.DoesHaveGamePlays);
+
+        }//public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
 
         #endregion
 
