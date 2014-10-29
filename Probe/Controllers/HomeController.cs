@@ -17,7 +17,8 @@ namespace Probe.Controllers
             return View();
         }
 
-        public ActionResult About()
+        [AllowAnonymous]
+        public ActionResult About(int? mobileind)
         {
             ViewBag.Message = "This is the Probe Internet Game Application (Version v0.61). " +
             "An authorized user (registered and logged in) may configure and publish a game to be played on any device connected to the internet. " +
@@ -25,9 +26,18 @@ namespace Probe.Controllers
             "Current game types available are 'Match' and 'Test'. " +
             "Devices supported are iPhone, Android, and Windows phone." +
             "When games are finished, the user can make results (reports) available to all players on their devices.";
-            
 
-            return View();
+            if (mobileind != 1)
+            {
+                ViewBag.MobileInd = false;
+                return View("About");
+            }
+            else
+            {
+                ViewBag.MobileInd = true;
+                return View("About", "_MobileLayout");
+            }
+
         }
 
         public ActionResult Contact()

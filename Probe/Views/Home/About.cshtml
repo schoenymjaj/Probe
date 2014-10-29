@@ -1,15 +1,62 @@
 ﻿@{
     ViewBag.Title = "About";
 }
-<h2>@ViewBag.Title</h2>
-<p>@ViewBag.Message</p>
 
-<h2>Contact Information</h2>
-<address>
-    Productivity Edge, Inc.<br />
-    Columbia, MD 21046<br />
-</address>
+<link href="~/Content/themes/custom-accordian/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
 
-<address>
-    <strong>Support:</strong>   <a href="mns@productivityedge.com">mns@productivityedge.com</a>
-</address>
+<script>
+    $(function () {
+        $("#accordion").accordion({
+            heightStyle: "content",
+            autoHeight: false,
+            clearStyle: true,
+        });
+    });
+</script>
+
+<div id="accordion">
+    <h3>About</h3>
+    <div>
+        <p>
+            This is the Probe Internet Game Application (Version v0.65)<br/>
+        </p>
+
+        <p>
+            All a game organizer needs to do is register (for free) on the Probe portal. You can even use your FaceBook or Google accounts to register and avoid dealing with another password.<br/>
+            After registering, you can quickly start authoring your games and make them available to your players. Any person with access to the Internet can play your game and enjoy the results.<br/> 
+            The game is especially mobile friendly. The Probe mobile app can be installed from the Apple and Google Play stores. It can also be played (without install) by using your mobile browser.
+        </p>
+    </div>
+    <h3>Game Organizer</h3>
+    <div>
+        <p>
+            Any registered game organizer of Probe may configure and publish a game to be played on any device connected to the internet. A game requires all players to answer a series of questions designed by the organizer and is contested by the specific rules of the game type. Current game types available are 'Match' and 'Test'. Players can play on any mobile device that is available today. When games are finished, the user can make results (reports) available to all players on their devices.
+        </p>
+    </div>
+    <h3>Player</h3>
+    <div>
+        <p>
+            Stuff for the Player
+        </p>
+    </div>
+    <h3>Contact Us</h3>
+    <div>
+        <p>
+            <address>
+                <strong>Company</strong><br/>
+                Productivity Edge, Inc.<br />
+                Columbia, MD 21046<br />
+            </address>
+
+            <address>
+                <strong>Email Address</strong><br/><a href="mns@productivityedge.com">mns@productivityedge.com</a>
+            </address>        
+        </p>
+    </div>
+</div>
+
+
+
+
+
+

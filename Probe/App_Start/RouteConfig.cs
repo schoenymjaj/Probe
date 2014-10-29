@@ -14,6 +14,13 @@ namespace Probe
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "About",
+                url: "Home/About/{mobileind}",
+                defaults: new { controller = "Home", action = "About", mobileind = UrlParameter.Optional }
+            );
+
+
+            routes.MapRoute(
                 name: "GetGamePlayerMatchMinMaxData",
                 url: "Reports/GetGamePlayerMatchMinMaxData/{gameplayid}",
                 defaults: new { controller = "Reports", action = "GetGamePlayerMatchMinMaxData" }
