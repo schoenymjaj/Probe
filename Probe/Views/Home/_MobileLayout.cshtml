@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Probe Application</title>
 
-    @Styles.Render("~/Content/cssmobile")
     @Scripts.Render("~/bundles/modernizr")
+
+    <link href="@Url.Content("~/Content/themes/custom-accordian/jquery-ui-1.10.4.custom.min.css")"
+          rel="stylesheet" type="text/css" />
+
+    @Styles.Render("~/Content/cssmobile")
 
 
     @Scripts.Render("~/bundles/jquery")

@@ -2,8 +2,6 @@
     ViewBag.Title = "About";
 }
 
-<link href="~/Content/themes/custom-accordian/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
-
 <script>
     $(function () {
         $("#accordion").accordion({
@@ -15,42 +13,80 @@
 </script>
 
 <div id="accordion">
+    <h3>Version</h3>
+    <div>
+        <p>
+            This is the Probe Internet Socal Media Game App (Version v0.65)<br />
+        </p>
+    </div>
     <h3>About</h3>
     <div>
         <p>
-            This is the Probe Internet Game Application (Version v0.65)<br/>
-        </p>
-
-        <p>
-            All a game organizer needs to do is register (for free) on the Probe portal. You can even use your FaceBook or Google accounts to register and avoid dealing with another password.<br/>
-            After registering, you can quickly start authoring your games and make them available to your players. Any person with access to the Internet can play your game and enjoy the results.<br/> 
+            All a game organizer needs to do is register (for free) on the Probe portal. FaceBook or Google accounts can be used to register and avoid dealing with another password.
+            <p>
+            After registering, you can start authoring your games and make them available to your players. Any person with access to the Internet can play your game and enjoy the results.
             The game is especially mobile friendly. The Probe mobile app can be installed from the Apple and Google Play stores. It can also be played (without install) by using your mobile browser.
+            </p>
+            A game requires all players to answer a series of questions designed by the organizer and is contested by the specific rules of the game type. Current game types available are 'Match' and 'Test'. More to come. When games are completed, the user can make results (reports) available to all players on their devices. There are extra result reports available to the game organizer on the Probe portal.
         </p>
     </div>
     <h3>Game Organizer</h3>
     <div>
         <p>
-            Any registered game organizer of Probe may configure and publish a game to be played on any device connected to the internet. A game requires all players to answer a series of questions designed by the organizer and is contested by the specific rules of the game type. Current game types available are 'Match' and 'Test'. Players can play on any mobile device that is available today. When games are finished, the user can make results (reports) available to all players on their devices.
+            Any registered game organizer may configure and publish a game to be played on any device connected to the internet. Here are the following steps to publish a game from the portal:
+            <ul>
+                <li>Create your authored questions to the reusable Question Library - <strong>Question Libray</strong></li>
+                <li>Create your game and identify it with a unique name - <strong>My Games</strong></li>
+                <li>Setup your game by adding your authored questions - <strong>My Games - Manage Their Questions</strong> </li>
+                <li>Create a game play for your game. Enter a game code, start and end dates, client result access toggle - <strong>My Game Plays</strong><br />
+                <i>Game Code</i> - to be distributed to your players to play your game<br/>
+                <i>Start and End Dates</i> - date and time window that your game can be played<br/>
+                <i>Client Report Access Toggle</i> - if true, your players will be able to display results from their devices
+</li>
+            </ul>
         </p>
     </div>
     <h3>Player</h3>
     <div>
         <p>
-            Stuff for the Player
+            Any person, with an internet device, that receives a game code from the game organizer can play a game. Here are the following steps to play and submit a game:
+            <ul>
+                <li>Click the <strong>Add</strong> icon</li>
+                <li>Enter a game code</li>
+                <li>Click <strong>Start Game</strong> button</li>
+                <li>Answer all the questions. When all the questions are answered, the Submit button will be enabled for the player.</li>
+                <li>Click the <strong>Submit</strong> button and answer YES to the confirmation dialog</li>
+                <li>NOTE: Probe saves the last 10 submitted games. Players can view its answers and game results (if organizer gives players access)</li>
+            </ul>
         </p>
+    </div>
+    <h3>Match Game</h3>
+    <div>
+        <p>
+            Players playing a Match game must answer all the questions presented. The questions are designed so there is no correct answer.
+        </p>
+        When the game has been completed; answers are tabulated and player compatibilities are linked and counted. If the organizer has given her players access to results; results can be displayed from their devices. There are additional reports available to the game organizer on the portal.
+    </div>
+    <h3>Test Game</h3>
+    <div>
+        <p>
+            Players playing a Test game must answer all the questions presented. Each question is design with one correct answer.
+        </p>
+        When the game has been completed; answers are tabulated and player test scores are calculated. If the organizer has given her players access to results; results can be displayed from their devices. There are additional reports available to the game organizer on the portal.
+
     </div>
     <h3>Contact Us</h3>
     <div>
         <p>
             <address>
-                <strong>Company</strong><br/>
+                <strong>Company</strong><br />
                 Productivity Edge, Inc.<br />
                 Columbia, MD 21046<br />
             </address>
 
             <address>
-                <strong>Email Address</strong><br/><a href="mns@productivityedge.com">mns@productivityedge.com</a>
-            </address>        
+                <strong>Email Address</strong><br /><a href="mns@productivityedge.com">mns@productivityedge.com</a>
+            </address>
         </p>
     </div>
 </div>
