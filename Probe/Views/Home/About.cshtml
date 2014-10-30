@@ -44,6 +44,16 @@
                 <i>Client Report Access Toggle</i> - if true, your players will be able to display results from their devices
 </li>
             </ul>
+            The Probe portal can be found at 
+            @if (!ViewBag.MobileInd)
+            {
+                <a href="https://probe.azurewebsites.net">https://probe.azurewebsites.net</a>
+            }
+            else
+            {
+                @:https://probe.azurewebsites.net
+            }
+            (NOTE: Portal is best used on a laptop/desktop)
         </p>
     </div>
     <h3>Player</h3>
@@ -85,7 +95,15 @@
             </address>
 
             <address>
-                <strong>Email Address</strong><br /><a href="mns@productivityedge.com">mns@productivityedge.com</a>
+                <strong>Email Address</strong><br />
+                @if (!ViewBag.MobileInd)
+                {
+                    <a href="mailto:mns@productivityedge.com">mns@productivityedge.com</a>
+                }
+                else
+                {
+                     @:mns@productivityedge.com
+                }
             </address>
         </p>
     </div>
