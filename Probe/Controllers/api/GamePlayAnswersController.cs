@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Probe.DAL;
 using Probe.Models;
+using Probe.Helpers.Validations;
 
 namespace Probe.Controllers.api
 {
@@ -88,34 +89,62 @@ namespace Probe.Controllers.api
             return CreatedAtRoute("DefaultApi", new { id = gamePlayAnswer.Id }, gamePlayAnswer);
         }
 
-        // POST: api/GamePlayAnswers
-        [ResponseType(typeof(GamePlayAnswer))]
-        public IHttpActionResult PostGamePlayAnswers(IList<GamePlayAnswer> gamePlayAnswers)
+        // POST: api/GamePlayAnswers NOTE: Currently used by client 11/2/14
+        [ResponseType(typeof(GamePlayAnswerDTO))]
+        public IHttpActionResult PostGamePlayAnswers(IList<GamePlayAnswerDTO> gamePlayAnswersDTOsIn)
         {
+            long firstPlayerId = gamePlayAnswersDTOsIn[0].PlayerId;
+            string firstGameCode = gamePlayAnswersDTOsIn[0].GameCode;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            //create GamePlayAnswerDTO's (Id, PlayerId, ChoiceId)
-            List<GamePlayAnswerDTO> gamePlayAnswerDTOs = new List<GamePlayAnswerDTO>();
-            foreach (GamePlayAnswer gamePlayAnswer in gamePlayAnswers)
+            try
             {
+                ProbeValidate.ValidateGameCodeVersusPlayerId(firstPlayerId, firstGameCode);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+
+                //Delete the player - if it exists and it does not have any gameplayanswers
+                if (!ProbeValidate.IsPlayerHaveAnyAnswers(firstPlayerId))
+                {
+                    Player player = db.Player.Find(firstPlayerId);
+                    db.Player.Remove(player);
+                    db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            List<GamePlayAnswerDTO> gamePlayAnswerDTOsOut = new List<GamePlayAnswerDTO>();
+
+            //create GamePlayAnswerDTO's (Id, PlayerId, ChoiceId)
+            foreach (GamePlayAnswerDTO gamePlayAnswerDTOIn in gamePlayAnswersDTOsIn)
+            {
+                //we need to create a gamePlayAnswer (to record in the database)
+                GamePlayAnswer gamePlayAnswer = new GamePlayAnswer
+                {
+                    PlayerId = gamePlayAnswerDTOIn.PlayerId,
+                    ChoiceId = gamePlayAnswerDTOIn.ChoiceId
+                };
+
                 db.GamePlayAnswer.Add(gamePlayAnswer);
                 db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
 
-                GamePlayAnswerDTO gamePlayAnswerDTO = new GamePlayAnswerDTO();
-                gamePlayAnswerDTO.Id = gamePlayAnswer.Id;
-                gamePlayAnswerDTO.PlayerId = gamePlayAnswer.PlayerId;
-                gamePlayAnswerDTO.ChoiceId = gamePlayAnswer.ChoiceId;
-                gamePlayAnswerDTOs.Add(gamePlayAnswerDTO);
+                GamePlayAnswerDTO gamePlayAnswerDTOOut = new GamePlayAnswerDTO();
+                gamePlayAnswerDTOOut.Id = gamePlayAnswer.Id;
+                gamePlayAnswerDTOOut.PlayerId = gamePlayAnswer.PlayerId;
+                gamePlayAnswerDTOOut.ChoiceId = gamePlayAnswer.ChoiceId;
+                gamePlayAnswerDTOsOut.Add(gamePlayAnswerDTOOut);
 
-            }
-
+            } //foreach (GamePlayAnswerDTO gamePlayAnswerDTOIn in gamePlayAnswersDTOsIn)
 
             //returning all the GamePlayAnswerDTOs in the list
-            return CreatedAtRoute("DefaultApi", new { id = gamePlayAnswerDTOs[0].Id }, gamePlayAnswerDTOs);
-        }
+            return CreatedAtRoute("DefaultApi", new { id = gamePlayAnswerDTOsOut[0].Id }, gamePlayAnswerDTOsOut);
+        } //public IHttpActionResult PostGamePlayAnswers
 
         // DELETE: api/GamePlayAnswers/5
         [ResponseType(typeof(GamePlayAnswer))]
@@ -146,5 +175,6 @@ namespace Probe.Controllers.api
         {
             return db.GamePlayAnswer.Count(e => e.Id == id) > 0;
         }
+
     }
 }

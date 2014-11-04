@@ -23,5 +23,13 @@ namespace Probe.Helpers.Exceptions
         {
         }
     }
+
+    public class ApiArgException : Exception
+    {
+        public ApiArgException(string message)
+            : base(message)
+        {
+        }
+    }
    
 }

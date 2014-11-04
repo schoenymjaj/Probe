@@ -34,8 +34,9 @@
         if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
         var gamePlayId = '@ViewBag.GamePlayId';
+        var gameCode = '@ViewBag.GameCode';
         var playerId = '@ViewBag.PlayerId';
-        $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gamePlayId + '/' + playerId, {},
+        $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gamePlayId + '/' + gameCode + '/' + playerId, {},
          function (data) {
 
              //SET COLUMN WIDTHS

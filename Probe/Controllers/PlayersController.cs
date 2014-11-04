@@ -12,7 +12,6 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
 using Probe.Helpers.Mics;
-using Probe.Models;
 
 namespace Probe.Controllers
 {

@@ -24,10 +24,11 @@
             if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
             var gamePlayId = '@ViewBag.GamePlayId';
+            var gameCode = '@ViewBag.GameCode';
             var playerId = '@ViewBag.PlayerId';
             var matchedPlayerId = '@ViewBag.MatchedPlayerId';
 
-            $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchDetailData/' + gamePlayId + '/' + playerId + '/' + matchedPlayerId, {},
+            $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchDetailData/' + gamePlayId + '/' + gameCode + '/' + playerId + '/' + matchedPlayerId, {},
             function (data) {
 
 

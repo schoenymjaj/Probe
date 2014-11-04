@@ -104,6 +104,7 @@ namespace Probe.Controllers
             {
                 return HttpNotFound();
             }
+
             return View(gamePlay);
         }
 
@@ -125,7 +126,21 @@ namespace Probe.Controllers
 
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.CurrentSelectedGame });
             }
-            return View(gamePlay);
+
+            //all of this is a hack; in order to properly display the game name in the edit screen when there is a validation error
+            var gamePlayUpdate = db.GamePlay.Find(gamePlay.Id);
+            gamePlayUpdate.GameId = gamePlay.GameId;
+            gamePlayUpdate.Name = gamePlay.Name;
+            gamePlayUpdate.Description = gamePlay.Description;
+            gamePlayUpdate.Code = gamePlay.Code;
+            gamePlayUpdate.GameUrl = gamePlay.GameUrl;
+            gamePlayUpdate.StartDate = gamePlay.StartDate;
+            gamePlayUpdate.EndDate = gamePlay.EndDate;
+            gamePlayUpdate.SuspendMode = gamePlay.SuspendMode;
+            gamePlayUpdate.TestMode = gamePlay.TestMode;
+            gamePlayUpdate.ClientReportAccess = gamePlay.ClientReportAccess;
+
+            return View(gamePlayUpdate);
         }
 
         // GET: GamePlays/Delete/5
@@ -176,6 +191,10 @@ namespace Probe.Controllers
             {
                 ModelState.AddModelError("Code", "The code already exists in Probe.");
             }
+            else if (!ProbeValidate.IsCodeValid(gamePlay.Code))
+            {
+                ModelState.AddModelError("Code", "The code can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
+            }
             if (ProbeValidate.IsGamePlayNameExistForLoggedInUser(gamePlay.Name))
             {
                 ModelState.AddModelError("Name", "The game play name already exists for the logged in user.");
@@ -193,6 +212,11 @@ namespace Probe.Controllers
             {
                 ModelState.AddModelError("Code", "The code already exists in Probe.");
             }
+            else if (!ProbeValidate.IsCodeValid(gamePlay.Code))
+            {
+                ModelState.AddModelError("Code", "The code can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
+            }
+
             if (ProbeValidate.IsGamePlayNameExistForLoggedInUser(gamePlay.Id,gamePlay.Name))
             {
                 ModelState.AddModelError("Name", "The game play name already exists for the logged in user.");

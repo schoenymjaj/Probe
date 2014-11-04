@@ -54,6 +54,32 @@ namespace Probe.Controllers.api
             return playerDTOs;
         }
 
+        // GET: api/Players NOTE: currently used by server client page (gameplays)
+        [Route("api/Players/GetPlayerByGameCode/{code}")]
+        public List<PlayerDTO> GetPlayerByGameCode(string code)
+        {
+            //without this command there would be a serializer error when returning the db.Players
+            db.Configuration.LazyLoadingEnabled = false;
+            var players = db.Player.Where(p => p.GamePlay.Code == code).OrderBy(p => p.FirstName + "-" + p.NickName);
+
+            List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
+
+            foreach (Player player in players)
+            {
+                PlayerDTO playerDTO = new PlayerDTO
+                {
+                    Id = player.Id,
+                    FirstName = player.FirstName,
+                    LastName = player.LastName,
+                    NickName = player.NickName,
+                    Sex = player.Sex
+                };
+                playerDTOs.Add(playerDTO);
+            }
+
+            return playerDTOs;
+        }
+
         // GET: api/Players/5
         [ResponseType(typeof(Player))]
         public IHttpActionResult GetPlayer(long id)
@@ -103,57 +129,71 @@ namespace Probe.Controllers.api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Players
-        [ResponseType(typeof(Player))]
-        public IHttpActionResult PostPlayer(Player player)
+        // POST: api/Players NOTE: currently used by the client 11/2/14
+        [ResponseType(typeof(PlayerDTO))]
+        public IHttpActionResult PostPlayer(PlayerDTO playerDTO)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-
+            /*
+             * Let's make sure the gameplayid and gamecode match up correctly. check for malicious activity
+             */
             try
             {
+                ProbeValidate.ValidateGameCodeVersusId(playerDTO.GamePlayId, playerDTO.GameCode);
+            } catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                return BadRequest(ModelState);
+            }
 
-                GamePlay gp = db.GamePlay.Find(player.GamePlayId);
+            /*
+             * If we've gotten this far, then the required fields and game code security
+             * validations have passed
+             */
+            try
+            {
+                GamePlay gp = db.GamePlay.Find(playerDTO.GamePlayId);
                 //business validations
                 if (!ProbeValidate.IsGamePlayActive(gp))
                 {
                     throw new GamePlayNotActiveException();
                 }
 
+                DateTime dateTimeNow = DateTime.Now;
+                Player player = new Player
+                {
+                    GamePlayId = playerDTO.GamePlayId,
+                    FirstName = playerDTO.FirstName,
+                    LastName = playerDTO.LastName,
+                    NickName = playerDTO.NickName,
+                    Sex = playerDTO.Sex,
+                    SubmitDate = dateTimeNow.Date,
+                    SubmitTime = DateTime.Parse(dateTimeNow.ToShortTimeString())
+                };
+
                 //will throw the following exceptions if there is a problem
                 //GamePlayDuplicatePlayerNameException, GamePlayInvalidFirstNameException, GamePlayInvalidNickNameException
                 ProbeValidate.IsGamePlayPlayerValid(gp.Id, player);
 
-                DateTime dateTimeNow = DateTime.Now;
-
-                player.SubmitDate = dateTimeNow.Date;
-                player.SubmitTime = DateTime.Parse(dateTimeNow.ToShortTimeString());
-
                 db.Person.Add(player);
                 db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
 
-                //transform to player DTO for return item
-                PlayerDTO playerDTO = new PlayerDTO
-                {
-                    Id = player.Id,
-                    FirstName = player.FirstName,
-                    LastName = player.LastName,
-                    NickName = player.NickName,
-                    Sex = player.Sex
-                };
-
+                playerDTO.Id = player.Id; //after db.SaveChanges. The id is set 
                 return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO); //EVERYTHING IS GOOD!
-            }//try
+
+            } //try
             catch (GamePlayNotActiveException)
             {
                 var errorObject = new
                 {
                     errorid = 2,
                     errormessage = "This game play is not active at this time.",
-                    gameplayid = player.GamePlayId
+                    gameplayid = playerDTO.GamePlayId
                 };
                 return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
             }
@@ -163,7 +203,7 @@ namespace Probe.Controllers.api
                 {
                     errorid = 3,
                     errormessage = "The player's name has already been used in this game.",
-                    playername = player.FirstName + '-' + player.NickName
+                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
                 };
                 return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
             }
@@ -173,7 +213,7 @@ namespace Probe.Controllers.api
                 {
                     errorid = 4,
                     errormessage = "The player's first name is invalid.",
-                    playername = player.FirstName + '-' + player.NickName
+                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
                 };
                 return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
             }
@@ -183,7 +223,7 @@ namespace Probe.Controllers.api
                 {
                     errorid = 5,
                     errormessage = "The player's nick name is invalid.",
-                    playername = player.FirstName + '-' + player.NickName
+                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
                 };
                 return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
             }

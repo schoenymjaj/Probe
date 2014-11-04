@@ -25,19 +25,21 @@ namespace Probe.Controllers.api
             return db.GameConfiguration;
         }
 
-        // GET: api/GameConfigurations/5
+        // GET: api/GameConfigurations/5 NOTE: currently used by client (11/2/14)
         [ResponseType(typeof(GameConfiguration))]
-        public IHttpActionResult GetGameConfiguration(long id)
+        [Route("api/GameConfigurations/GetGameConfiguration/{code}")]
+        public IHttpActionResult GetGameConfiguration(string code)
         {
             //without this command there would be a serializer error when returning the db.Players
             db.Configuration.LazyLoadingEnabled = false;
-            GameConfiguration gameConfiguration = db.GameConfiguration.Find(id);
-            if (gameConfiguration == null)
+
+            var gameConfiguration = db.GameConfiguration.Where(gc => gc.GameId == db.GamePlay.Where(gp => gp.Code == code).FirstOrDefault().GameId);
+            if (gameConfiguration.Count() == 0)
             {
                 return NotFound();
             }
 
-            return Ok(gameConfiguration);
+            return Ok(gameConfiguration); //we are getting the first only because there is one config at the moment
         }
 
         // GET: api/GameConfigurations/5 - get all game configurations for a gameId (foreign key)

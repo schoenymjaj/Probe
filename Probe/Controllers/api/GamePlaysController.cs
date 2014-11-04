@@ -72,7 +72,54 @@ namespace Probe.Controllers.api
 
         }//public IHttpActionResult GetGamePlayById(long id)
 
-        // GET: api/GamePlays/GetGamePlay/{code}
+        // GET: api/GamePlays/GetGamePlayByCode/{code}
+        [Route("api/GamePlays/GetGamePlayByCode/{code}")]
+        [ResponseType(typeof(GamePlay))]
+        public IHttpActionResult GetGamePlayByCode(string code)
+        {
+            db.Configuration.LazyLoadingEnabled = false;
+
+            /*
+             * Given a GamePlay code. We return the GamePlay and Player Count for GamePlay
+             */
+
+            try
+            {
+                var gamePlay = db.GamePlay
+                                 .Select(gp => new
+                                 {
+                                     gp.Id,
+                                     gp.GameId,
+                                     gp.Name,
+                                     gp.Description,
+                                     gp.Code,
+                                     gp.GameUrl,
+                                     gp.StartDate,
+                                     gp.EndDate,
+                                     gp.SuspendMode,
+                                     gp.ClientReportAccess,
+                                     gp.TestMode,
+                                     PlayerCount = gp.Players.Count()
+                                 }).Where(gp => gp.Code == code).Single();
+
+                return Ok(gamePlay);
+
+            }
+            catch
+            {
+                var errorObject = new
+                {
+                    errorid = 1,
+                    errormessage = "A game play was not found for the code specified.",
+                    code = code
+                };
+                return Ok(errorObject);
+            }
+
+        }//public IHttpActionResult GetGamePlayByCode(string code)
+
+
+        // GET: api/GamePlays/GetGamePlay/{code} NOTE: currently used by client (11/2/14)
         [Route("api/GamePlays/GetGamePlay/{code}")]
         [ResponseType(typeof(GamePlay))]
         public IHttpActionResult GetGamePlay(string code)

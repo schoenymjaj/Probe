@@ -11,6 +11,12 @@ namespace Probe.Models
     {
         public long Id { get; set; }
 
+        [Required]
+        public long GamePlayId { get; set; }
+
+        [Required]
+        public string GameCode { get; set; }
+
         public string LastName { get; set; }
 
         [Required]

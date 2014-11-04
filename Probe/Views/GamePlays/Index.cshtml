@@ -80,9 +80,10 @@
                         @Html.DisplayFor(modelItem => item.EndDate)
                     </td>
                     <td>
-                        @if (item.Players.Count > 0) { 
-                        <a class="playersDialogLink" data-gameplayid="@item.Id" data-gametype="@item.Game.GameType.Name"  
-                           href="#">@Html.DisplayFor(modelItem => item.Players.Count)</a>
+                        @if (item.Players.Count > 0)
+                        {
+                            <a class="playersDialogLink" data-gameplayid="@item.Id" data-code="@item.Code" data-gametype="@item.Game.GameType.Name"
+                               href="#">@Html.DisplayFor(modelItem => item.Players.Count)</a>
                         }
                         else
                         {
@@ -165,12 +166,12 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
                     reportURL = "";
                     if (gameType == 'Match') {
                         if (reportName == "Game Match Summary") {
-                            reportURL = 'Reports/GamePlayerMatchMinMax/' + gamePlayId;
+                            reportURL = 'Reports/GamePlayerMatchMinMax/' + gamePlayId + '/' + code;
                         } else if (reportName == "Player Match Summary") {
-                            reportURL = 'Reports/PlayerMatchSummary/' + gamePlayId + '/' + playerId;
+                            reportURL = 'Reports/PlayerMatchSummary/' + gamePlayId + '/' + code + '/' + playerId;
                         }
                     } else if (gameType == 'Test') {
-                        reportURL = 'Reports/PlayerTestSummary/' + gamePlayId;;
+                        reportURL = 'Reports/PlayerTestSummary/' + gamePlayId + '/' + code;
                     }
 
                     window.location = reportURL;
@@ -200,7 +201,7 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
                     window.location = 'Players?SelectedGamePlay=' + gamePlayId;
                     break;
                 case 'Report':
-                    ShowReportDialog(gamePlayId, gameType, playerCount);
+                    ShowReportDialog(code, gamePlayId, gameType, playerCount);
                     break;
                 case 'Edit':
                     window.location = 'GamePlays/Edit/' + gamePlayId;
@@ -221,8 +222,8 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
         //BIND PLAYERS COUNT COLUMN CLICK WITH THE PLAYERS DIALOG
         $('.playersDialogLink').click(function () {
 
-            gamePlayId = $(this).attr('data-gamePlayId');
-            $.getJSON('/api/Players/GetPlayerByGamePlay/' + gamePlayId, {},
+            gameCode = $(this).attr('data-code');
+            $.getJSON('/api/Players/GetPlayerByGameCode/' + gameCode, {},
             function (data) {
 
                 $('select[name="Pplayers"]').empty();
@@ -279,9 +280,9 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
         return false;
     }//function ShowPreviewDialog
 
-    function ShowReportDialog(gamePlayId, gameType, playerCount) {
+    function ShowReportDialog(code, gamePlayId, gameType, playerCount) {
 
-        $.getJSON('api/Players/GetPlayerByGamePlay/' + gamePlayId, {},
+        $.getJSON('api/Players/GetPlayerByGameCode/' + code, {},
         function (data) {
 
             if (gameType == 'Match') {

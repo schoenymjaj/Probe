@@ -25,9 +25,10 @@
         if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
         var gamePlayId = '@ViewBag.GamePlayId';
+        var gameCode = '@ViewBag.GameCode';
         var playerId = '@ViewBag.PlayerId';
 
-        $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchSummaryData/' + gamePlayId + '/' + playerId, {},
+        $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchSummaryData/' + gamePlayId + '/' + gameCode + '/' + playerId, {},
         function (data) {
 
             //HANDLER FOR INTERACTIVITY
@@ -39,7 +40,7 @@
                     console.log('The player selected ' + matchedPlayerId);
 
                     window.location = '@Url.Content("~")' + 'Reports/PlayerMatchDetail/'
-                        + gamePlayId + '/' + playerId + '/' + matchedPlayerId + (DoStyleMobile() ? '/1' : '');
+                        + gamePlayId + '/' + gameCode + '/' + playerId + '/' + matchedPlayerId + (DoStyleMobile() ? '/1' : '');
 
                 }
             };

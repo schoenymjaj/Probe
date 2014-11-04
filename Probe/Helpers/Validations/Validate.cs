@@ -8,11 +8,11 @@ using System.Net;
 using Probe.DAL;
 using Probe.Models;
 using Probe.Helpers.Exceptions;
-
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 
 namespace Probe.Helpers.Validations
 {
@@ -43,6 +43,28 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
+        public static bool IsCodeValid(string code)
+        {
+            /*
+             *  Code should be only letters, numbers, and space. There should
+             *  be no leading or trailing spaces either
+             */
+            bool returnStatus = false;
+
+            if (code.TrimStart().TrimEnd() == code)
+            {
+                if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+").Count == 1)
+                {
+                    if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+")[0].ToString() == code)
+                    {
+                        returnStatus = true;
+                    }
+                }
+            }
+
+
+            return returnStatus;
+        }
 
         public static bool IsGamePlayNameExistForLoggedInUser(string gamePlayName)
         {
@@ -127,6 +149,18 @@ namespace Probe.Helpers.Validations
             }
 
             return status;
+
+        }
+
+        public static void ValidateGameCodeVersusId(long gamePlayId, string code)
+        {
+            var db = new ProbeDataContext();
+
+            var gamePlay = db.GamePlay.Where(gp => gp.Id == gamePlayId && gp.Code == code);
+            if (gamePlay.Count() != 1)
+            {
+                throw new ApiArgException("The GamePlayId and GameCode do not correlate. GamePlayId: " + gamePlayId + " GameCode: " + code);
+            }
 
         }
 
@@ -410,6 +444,36 @@ namespace Probe.Helpers.Validations
                       }).ToDictionary(gp => gp.Id, gp => gp.DoesHaveGamePlays);
 
         }//public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
+
+        #endregion
+
+        #region Player Validations
+
+        public static void ValidateGameCodeVersusPlayerId(long playerId, string code)
+        {
+            var db = new ProbeDataContext();
+
+            bool doesGameCodeRelateWithPlayerId = db.Player.Where(p => p.Id == playerId && p.GamePlay.Code == code).Count() > 0;
+            if (!doesGameCodeRelateWithPlayerId)
+            {
+                throw new ApiArgException("The PlayerId and GameCode do not correlate. PlayerId: " + playerId + " GameCode: " + code);
+            }
+
+        }
+
+        public static bool IsPlayerHaveAnyAnswers(long playerId)
+        {
+            var db = new ProbeDataContext();
+
+            bool returnStatus = false;
+            if (db.GamePlayAnswer.Where(gpa => gpa.PlayerId == playerId).Count() > 0)
+            {
+                returnStatus = true;
+            }
+
+            return returnStatus;
+
+        }
 
         #endregion
 
