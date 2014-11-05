@@ -65,6 +65,15 @@
                 }
 
                 /*
+                check if there is enough players to match for this report
+                */
+                if (data.length == 0) {
+                    if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
+                    alert('This results reports requires at least two player game submissions.');
+                    return;
+                }
+
+                /*
                 SETUP GOOGLE CHART DATA
                 */
                 maxTickValue = 0;

@@ -72,7 +72,7 @@ namespace Probe.Controllers.api
 
         }//public IHttpActionResult GetGamePlayById(long id)
 
-        // GET: api/GamePlays/GetGamePlayByCode/{code}
+        // GET: api/GamePlays/GetGamePlayByCode/{code} NOTE: currently used by client (11/2/14)
         [Route("api/GamePlays/GetGamePlayByCode/{code}")]
         [ResponseType(typeof(GamePlay))]
         public IHttpActionResult GetGamePlayByCode(string code)
