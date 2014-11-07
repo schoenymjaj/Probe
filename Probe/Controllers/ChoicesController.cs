@@ -62,7 +62,7 @@ namespace Probe.Controllers
             Choice c = new Choice
             {
                 ChoiceQuestionId = (long)SelectedQuestion,
-                OrderNbr = 1,
+                OrderNbr = GetNextOrderNbr((long)SelectedQuestion),
                 ChoiceQuestion = new ChoiceQuestion {
                     Id = (long)SelectedQuestion,
                     Name = cq.Name,
@@ -160,6 +160,18 @@ namespace Probe.Controllers
                 ModelState.AddModelError("Correct", "The question can only have one correct choice.");
             }
 
+        }
+
+        private int GetNextOrderNbr(long SelectedQuestion)
+        {
+            if (db.Choice.Where(c => c.ChoiceQuestionId == SelectedQuestion).Count() > 0)
+            {
+                return (int)db.Choice.Where(c => c.ChoiceQuestionId == SelectedQuestion).Max(c => c.OrderNbr) + 1;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         protected override void Dispose(bool disposing)
