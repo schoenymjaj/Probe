@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Probe.Helpers.Exceptions;
 using Probe.Helpers.Logging;
 using Probe.Helpers.Authorize;
+using Probe.Helpers.Redirecting;
 
 namespace Probe
 {
@@ -15,6 +16,7 @@ namespace Probe
             //filters.Add(new RoleAuthorizeAttribute());
             //filters.Add(new HandleErrorAttribute());
             filters.Add(new ElmahHandleErrorAttribute());
+            filters.Add(new RedirectFilterAttribute());
 
             bool logMvcActionInd = false;
             if (System.Configuration.ConfigurationManager.AppSettings["LogMvcActions"] != null)
