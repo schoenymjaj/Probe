@@ -931,7 +931,6 @@ $(function () {
                         setTimeout(function () {
                             app.GameResumeAction(index);
                         }, 500);
-                        $.mobile.loading('hide'); //to show the spinner //MNS
 
                     }); //$('[data-gameplay="submitted" .gameResumeAction]').click
 
@@ -1163,17 +1162,20 @@ $(function () {
         app.AdjustPagePaddingTop = function () {
             //console.log('func AdjustPagePaddingTop');
 
+            padding = '2.5em';
             switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id')) {
                 case "home":
-                    //console.log('change the padding to 44px for home');
-                    $('#home').css("padding-top", "42px");
+                    console.log('change the padding to ' + padding + ' for home');
+                    $('#home').css("padding-top", padding);
                     break;
                 case "question":
-                    $('#question').css("padding-top", "42px");
+                    $('#question').css("padding-top", "2em");
                     break;
                 case "summary":
-                    $('#summary').css("padding-top", "42px");
+                    $('#summary').css("padding-top", "2em");
                     break;
+                default:
+                    $('#homePageContent').css("padding-top", padding);
             }
 
         }
