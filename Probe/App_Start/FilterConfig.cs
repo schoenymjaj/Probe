@@ -16,7 +16,7 @@ namespace Probe
             //filters.Add(new RoleAuthorizeAttribute());
             //filters.Add(new HandleErrorAttribute());
             filters.Add(new ElmahHandleErrorAttribute());
-            filters.Add(new RedirectFilterAttribute());
+            //filters.Add(new RedirectFilterAttribute());
 
             bool logMvcActionInd = false;
             if (System.Configuration.ConfigurationManager.AppSettings["LogMvcActions"] != null)
