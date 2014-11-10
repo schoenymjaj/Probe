@@ -29,9 +29,16 @@ namespace Probe.Helpers.Redirecting
             var baseUrl = System.Web.HttpContext.Current.Request.Url.Authority;
             if (url.ToLower().Contains("in-common-app.com") && !url.ToLower().Contains("www.in-common-app.com"))
             {
+                Log(filterContext);
                 filterContext.Result = new RedirectResult(url.Replace("in-common-app.com", "www.in-common-app.com"));
                 return;
             }
+        }
+
+        private void Log(ActionExecutingContext filterContext)
+        {
+            Elmah.ErrorSignal.FromCurrentContext().Raise(new ActionException("Redirecting:" + filterContext.HttpContext.Request.Url.ToString()));
+
         }
 
     }
