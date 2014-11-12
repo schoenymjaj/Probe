@@ -652,9 +652,6 @@
     <Content Include="Client\css\themes\jquery.mobile.icons.min.css" />
     <Content Include="Client\css\themes\ProbeTheme.V0.1.css" />
     <Content Include="Client\css\themes\ProbeTheme.V0.1.min.css" />
-    <Content Include="Client\images\bckground\ProbeBackground-Opacity20.jpg" />
-    <Content Include="Client\images\bckground\ProbeBackground-Opacity3.jpg" />
-    <Content Include="Client\images\bckground\ProbeBackground.jpg" />
     <Content Include="Client\images\icon\android\icon-144-xxhdpi.png" />
     <Content Include="Client\images\icon\android\icon-36-ldpi.png" />
     <Content Include="Client\images\icon\android\icon-48-mdpi.png" />
@@ -1341,6 +1338,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Client\images\bckground\" />
     <Folder Include="Client\js\3party\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Error\" />
