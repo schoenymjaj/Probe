@@ -261,7 +261,9 @@ $(function () {
                                 '<button id="aboutBtn" class="ui-btn" data-icon="book">Want to know more?</button>';
 
             $('#homePageContent').html(gameInstructions);
-            $('#homePageContent').css('color', '#3388cc');
+            $('#homePageContent').css('color', '#000000');
+            $('#homePageContent').css('font-size', '1.2em');
+            $('#homePageContent').css('font-weight', 'bold');
             $('#home').trigger('create');
 
             //let's kick start the 'DEMO Match' game
