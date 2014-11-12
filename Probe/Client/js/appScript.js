@@ -279,7 +279,7 @@ $(function () {
 
             //Will fill in code if app started with code query string parm
             promptforCodeHtml =
-                '<div style="margin-top: 10px"><label for="code">Game Code</label>' +
+                '<div style="margin-top: 10px"><label for="code" style="font-size: 1.2em; font-weight: bolder">Game Code</label>' +
                 '<input name="code" id="gameCode" type="text" ' +
                 'value="' +
                 '" ' +
@@ -305,6 +305,9 @@ $(function () {
             $('#cancelGamePlay').click(function (event) {
                 app.CancelGame();
             });
+
+            $('#gameCode').focus(); //put the focus on the game code text input
+
 
         } //app.SetGamePlayCodePrompt
 
@@ -581,16 +584,16 @@ $(function () {
 
             promptforPlayerHtml =
                 '<div style="margin-top: 10px; font-weight:bold">' +
-                '<label for="gpName"><b>(' + gamePlayData.GameType + ' Game)</b>' +
+                '<label for="gpName" style="font-size: 1.2em; font-weight: bolder">(' + gamePlayData.GameType + ' Game)' +
                 '</label>' +
                 '<textarea name="gpName" id="gpName" disabled="disabled">' + gamePlayData.Name + ' (' +
                 gameDescription + ')</textarea>' +
-                '<label for="C">First Name</label>' +
+                '<label for="C" style="font-size: 1.2em; font-weight: bolder">First Name</label>' +
                 '<input name="firstName" id="firstName" type="text" value="" data-clear-btn="true">' +
-                '<label for="nickName">Nick Name</label>' +
+                '<label for="nickName" style="font-size: 1.2em; font-weight: bolder">Nick Name</label>' +
                 '<input name="nickName" id="nickName" type="text" value="" data-clear-btn="true">' +
                 '<fieldset data-role="controlgroup" data-type="horizontal">' +
-                '<legend>Sex</legend>' +
+                '<legend style="font-size: 1.2em; font-weight: bolder">Sex</legend>' +
                 '<input name="sex" id="sex-male" type="radio" checked="checked" value="on">' +
                 '<label for="sex-male">Male</label>' +
                 '<input name="sex" id="sex-female" type="radio">' +
@@ -801,7 +804,7 @@ $(function () {
             result = app.GetResultLocalStorage();
 
             question = gamePlayData.GameQuestions[questionNbr].Question;
-            questionText = question.Text;
+            questionText = '<span class="questionText">' + question.Text + '?</span>';
 
             fieldset = '<fieldset data-role="controlgroup">';
             question.Choices.forEach(function (value, index, ar) {
@@ -820,8 +823,8 @@ $(function () {
             });
             fieldset += '</fieldset>'
 
-            $('#questionText h2').html(questionText + '?');
-            $('#choiceListLegend').html('Question #' + (questionNbr + 1) + ' of ' + app.NbrQuestions());
+            $('#questionText h2').html(questionText);
+            $('#choiceListLegend').html('<span class="questionText">Question #' + (questionNbr + 1) + ' of ' + app.NbrQuestions() + '</span>');
             $('#choiceList').html(fieldset);
 
             if (gameState != GameState.ReadOnly)
@@ -832,7 +835,11 @@ $(function () {
                 $("input[name ='choice']").checkboxradio().checkboxradio('disable').trigger("create");
             }
 
-            $('#question').trigger('create');
+            //Style choice list with proper spacing
+            $('#question [data-role="controlgroup"]').css("margin", ".5em 0")
+            $('#question .ui-radio').css("margin", "0");
+
+            //$('#question').trigger('create');
 
             $("input[name ='choice']").on('change', function () {
 
@@ -863,7 +870,7 @@ $(function () {
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
 
-            summaryText = 'Questions - ' + app.NbrQuestionsAnswered() + ' out of ' + app.NbrQuestions() + ' answered'
+            summaryText = '<span class="questionText">Questions - ' + app.NbrQuestionsAnswered() + ' out of ' + app.NbrQuestions() + ' answered</span>'
 
 
             listViewHtml = '<ul data-role="listview" data-inset="true">';
@@ -875,8 +882,8 @@ $(function () {
                 ' data-qnum=' + index + '>' +
                 '<a href="#">' +
                 (index + 1) + '. ' +
-                ((value.Question.Text.length <= 30) ? value.Question.Text : value.Question.Text.substr(0, 30))
-                + '...</a></li>';
+                value.Question.Text + '?' +
+                '</a></li>';
 
             });
             listViewHtml += '</ul>';
@@ -884,8 +891,11 @@ $(function () {
             $('#summaryText h2').html(summaryText);
             $('#questionList').html(listViewHtml);
 
-            $('#summary').trigger('create');
+            $('#questionList').listview().trigger("create")
+            $('#summary article').css("overflow", "hidden");
 
+            //COMMENTED OUT MNS 11/12/14 - CAUSES THE FOOTER TO BECOME GLOBAL AND TOP/BOTTOM PADDING CHANGES - BAD THINGS THAT CAUSED SHIFTS IN THE CONTENT SECTION
+            //$('#summary').trigger('create');
             //don't need the refresh. In fact is creates a mysterious scroll bar
             //$('#questionList').listview().listview("refresh").trigger("create"); 
 
@@ -1161,26 +1171,28 @@ $(function () {
         */
         app.AdjustPagePaddingTop = function () {
             console.log('func AdjustPagePaddingTop');
-            padding = '2.5em';
-            switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id')) {
-                case "home":
-                    padding = "2.5em"
-                    $('#home').css("padding-top", padding);
-                    break;
-                case "question":
-                    padding = "2.0em"
-                    $('#question').css("padding-top", padding);
-                    break;
-                case "summary":
-                    padding = "2.0em"
-                    $('#summary').css("padding-top", padding);
-                    break;
-                case "info":
-                    padding = "3em"
-                    $('#info').css("padding-top", padding);
-                    break;
-            }
-            console.log('change the padding to ' + padding );
+            //paddingtop = "44px";
+            //paddingbottom = "58px";
+            //switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id')) {
+            //    case "home":
+            //        $('#home').css("padding-top", paddingtop);
+            //        $('#home').css("padding-bottom", paddingbottom);
+            //        break;
+            //    case "question":
+            //        $('#question').css("padding-top", paddingtop);
+            //        $('#home').css("padding-bottom", paddingbottom);
+            //        break;
+            //    case "summary":
+            //        $('#summary').css("padding-top", paddingtop);
+            //        $('#home').css("padding-bottom", paddingbottom);
+            //        break;
+            //    case "info":
+            //        $('#info').css("padding-top", paddingtop);
+            //        $('#home').css("padding-bottom", paddingbottom);
+            //        break;
+            //}
+            //console.log('change the padding to ' + paddingtop);
+
 
         }
 
@@ -1196,16 +1208,8 @@ $(function () {
 
             //$('#home').css("padding-top", "42px");
 
-            if (initialState) {
-                //$('#home').css('background-image', 'url(./images/bckground/ProbeBackground-Opacity20.jpg)');
-                $('#home').removeClass('backimageLowOpacity');
-                $('#home').addClass('backimageHighOpacity');
-
-            } else {
-                //$('#home').css('background-image', 'url(./images/bckground/ProbeBackground-Opacity3.jpg)');
-                $('#home').removeClass('backimageHighOpacity');
-                $('#home').addClass('backimageLowOpacity');
-            }
+            //$('#home').removeClass('backimageInCommon');
+            //$('#home').addClass('backimageInCommon');
 
             app.SetBottomNavButtons(false, false); //From the home page. Always set the bottom nav bar bottoms to disabled.
 
@@ -1280,7 +1284,7 @@ $(function () {
             setTimeout(function () {
 
                 $(':mobile-pagecontainer').pagecontainer('change', '#info', { transition: 'none' });
-                $('#info').css("padding-top", "3em");
+                //$('#info').css("padding-top", "3em");
 
             }, 500);
         }
