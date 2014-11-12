@@ -767,6 +767,7 @@
     <Content Include="Client\images\bckground\768x1024_BG.jpg" />
     <Content Include="Client\images\bckground\800x1280_BG.jpg" />
     <Content Include="Client\images\bckground\900x1600_BG.jpg" />
+    <Content Include="Client\images\header\header180x40.jpg" />
     <Content Include="Client\images\icon\android\icon-144-xxhdpi.png" />
     <Content Include="Client\images\icon\android\icon-36-ldpi.png" />
     <Content Include="Client\images\icon\android\icon-48-mdpi.png" />
