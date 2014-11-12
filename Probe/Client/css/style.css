@@ -86,6 +86,12 @@ body {
 }
 
 
+.headerImage {
+    text-align: center; 
+    margin: 0px 0px 0px 0px;
+}
+
+
 /*****************
     SETTINGS POPUP 
 ******************/

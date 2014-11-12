@@ -96,21 +96,19 @@ $(function () {
                     app.GetGamePlayServer(codeFromURL);
                 }
 
-
-
             }); //$(document).on
 
             //We needed to do this because mysteriously the page padding was dynamically changing to a value of 2.xxx
             //Don't know why.
-            $(document).on("pagechange pagebeforechange popupafteropen popupafterclose resize", function (event) {
-                console.log('event pagechange-pagebeforechange popupafteropen popupafterclose resize');
-                app.AdjustPagePaddingTop();
-            });
+            //$(document).on("pagechange pagebeforechange popupafteropen popupafterclose resize", function (event) {
+            //    console.log('event pagechange-pagebeforechange popupafteropen popupafterclose resize');
+            //    app.AdjustPagePaddingTop();
+            //});
 
             //sets the padding when window is resized. Not going to happen on a phone.
             $(window).resize(function ()
             {
-                app.AdjustPagePaddingTop();
+                app.SetHeaderImage();
             });
 
             /*
@@ -137,6 +135,8 @@ $(function () {
         app.SetHomePageInitialDisplay = function () {
             console.log('func app.SetHomePageInitialDisplay w:' + $(window).height() + ' h:' + $(window).height());
             gamePlayListQueue = app.GetGamePlayListQueueLocalStorage();
+
+            app.SetHeaderImage(); //need to set header based on the size of the window
 
             //if the game state is idle; then we just want to make sure that the Add function is
             //enabled and the Cancel function is disabled
@@ -1168,33 +1168,32 @@ $(function () {
             }
         }//app.ConfirmSubmit
 
-        /*
-        AdjustPagePaddingTop
-        */
-        app.AdjustPagePaddingTop = function () {
-            console.log('func AdjustPagePaddingTop');
-            //paddingtop = "44px";
-            //paddingbottom = "58px";
-            //switch ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id')) {
-            //    case "home":
-            //        $('#home').css("padding-top", paddingtop);
-            //        $('#home').css("padding-bottom", paddingbottom);
-            //        break;
-            //    case "question":
-            //        $('#question').css("padding-top", paddingtop);
-            //        $('#home').css("padding-bottom", paddingbottom);
-            //        break;
-            //    case "summary":
-            //        $('#summary').css("padding-top", paddingtop);
-            //        $('#home').css("padding-bottom", paddingbottom);
-            //        break;
-            //    case "info":
-            //        $('#info').css("padding-top", paddingtop);
-            //        $('#home').css("padding-bottom", paddingbottom);
-            //        break;
-            //}
-            //console.log('change the padding to ' + paddingtop);
+        app.SetHeaderImage = function () {
 
+            width = $(window).width();
+            height = $(window).height();
+
+            /*
+             responsive header logo image   
+             */
+            if (height >= 2560)
+            {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 2559 && height >= 1912) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 1911 && height >= 1600) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 1599 && height >= 1180) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 1179 && height >= 1024) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 1023 && height >= 800) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 799 && height >= 480) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            } else if (height <= 479 && height >= 0) {
+                $('header img').attr("src", "./images/header/header180x40.jpg")
+            }
 
         }
 
@@ -1575,7 +1574,6 @@ $(function () {
             //display popup
             $('#popupMsg').enhanceWithin().popup().popup("open", { transition: "fade" });
 
-            app.AdjustPagePaddingTop();
         };
 
         /*
