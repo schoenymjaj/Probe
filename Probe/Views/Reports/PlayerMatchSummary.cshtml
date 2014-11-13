@@ -56,9 +56,7 @@
                 if (DoStyleMobile()) {
                     $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
                     $('#appHome').click(function (event) {
-                        //window.history.go(-1);
-                        alert('url:' + '@Url.Content("~")' + '/client/')
-                        window.location = '@Url.Content("~")' + '/client/'
+                        window.history.go(-1);
                     });
                     $('.reportReturnLink').hide();
                 } else {

@@ -70,8 +70,7 @@
                              + '<br/><span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
                              + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
                          $('#appHome').click(function (event) {
-                             //window.history.go(-1);
-                             window.location = '@Url.Content("~")' + '/client/'
+                             window.history.go(-1);
                          });
                          $('.reportReturnLink').hide();
                      } else {
