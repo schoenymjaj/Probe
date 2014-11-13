@@ -1296,7 +1296,6 @@ $(function () {
         */
         app.DisplayAboutPage = function () {
             console.log('func app.DisplayAboutPage');
-            alert(GetMobileIndForAPI());
             url = root + 'Home/About/' + GetMobileIndForAPI(); //insert the portal About (for mobil) page.
             $('#infoFrameId').attr("src", url);
             setTimeout(function () {
