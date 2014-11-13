@@ -62,7 +62,12 @@
                         if (DoStyleMobile()) {
                             $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
                             $('#appHome').click(function (event) {
-                                window.history.go(-2);
+                                //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
+                                if (ClientIsCordovaApp()) {
+                                    window.history.go(-2);
+                                } else {
+                                    window.location = '@Request.Url.Scheme' + '://' + '@Request.Url.Authority' + '@VirtualPathUtility.ToAbsolute("~/")' + 'client/'
+                                }
                             });
                             $('.reportReturnLink').hide();
                         } else {

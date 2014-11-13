@@ -70,7 +70,12 @@
                              + '<br/><span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
                              + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
                          $('#appHome').click(function (event) {
-                             window.history.go(-1);
+                             //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
+                             if (ClientIsCordovaApp()) {
+                                 window.history.go(-1);
+                             } else {
+                                 window.location = '@Request.Url.Scheme' + '://' + '@Request.Url.Authority' + '@VirtualPathUtility.ToAbsolute("~/")' + 'client/'
+                             }
                          });
                          $('.reportReturnLink').hide();
                      } else {

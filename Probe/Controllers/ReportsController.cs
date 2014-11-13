@@ -199,14 +199,23 @@ namespace Probe.Controllers
             ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"]; //get current selected game from GamePlay controller
             ViewBag.NbrQuestions = db.GamePlay.Find(gameplayid).Game.GameQuestions.Count();
 
-            if (mobileind != 1)
+            if (mobileind == null || mobileind == 0)
             {
                 ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
                 return View();
             }
             else
             {
                 ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
                 return View("GamePlayerMatchMinMax", "_MobileLayout");
             }
 
@@ -260,14 +269,23 @@ namespace Probe.Controllers
 
             ViewBag.NbrQuestions = db.GamePlay.Find(gameplayid).Game.GameQuestions.Count();
 
-            if (mobileind != 1)
+            if (mobileind == null || mobileind == 0)
             {
                 ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
                 return View();
             }
             else
             {
                 ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
                 return View("PlayerMatchSummary", "_MobileLayout");
             }
         }
@@ -326,14 +344,23 @@ namespace Probe.Controllers
             ViewBag.PlayerId = playerid;
             ViewBag.MatchedPlayerId = matchedplayerid;
 
-            if (mobileind != 1)
+            if (mobileind == null || mobileind == 0)
             {
                 ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
                 return View();
             }
             else
             {
                 ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
                 return View("PlayerMatchDetail", "_MobileLayout");
             }
 
@@ -389,14 +416,23 @@ namespace Probe.Controllers
             ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
             ViewBag.NbrQuestions = db.GamePlay.Find(gameplayid).Game.GameQuestions.Count();
 
-            if (mobileind != 1)
+            if (mobileind == null || mobileind == 0)
             {
                 ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
                 return View();
             }
             else
             {
                 ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
                 return View("PlayerTestSummary", "_MobileLayout");
             }
 
@@ -453,14 +489,23 @@ namespace Probe.Controllers
             ViewBag.PlayerId = playerid;
 
             //check mobile indicator from request
-            if (mobileind != 1)
+            if (mobileind == null || mobileind == 0)
             {
                 ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
                 return View();
             }
             else
             {
                 ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
                 return View("PlayerTestDetail", "_MobileLayout");
             }
 

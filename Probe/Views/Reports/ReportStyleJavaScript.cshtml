@@ -10,6 +10,14 @@ DoStyleMobile = function () {
     }
 }
 
+ClientIsCordovaApp = function () {
+    if ('@ViewBag.CordovaInd' == 'True') {
+    return true;
+    } else {
+    return false;
+    }
+}
+
 var isInIFrame = (window.location != window.parent.location);
 
 $(window).resize(function () {
