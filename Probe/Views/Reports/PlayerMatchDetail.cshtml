@@ -62,7 +62,8 @@
                         if (DoStyleMobile()) {
                             $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
                             $('#appHome').click(function (event) {
-                                window.history.go(-2);
+                                //window.history.go(-2);
+                                window.location = '@Url.Content("~")' + '/client/'
                             });
                             $('.reportReturnLink').hide();
                         } else {
