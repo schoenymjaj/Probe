@@ -176,6 +176,7 @@
     <Compile Include="Controllers\api\GameConfigurationsController.cs" />
     <Compile Include="Controllers\api\GamePlayAnswersController.cs" />
     <Compile Include="Controllers\api\GamePlaysController.cs" />
+    <Compile Include="Controllers\api\ReportsController.cs" />
     <Compile Include="Controllers\api\PlayersController.cs" />
     <Compile Include="Controllers\api\QuestionsController.cs" />
     <Compile Include="Controllers\ChoiceQuestionsController.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="Models\QuestionType.cs" />
     <Compile Include="Models\GameType.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\JSONAPI.cs" />
     <Compile Include="Models\ReportType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
