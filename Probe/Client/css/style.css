@@ -41,6 +41,10 @@ body {
     margin-right: 15px;
 }
 
+.disabledCustColor {
+    color: red;
+}
+
 /*
  responsive background image   
  */

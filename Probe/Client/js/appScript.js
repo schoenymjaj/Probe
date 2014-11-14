@@ -132,7 +132,6 @@ $(function () {
         */
         app.SetHomePageInitialDisplay = function () {
             console.log('func app.SetHomePageInitialDisplay w:' + $(window).width() + ' h:' + $(window).height());
-            alert('func app.SetHomePageInitialDisplay w:' + $(window).width() + ' h:' + $(window).height());
             gamePlayListQueue = app.GetGamePlayListQueueLocalStorage();
 
             app.SetHeaderImage(); //need to set header based on the size of the window
@@ -647,6 +646,11 @@ $(function () {
                     $('#startGamePlay').text('Resume Game');
                 }
 
+                $('#gpName').css("color", "black"); //needs a little help with the chosen background
+                $('#firstName').css("color", "black"); //needs a little help with the chosen background
+                $('#nickName').css("color", "black"); //needs a little help with the chosen background
+
+
                 //$('#cancelGamePlay').hide(); //if game is not idle; we don't want to give the user the cancel ability here (too easy)
             }//if (gameState != GameState.Idle)
 
@@ -822,7 +826,7 @@ $(function () {
                 '<input name="choice" id="choice-' + selectChoiceId + '" type="radio" data-theme="a"' + checkedStr + '>'
 
                 fieldset +=
-                '<label for="choice-' + selectChoiceId + '" data-theme="a">' + choiceText + '</label>';
+                '<label for="choice-' + selectChoiceId + '" data-theme="a" class="style:"color:black">' + choiceText + '</label>';
             });
             fieldset += '</fieldset>'
 
@@ -835,6 +839,7 @@ $(function () {
 
             } else {
                 $("input[name ='choice']").checkboxradio().checkboxradio('disable').trigger("create");
+                $('[for^="choice-"]').css("color", "black"); //needs a little help with the chosen background
             }
 
             //Style choice list with proper spacing
