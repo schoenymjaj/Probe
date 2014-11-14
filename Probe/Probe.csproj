@@ -349,6 +349,14 @@
     <Content Include="Client\images\bckground\768x1024_BG.jpg" />
     <Content Include="Client\images\bckground\800x1280_BG.jpg" />
     <Content Include="Client\images\bckground\900x1600_BG.jpg" />
+    <Content Include="Client\images\header\header144x40.png" />
+    <Content Include="Client\images\header\header180x40.png" />
+    <Content Include="Client\images\header\header240x40.png" />
+    <Content Include="Client\images\header\header270x40.png" />
+    <Content Include="Client\images\header\header324x40.png" />
+    <Content Include="Client\images\header\header432x40.png" />
+    <Content Include="Client\images\header\header72x40.png" />
+    <Content Include="Client\images\header\header96x40.png" />
     <Content Include="Client\images\icon\android\icon-144-xxhdpi.png" />
     <Content Include="Client\images\icon\android\icon-36-ldpi.png" />
     <Content Include="Client\images\icon\android\icon-48-mdpi.png" />
@@ -382,6 +390,7 @@
     <Content Include="Client\images\screen\windows\screen-480-800.jpg" />
     <Content Include="Client\index.html" />
     <Content Include="Client\js\appScript.js" />
+    <Content Include="Client\js\commonGraphicScript.js" />
     <Content Include="Client\js\commonScript.js" />
     <Content Include="Client\js\eventscript.js" />
     <Content Include="Client\js\jqm-config.js" />
@@ -1034,7 +1043,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Client\images\header\" />
     <Folder Include="Client\js\3party\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Error\" />
