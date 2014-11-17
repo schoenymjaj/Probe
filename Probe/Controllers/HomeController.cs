@@ -21,7 +21,7 @@ namespace Probe.Controllers
         public ActionResult About(int? mobileind)
         {
 
-            if (mobileind != 1)
+            if (mobileind == null || mobileind == 0)
             {
                 ViewBag.MobileInd = false;
                 return View("About");
