@@ -169,6 +169,57 @@ textarea {
    About Page - for mobile we do some overriding of the jquery ui accordian widget
  */
 
+/*
+ responsive background image   
+ */
+@media only screen and (min-height: 2560px) { /*height: 2560px width 1440*/
+    .backimageInCommon {
+        background: url(./images/bckground/1440x2560_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 2559px) and (min-height: 1912px) { /*MANY -height: 1920px width 1080*/
+    .backimageInCommon {
+        background: url(./images/bckground/1440x2560_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1911px) and (min-height: 1600px) { /*height: 1600px width 900*/
+    .backimageInCommon {
+        background: url(./images/bckground/1080x1920_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1599px) and (min-height: 1180px) { /*MANY -height: 1280px width 800*/
+    .backimageInCommon {
+        background: url(./images/bckground/900x1600_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1179px) and (min-height: 1024px) { /*height: 1024px width 600*/
+    .backimageInCommon {
+        background: url(./images/bckground/800x1280_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1023px) and (min-height: 800px) { /*MANY -height: 800px  width 480*/
+    .backimageInCommon {
+        background: url(./images/bckground/600x1024_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 799px) and (min-height: 480px) { /*MANY - height 480 width 320*/
+    .backimageInCommon {
+        background: url(./images/bckground/480x800_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 479px) and (min-height: 0px) { /*height 320 width 240*/
+    .backimageInCommon {
+        background: url(./images/bckground/320x480_BG.jpg) no-repeat center center fixed;
+    }
+}
+
+.backCoverInCommon {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
 .ui-accordion .ui-accordion-content {
     padding-left: 5px;
     padding-right: 5px;
