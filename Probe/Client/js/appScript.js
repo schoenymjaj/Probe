@@ -1347,8 +1347,7 @@ $(function () {
         Display the PlayerMatchSummary report
         */
         app.DrawReport = function (reportType, gamePlayId,gameCode,playerId,matchedPlayerId) {
-            console.log('func app.DrawPlayerMatchSummary');
-            $.mobile.loading('show'); //to show the spinner
+            console.log('func app.DrawReport');
 
             switch (reportType) {
                 case ReportType.MatchSummary:
@@ -1368,7 +1367,7 @@ $(function () {
                     break;
             }
 
-
+            $.mobile.loading('show'); //to show the spinner
             $.getJSON(url) //call is asychronous
             .done(function (data) {
                 if (data.errorid == undefined) {
