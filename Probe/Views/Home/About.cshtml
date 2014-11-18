@@ -41,22 +41,33 @@
                 <li>Create your authored questions to the reusable Question Library - <strong>Question Libray</strong></li>
                 <li>Create your game and identify it with a unique name - <strong>My Games</strong></li>
                 <li>Setup your game by adding your authored questions - <strong>My Games - Manage Their Questions</strong> </li>
-                <li>Create a game play for your game. Enter a game code, start and end dates, client result access toggle - <strong>My Game Plays</strong><br />
-                <i>Game Code</i> - to be distributed to your players to play your game<br/>
-                <i>Start and End Dates</i> - date and time window that your game can be played<br/>
-                <i>Client Report Access Toggle</i> - if true, your players will be able to display results from their devices
-</li>
+                <li>
+                    Create a game play for your game. Enter a game code, start and end dates, client result access toggle - <strong>My Game Plays</strong><br />
+                    <i>Game Code</i> - to be distributed to your players to play your game<br />
+                    <i>Start and End Dates</i> - date and time window that your game can be played<br />
+                    <i>Client Report Access Toggle</i> - if true, your players will be able to display results from their devices
+                </li>
             </ul>
-            The <i>In Common</i> portal can be found at 
+            <div>
+                The <i>In Common</i> portal for Game Organizers can be found at
+                @if (!ViewBag.MobileInd)
+                {
+                    <a href="https://www/in-common-app.net">https://www/in-common-app.net</a>
+                }
+                else
+                {
+                    @:https://www/in-common-app.net
+            }
+                (NOTE: Portal is best used on a laptop/desktop)
+            </div>
             @if (!ViewBag.MobileInd)
             {
-                <a href="https://probe.azurewebsites.net">https://probe.azurewebsites.net</a>
+                <div>
+                    The <i>In Common</i> app for players can be found at
+                    <a href="https://www/in-common-app.net/client">https://www/in-common-app.net/client</a>
+                    OR by downloading the native app from the Apple Store or Google Play
+                </div>
             }
-            else
-            {
-                @:https://probe.azurewebsites.net
-            }
-            (NOTE: Portal is best used on a laptop/desktop)
         </p>
     </div>
     <h3>Player</h3>
@@ -69,7 +80,7 @@
                 <li>Click <strong>Start Game</strong> button</li>
                 <li>Answer all the questions. When all the questions are answered, the Submit button will be enabled for the player.</li>
                 <li>Click the <strong>Submit</strong> button and answer YES to the confirmation dialog</li>
-                <li>NOTE: Probe saves the last 10 submitted games. Players can view its answers and game results (if organizer gives players access)</li>
+                <li>NOTE: <i>In Common</i> saves the last 10 submitted games. Players can view its answers and game results (if organizer gives players access)</li>
             </ul>
         </p>
     </div>
@@ -113,7 +124,7 @@
     <h3>Version</h3>
     <div>
         <p>
-            This is the Probe Internet Socal Media Game App (Version v0.67)<br />
+            This is the <i>In Common</i> Internet Socal Media Game App (Version v0.67)<br />
         </p>
     </div>
 </div>

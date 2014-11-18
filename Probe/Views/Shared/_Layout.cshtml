@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Probe Application</title>
+    <title>@ViewBag.Title - In Common</title>
 
 
     @Styles.Render("~/Content/css")
@@ -51,50 +51,50 @@
     <script src="@Url.Content("~/Scripts/probe/stacktrace.js")" type="text/javascript"></script>
 
 </head>
-<body>
+<body class="backimageInCommon backCoverInCommon">
 
-@functions{
-    public bool IsUserLoggedIn()
-    {
-        bool returnStatus = System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
-
-        return returnStatus;
-    }
-
-    public bool IsUserInRole(string roleName)
-    {
-
-        bool returnStatus = false;
-
-        try
+    @functions{
+        public bool IsUserLoggedIn()
         {
-            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-            {
-                Probe.Models.ApplicationDbContext dbIdentity = new Probe.Models.ApplicationDbContext();
-                string userName = System.Web.HttpContext.Current.User.Identity.Name;
-                Probe.Models.ApplicationUser user = dbIdentity.Users.Where(u => u.UserName == userName).Single();
-                var role = dbIdentity.Roles.Where(r => r.Name == roleName).Single();
+            bool returnStatus = System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
 
-                returnStatus = user.Roles.Where(r => r.RoleId == role.Id).Count() > 0;
+            return returnStatus;
+        }
+
+        public bool IsUserInRole(string roleName)
+        {
+
+            bool returnStatus = false;
+
+            try
+            {
+                if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+                {
+                    Probe.Models.ApplicationDbContext dbIdentity = new Probe.Models.ApplicationDbContext();
+                    string userName = System.Web.HttpContext.Current.User.Identity.Name;
+                    Probe.Models.ApplicationUser user = dbIdentity.Users.Where(u => u.UserName == userName).Single();
+                    var role = dbIdentity.Roles.Where(r => r.Name == roleName).Single();
+
+                    returnStatus = user.Roles.Where(r => r.RoleId == role.Id).Count() > 0;
+
+                }
 
             }
+            catch
+            {
+                returnStatus = false; //if there is an issue; we will just not give the user access
+            }
 
+            return returnStatus;
         }
-        catch
+
+
+
+        public string GetControllerName()
         {
-            returnStatus = false; //if there is an issue; we will just not give the user access
+            return HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString();
         }
-
-        return returnStatus;
     }
-     
-    
-    
-    public string GetControllerName()
-    {
-        return HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString();
-    }
-}
 
 
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -105,7 +105,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Probe", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("In Common", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -121,7 +121,8 @@
                                             @Html.ActionLink("Game Type Setup", "Index", "GameTypes")
                                             @Html.ActionLink("Game Configuration Setup", "Index", "GameConfigurations")
                                         }
-                                        @if (IsUserLoggedIn()) {
+                                        @if (IsUserLoggedIn())
+                                        {
                                             @Html.ActionLink("My Games", "Index", "Games")
                                             @Html.ActionLink("My Games - Manage Their Questions", "Index", "GameQuestions")
                                         }
@@ -132,7 +133,8 @@
                                 <a tabindex="-1" href="#">Play Game</a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        @if (IsUserLoggedIn()) { 
+                                        @if (IsUserLoggedIn())
+                                        {
                                             @Html.ActionLink("My Game Plays", "Index", "GamePlays")
                                         }
                                     </li>
@@ -145,17 +147,19 @@
                         <ul class="dropdown-menu">
                             <li>
                                 @if (IsUserInRole("Admin"))
-                                { 
-                                @Html.ActionLink("Question Type Setup", "Index", "QuestionTypes")
+                                {
+                                    @Html.ActionLink("Question Type Setup", "Index", "QuestionTypes")
                                 }
-                                @if (IsUserLoggedIn()) {
+                                @if (IsUserLoggedIn())
+                                {
                                     @Html.ActionLink("My Question Library", "Index", "ChoiceQuestions")
                                     @Html.ActionLink("My Question Choices", "Index", "Choices")
                                 }
                             </li>
                         </ul>
                     </li>
-                    @if (IsUserLoggedIn()) {
+                    @if (IsUserLoggedIn())
+                    {
                         <li>@Html.ActionLink("Player", "Index", "Players")</li>
                     }
                     <li>@Html.ActionLink("About", "About", "Home")</li>
@@ -165,25 +169,26 @@
         </div>
     </div>
 
-@if (GetControllerName() != "Reports") {
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Probe Application</p>
-        </footer>
-    </div>
-}
-else
-{
-    <div class="reportContentContainer">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Probe Application</p>
-        </footer>
-    </div>
-}
+    @if (GetControllerName() != "Reports")
+    {
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - In Common Social Media Application</p>
+            </footer>
+        </div>
+    }
+    else
+    {
+        <div class="reportContentContainer">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - In Common Social Media Application</p>
+            </footer>
+        </div>
+    }
 
     @RenderSection("scripts", required: false)
 
