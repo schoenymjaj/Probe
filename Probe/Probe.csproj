@@ -230,6 +230,27 @@
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Client\config.xml" />
+    <Content Include="Client\css\custom-accordian\images\animated-overlay.gif" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_flat_75_f6f6f6_40x100.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_glass_65_00edf0_1x400.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_glass_75_00edf0_1x400.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_glass_75_262626_1x400.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_glass_75_ededed_1x400.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-icons_000000_256x240.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-icons_222222_256x240.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Client\css\custom-accordian\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Client\css\custom-accordian\jquery-ui-1.10.4.custom.css" />
+    <Content Include="Client\css\custom-accordian\jquery-ui-1.10.4.custom.min.css" />
+    <Content Include="Client\css\custom-accordian\js\jquery-1.10.2.js" />
+    <Content Include="Client\css\custom-accordian\js\jquery-ui-1.10.4.custom.js" />
+    <Content Include="Client\css\custom-accordian\js\jquery-ui-1.10.4.custom.min.js" />
     <Content Include="Client\css\icon-pack\jqm-icon-pack-fa-builder.css" />
     <Content Include="Client\css\icon-pack\jqm-icon-pack-fa.css" />
     <Content Include="Client\css\icon-pack\png\bar-chart-o.png" />
@@ -418,6 +439,7 @@
     <Content Include="Client\js\json\json_parse_state.js" />
     <Content Include="Client\js\set-weinre.js" />
     <Content Include="Client\main.html" />
+    <Content Include="Content\AboutContent.html" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\bckground\1080x1920_BG.jpg" />

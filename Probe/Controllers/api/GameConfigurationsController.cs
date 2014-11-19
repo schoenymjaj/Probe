@@ -18,11 +18,35 @@ namespace Probe.Controllers.api
         private ProbeDataContext db = new ProbeDataContext();
 
         // GET: api/GameConfigurations
-        public IQueryable<GameConfiguration> GetGameConfiguration()
+        [ResponseType(typeof(GameConfiguration))]
+        [Route("api/GameConfigurations/GetConfiguration/{code}")]
+        public IHttpActionResult GetConfiguration(string code)
         {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
-            return db.GameConfiguration;
+
+            if (code != "incommon-code-around")
+            {
+                return NotFound();
+            }
+
+            List<GameConfiguration> gameConfigurationsList = new List<GameConfiguration>
+            {
+                new GameConfiguration {
+                    GameId = 0,
+                    Name = "InCommon-About",
+                    Description = "InCommon-About",
+                    Value = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(@"~/Content/AboutContent.html"))
+                },
+                new GameConfiguration {
+                    GameId = 0,
+                    Name = "InCommon-CacheMinutes",
+                    Description = "InCommon-CacheMinutes",
+                    Value = "5"
+                }
+            };
+
+            IQueryable<GameConfiguration> gameConfigurations = gameConfigurationsList.AsQueryable<GameConfiguration>();
+
+            return Ok(gameConfigurations);
         }
 
         // GET: api/GameConfigurations/5 NOTE: currently used by client (11/2/14)
@@ -33,13 +57,13 @@ namespace Probe.Controllers.api
             //without this command there would be a serializer error when returning the db.Players
             db.Configuration.LazyLoadingEnabled = false;
 
-            var gameConfiguration = db.GameConfiguration.Where(gc => gc.GameId == db.GamePlay.Where(gp => gp.Code == code).FirstOrDefault().GameId);
-            if (gameConfiguration.Count() == 0)
+            var gameConfigurations = db.GameConfiguration.Where(gc => gc.GameId == db.GamePlay.Where(gp => gp.Code == code).FirstOrDefault().GameId);
+            if (gameConfigurations.Count() == 0)
             {
                 return NotFound();
             }
 
-            return Ok(gameConfiguration); //we are getting the first only because there is one config at the moment
+            return Ok(gameConfigurations); //we are getting the first only because there is one config at the moment
         }
 
         // GET: api/GameConfigurations/5 - get all game configurations for a gameId (foreign key)
