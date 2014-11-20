@@ -40,7 +40,7 @@ namespace Probe.Controllers.api
                     GameId = 0,
                     Name = "InCommon-CacheMinutes",
                     Description = "InCommon-CacheMinutes",
-                    Value = "5"
+                    Value = "30"
                 }
             };
 
