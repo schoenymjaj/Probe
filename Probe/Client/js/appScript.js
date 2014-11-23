@@ -240,12 +240,12 @@ $(function () {
             console.log('func app.HomePageInitialDisplayInstruct');
 
             app.SetHomePageStyle(true); //the only time we set bckground image to full opacity -first time
-            gameInstructions = '<h3 style="text-align: center">Welcome to the <i>In Common</i> App!</h3>' +
+            gameInstructions = '<h3 style="text-align: center">Welcome to <i>In Common</i>!</h3>' +
                                '<p>You will need a game code from a game organizer to play. Try the <a id="demoGameLink" data-democode="Practice Match" href="#">practice game</a> if you don\'t have a code yet.</p>' +
                                '<p>To enter a code, click the Add icon on the top bar.' +
                                ' <i>In Common</i> may take a few moments to retrieve your game.</p>' +
                                 '<p>Enter your first name and a nickname to be recognized. Answer each of questions and click submit. Your game organizer will provide you with access to the game results.</p>' +
-                                '<button id="aboutBtn" class="ui-btn" data-icon="book">Want to know more?</button>';
+                                '<div class="AboutButtonDiv"><button id="aboutBtn" class="ui-btn ui-corner-all" data-icon="book">Want to Know More?</button></div>';
 
             $('#homePageContent').html(gameInstructions);
             $('#homePageContent').css('color', '#000000');
@@ -723,7 +723,19 @@ $(function () {
 
                 app.PutResultLocalStorage(result);
 
-                app.StartGame(0);
+
+                //This is a hack for IPAD to ensure that the fixed nav bar is positioned corrected
+                if (navigator.userAgent.match(/iPad/i)) {
+                    $('header, footer').css('position', 'absolute');
+                    window.scrollTo($.mobile.window.scrollLeft(), $.mobile.window.scrollTop());
+                    //Wait a tenth of a second to ensure the IPAD soft keyboard is down. This is a hack to
+                    //ensure the fixed bottom nav bar doesnt jump up to the middle on the question page
+                    setTimeout(function () {
+                        app.StartGame(0);
+                    }, 100);
+                } else { //Just have to start game if your not an IPAD
+                    app.StartGame(0);
+                }
 
             });
 
