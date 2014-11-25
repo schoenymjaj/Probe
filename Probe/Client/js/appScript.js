@@ -167,13 +167,15 @@ $(function () {
                 gamePlayData = app.GetGamePlayLocalStorage();
                 result = app.GetResultLocalStorage();
 
+                playerName = (app.GetPlayerName() != '-') ? app.GetPlayerName() : '(Player not named)';
+
                 listViewHtml += '<li data-role="list-divider">Active Game<span class="ui-li-count">1</span></li>' +
                                 '<li data-icon="star" data-gameplay="active"' +
                                 ' data-index="-1"' +
                                 '><a href="#"><span class="listviewGameName">' +
                                  gamePlayData.Name + '</span>' +
                                 '<p class="listviewPlayerName">' +
-                                 result.FirstName + '-' + result.NickName +
+                                 playerName +
                                  '</p>' + '</a></li>';
             } else if (app.IsGamesInQueue(GameState.Active)) {
                 $("[data-icon='plus']").addClass('ui-disabled');
@@ -775,9 +777,9 @@ $(function () {
 
             result["GamePlayId"] = JSONdata.Id;
             result["GameCode"] = JSONdata.Code;
-            result["FirstName"] = {};
-            result["LastName"] = {};
-            result["NickName"] = {};
+            result["FirstName"] = '';
+            result["LastName"] = '';
+            result["NickName"] = '';
             result["Sex"] = SexType.Male;
             result["GameQuestions"] = new Array();
             result["DirtyFlag"] = true;
