@@ -15,7 +15,7 @@ $(function () {
     $("[data-role=panel]").trigger("create");
 
     (function (app) {
-        console.log('func app');
+        //console.log('func app');
         /* Localstorage
         localStorage["GamePlay"]
         localStorage["Result"]
@@ -54,7 +54,7 @@ $(function () {
 
         app.init = function () {
             //this occurs after document is ready (runs once)
-            console.log('func app.init');
+            //console.log('func app.init');
             app.bindings();
             //app.checkForStorage();
         };
@@ -67,7 +67,7 @@ $(function () {
             when document ready event is triggered. Store documents in localStorage
             */
             $(document).on("ready", function (event) {  //jquery document ready event gets you jquery mobile styles, and data rendered
-                console.log('event doc ready');
+                //console.log('event doc ready');
 
                 //override the console.log if production (disable console)
                 $(function () {
@@ -590,7 +590,7 @@ $(function () {
         };//app.GetInCommonConfigServer
         
         /*
-        Update the home page with the game play information and a prompt for first name and nick name 
+        Update the home page with the game play information and a prompt for first name and nickname 
         before starting the game
         */
         app.SetGamePlayPlayerPrompt = function () {
@@ -610,7 +610,7 @@ $(function () {
                 gameDescription + ')</textarea>' +
                 '<label for="C" style="font-size: 1.2em; font-weight: bolder">First Name</label>' +
                 '<input name="firstName" id="firstName" type="text" value="" data-clear-btn="true">' +
-                '<label for="nickName" style="font-size: 1.2em; font-weight: bolder">Nick Name</label>' +
+                '<label for="nickName" style="font-size: 1.2em; font-weight: bolder">Nickname</label>' +
                 '<input name="nickName" id="nickName" type="text" value="" data-clear-btn="true">' +
                 '<fieldset data-role="controlgroup" data-type="horizontal">' +
                 '<legend style="font-size: 1.2em; font-weight: bolder">Sex</legend>' +
@@ -697,18 +697,18 @@ $(function () {
 
                 //error handling 
                 if ($('#firstName').val().length < 3 ||
-                    $('#firstName').val().length > 10 ||
+                    $('#firstName').val().length > 8 ||
                     $('#firstName').val().indexOf(" ") != -1)
                 {
-                    app.popUpHelper('Error', 'The first name must be between 3 and 10 characters and contain no spaces.', 'Please enter a first name again.');
+                    app.popUpHelper('Error', 'The first name must be between 3 and 8 characters and contain no spaces.', 'Please enter a first name again.');
                     return;
                 }
 
                 if ($('#nickName').val().length < 3 ||
-                    $('#nickName').val().length > 10 ||
+                    $('#nickName').val().length > 8 ||
                     $('#nickName').val().indexOf(" ") != -1)
                 {
-                    app.popUpHelper('Error', 'The nick name must be between 3 and 10 characters and contain no spaces.', 'Please enter a nick name again.');
+                    app.popUpHelper('Error', 'The nickname must be between 3 and 8 characters and contain no spaces.', 'Please enter a nickname again.');
                     return;
                 }
 
