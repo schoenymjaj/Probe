@@ -1150,19 +1150,21 @@ $(function () {
         app.GameReportAction = function (index) {
             console.log('func app.GameReportAction');
 
+            //get the game from the queue first
+            gamePlayQueueBeforPush = app.GetGamePlayQueueLocalStorage();
+            gamePlayDataBeforePush = gamePlayQueueBeforPush[index].GamePlay;
+            resultBeforePush = gamePlayQueueBeforPush[index].Result;
+
             //if game is in progess, then we want to push active game onto the queue
             if (app.IsGameInProgress()) {
                 app.PushQueueGamePlays(GameState.Active);
             }
 
-            gamePlayQueue = app.GetGamePlayQueueLocalStorage();
-            gamePlayData = gamePlayQueue[index].GamePlay;
-            result = gamePlayQueue[index].Result;
-            app.PutGamePlayLocalStorage(gamePlayData);
-            app.PutResultLocalStorage(result);
+            app.PutGamePlayLocalStorage(gamePlayDataBeforePush);
+            app.PutResultLocalStorage(resultBeforePush);
 
             try {
-                if (app.GetGamePlayStatusServer(result.GameCode)) {
+                if (app.GetGamePlayStatusServer(resultBeforePush.GameCode)) {
                     $.mobile.loading('hide'); //to show the spinner
                     app.DisplayReportPage();
                 } else {
