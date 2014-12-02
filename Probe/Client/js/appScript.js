@@ -727,7 +727,7 @@ $(function () {
 
 
                 //This is a hack for IPAD to ensure that the fixed nav bar is positioned corrected
-                if (navigator.userAgent.match(/iPad/i)) {
+                //if (navigator.userAgent.match(/iPad/i)) { MNS - 12/2/14 - will do this for all devices
                     $('header, footer').css('position', 'absolute');
                     window.scrollTo($.mobile.window.scrollLeft(), $.mobile.window.scrollTop());
                     //Wait a tenth of a second to ensure the IPAD soft keyboard is down. This is a hack to
@@ -735,9 +735,9 @@ $(function () {
                     setTimeout(function () {
                         app.StartGame(0);
                     }, 100);
-                } else { //Just have to start game if your not an IPAD
-                    app.StartGame(0);
-                }
+                //} else { //Just have to start game if your not an IPAD
+                //    app.StartGame(0);
+                //}
 
             });
 
