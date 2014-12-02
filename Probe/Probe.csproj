@@ -381,13 +381,9 @@
     <Content Include="Client\images\icon\ios\icon-72-2x.png" />
     <Content Include="Client\images\icon\ios\icon-72.png" />
     <Content Include="Client\images\icon\ios\icon-76.png" />
-    <Content Include="Client\images\screen\android\screen-hdpi-landscape.png" />
     <Content Include="Client\images\screen\android\screen-hdpi-portrait.png" />
-    <Content Include="Client\images\screen\android\screen-ldpi-landscape.png" />
     <Content Include="Client\images\screen\android\screen-ldpi-portrait.png" />
-    <Content Include="Client\images\screen\android\screen-mdpi-landscape.png" />
     <Content Include="Client\images\screen\android\screen-mdpi-portrait.png" />
-    <Content Include="Client\images\screen\android\screen-xhdpi-landscape.png" />
     <Content Include="Client\images\screen\android\screen-xhdpi-portrait.png" />
     <Content Include="Client\images\screen\ios\screen-ipad-landscape-2x.png" />
     <Content Include="Client\images\screen\ios\screen-ipad-landscape.png" />
