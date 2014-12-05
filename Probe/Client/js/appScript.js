@@ -290,7 +290,7 @@ $(function () {
                     if ($('#gameCode').val() != 'incommon-settings') {
                         app.GetGamePlayServer($('#gameCode').val());
                     } else {
-                        app.popUpHelper('Info', 'screen width = ' + $(window).width() + '</br>' + 'screen height = ' + $(window).height(), null);
+                        app.popUpHelper('Info', 'screen width = ' + $(window).width() + '</br>' + 'screen height = ' + $(window).height() + '</br>' + 'browser = ' + navigator.userAgent, null);
                     }
                 } else {
                     app.popUpHelper('Error', 'The game code cannot be blank.', 'Please enter a game code.');
@@ -725,16 +725,18 @@ $(function () {
 
                 app.PutResultLocalStorage(result);
 
+                defaultHackWaitmsec = 100;
+                //Android - you have to wait a little longer for the soft keyboard to reset. The ipad took 100msec
+                (navigator.userAgent.match(/Android/i)) ? defaultHackWaitmsec = 300 : defaultHackWaitmsec = 100;
 
                 //This is a hack for IPAD to ensure that the fixed nav bar is positioned corrected
-                //if (navigator.userAgent.match(/iPad/i)) { MNS - 12/2/14 - will do this for all devices
                     $('header, footer').css('position', 'absolute');
                     window.scrollTo($.mobile.window.scrollLeft(), $.mobile.window.scrollTop());
                     //Wait a tenth of a second to ensure the IPAD soft keyboard is down. This is a hack to
                     //ensure the fixed bottom nav bar doesnt jump up to the middle on the question page
                     setTimeout(function () {
                         app.StartGame(0);
-                    }, 100);
+                    }, defaultHackWaitmsec);
                 //} else { //Just have to start game if your not an IPAD
                 //    app.StartGame(0);
                 //}

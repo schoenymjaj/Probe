@@ -385,6 +385,7 @@
     <Content Include="Client\images\screen\android\screen-ldpi-portrait.png" />
     <Content Include="Client\images\screen\android\screen-mdpi-portrait.png" />
     <Content Include="Client\images\screen\android\screen-xhdpi-portrait.png" />
+    <Content Include="Client\images\screen\android\screen-xxhdpi-portrait.png" />
     <Content Include="Client\images\screen\ios\screen-ipad-landscape-2x.png" />
     <Content Include="Client\images\screen\ios\screen-ipad-landscape.png" />
     <Content Include="Client\images\screen\ios\screen-ipad-portrait-2x.png" />
