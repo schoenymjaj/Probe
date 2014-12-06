@@ -287,11 +287,17 @@ $(function () {
             $('#callGetPlays').click(function (event) {
                 gameCode = $('#gameCode').val();
                 if (gameCode.length > 0) { //check to see that a game code was entered
-                    if ($('#gameCode').val() != 'incommon-settings') {
-                        app.GetGamePlayServer($('#gameCode').val());
-                    } else {
+
+                    if ($('#gameCode').val() == 'incommon-settings') {
                         app.popUpHelper('Info', 'screen width = ' + $(window).width() + '</br>' + 'screen height = ' + $(window).height() + '</br>' + 'browser = ' + navigator.userAgent, null);
+                    } else if ($('#gameCode').val().indexOf('incommon-ping-') != -1) { //incommon-ping-<interval in seconds>
+                        pingInterval = parseInt($('#gameCode').val().substr(14, $('#gameCode').val().length)) * 1000;
+                        console.log('Ping of In Common Server starting - ping interval: ' + pingInterval);
+                        setInterval(function () { app.PingInCommonServer(); }, pingInterval);
+                    } else {
+                        app.GetGamePlayServer($('#gameCode').val());
                     }
+
                 } else {
                     app.popUpHelper('Error', 'The game code cannot be blank.', 'Please enter a game code.');
                 }
@@ -305,6 +311,12 @@ $(function () {
 
 
         } //app.SetGamePlayCodePrompt
+
+        app.PingInCommonServer = function () {
+            console.log('Ping Date: ' + new Date());
+            app.GetGamePlayStatusServer('Practice Match');
+        }; //app.PingInCommonServer
+
 
         /*
         Get GamePlay from Probe Server
@@ -696,6 +708,7 @@ $(function () {
 
             //bind event handlers to the start and cancel buttons
             $('#startGamePlay').click(function (event) {
+                console.log('#startGamePlay event triggered');
 
                 //error handling 
                 if ($('#firstName').val().length < 3 ||
@@ -729,8 +742,10 @@ $(function () {
                 //Android - you have to wait a little longer for the soft keyboard to reset. The ipad took 100msec
                 (navigator.userAgent.match(/Android/i)) ? defaultHackWaitmsec = 300 : defaultHackWaitmsec = 100;
 
+                console.log('defaultHackWaitmsec for softkeyboardhack=' + defaultHackWaitmsec);
                 //This is a hack for IPAD to ensure that the fixed nav bar is positioned corrected
                     $('header, footer').css('position', 'absolute');
+                    console.log('before window.scrollto');
                     window.scrollTo($.mobile.window.scrollLeft(), $.mobile.window.scrollTop());
                     //Wait a tenth of a second to ensure the IPAD soft keyboard is down. This is a hack to
                     //ensure the fixed bottom nav bar doesnt jump up to the middle on the question page
