@@ -312,11 +312,13 @@ $(function () {
 
         } //app.SetGamePlayCodePrompt
 
+        /*
+        Ping In Common Server
+        */
         app.PingInCommonServer = function () {
             console.log('Ping Date: ' + new Date());
             app.GetGamePlayStatusServer('Practice Match');
         }; //app.PingInCommonServer
-
 
         /*
         Get GamePlay from Probe Server
@@ -745,7 +747,6 @@ $(function () {
                 console.log('defaultHackWaitmsec for softkeyboardhack=' + defaultHackWaitmsec);
                 //This is a hack for IPAD to ensure that the fixed nav bar is positioned corrected
                     $('header, footer').css('position', 'absolute');
-                    console.log('before window.scrollto');
                     window.scrollTo($.mobile.window.scrollLeft(), $.mobile.window.scrollTop());
                     //Wait a tenth of a second to ensure the IPAD soft keyboard is down. This is a hack to
                     //ensure the fixed bottom nav bar doesnt jump up to the middle on the question page
@@ -753,7 +754,7 @@ $(function () {
                         app.StartGame(0);
                     }, defaultHackWaitmsec);
                 //} else { //Just have to start game if your not an IPAD
-                //    app.StartGame(0);
+                   //app.StartGame(0);
                 //}
 
             });
@@ -1243,7 +1244,9 @@ $(function () {
             }
         }//app.AdjustPagePaddingTop
 
-
+        /*
+        Responsive UI approach to setting the header image
+        */
         app.SetHeaderImage = function () {
 
             width = $(window).width();
