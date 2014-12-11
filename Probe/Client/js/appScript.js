@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        var probeVersion = '1.0.0';
+        var probeVersion = '1.0.1';
         var root = GetRootUrl();  //root directory of the web site serving mobile app (i.e. in-common-app.com)
 
         //alert('Probe Version: ' + probeVersion);
@@ -111,6 +111,7 @@ $(function () {
             //sets the padding when window is resized. Not going to happen on a phone.
             $(window).resize(function ()
             {
+                console.log('resize triggered');
                 app.SetHeaderImage();
             });
 
@@ -283,6 +284,7 @@ $(function () {
 
             $('#homePageContent').html(promptforCodeHtml);
             $('#homePageContent').trigger("create");
+            $(window).trigger('resize'); //ensure the background image covers the entire window
 
             $('#callGetPlays').click(function (event) {
                 gameCode = $('#gameCode').val();
@@ -292,6 +294,7 @@ $(function () {
                         app.popUpHelper('Info', 'screen width = ' + $(window).width() + '</br>' + 'screen height = ' + $(window).height() + '</br>' + 'browser = ' + navigator.userAgent, null);
                     } else if ($('#gameCode').val().indexOf('incommon-ping-') != -1) { //incommon-ping-<interval in seconds>
                         pingInterval = parseInt($('#gameCode').val().substr(14, $('#gameCode').val().length)) * 1000;
+                        app.popUpHelper('Info', 'Ping of In Common Server starting - ping interval: ' + pingInterval, null);
                         console.log('Ping of In Common Server starting - ping interval: ' + pingInterval);
                         setInterval(function () { app.PingInCommonServer(); }, pingInterval);
                     } else {
@@ -691,6 +694,8 @@ $(function () {
             }//if (gameState != GameState.Idle)
 
             $('#homePageContent').trigger("create");
+            $(window).trigger('resize'); //ensure the background image covers the entire window
+
             if (gameState == GameState.ReadOnly) {
                 $('#startGamePlay,#cancelGamePlay,#reportGamePlay').addClass('GameReadOnlyButtons');
             }
@@ -741,12 +746,12 @@ $(function () {
                 app.PutResultLocalStorage(result);
 
                 defaultHackWaitmsec = 100;
-                //Android - you have to wait a little longer for the soft keyboard to reset. The ipad took 100msec
-                (navigator.userAgent.match(/Android/i)) ? defaultHackWaitmsec = 300 : defaultHackWaitmsec = 100;
+                //Android - you have to wait a little longer for the soft keyboard to reset. The ipad took 100msec, Android 300
+                (navigator.userAgent.match(/Android/i)) ? defaultHackWaitmsec = 1000 : defaultHackWaitmsec = 100;
 
                 console.log('defaultHackWaitmsec for softkeyboardhack=' + defaultHackWaitmsec);
                 //This is a hack for IPAD to ensure that the fixed nav bar is positioned corrected
-                    $('header, footer').css('position', 'absolute');
+                    //$('header, footer').css('position', 'absolute'); //MNS COMMENTED OUT 12-9-14
                     window.scrollTo($.mobile.window.scrollLeft(), $.mobile.window.scrollTop());
                     //Wait a tenth of a second to ensure the IPAD soft keyboard is down. This is a hack to
                     //ensure the fixed bottom nav bar doesnt jump up to the middle on the question page
@@ -916,6 +921,19 @@ $(function () {
 
             $(":mobile-pagecontainer").pagecontainer('change', '#question', { transition: transitionType });
 
+            //Change the min-height if for some reason the question page min height is less than the home page
+            styleHomeMinHeight = parseInt($('#home').css('min-height'));
+            styleQuesMinHeight = parseInt($('#question').css('min-height'));
+            console.log('homeMinHeight: ' + styleHomeMinHeight + '  questMinHeight: ' + styleQuesMinHeight);
+            if (styleQuesMinHeight < styleHomeMinHeight) {
+                console.log('set HOME min-height');
+                $('#question').css('min-height', styleHomeMinHeight);
+            }
+            $('#question header').css('position', 'fixed');
+            $('#question footer').css('position', 'fixed');
+            $(window).trigger('resize'); //ensure the background image covers the entire window //MNS ADDED 12-9-14
+
+
         }; //app.SetQuestionPage
 
         /*
@@ -962,6 +980,9 @@ $(function () {
             app.SetBottomNavButtons(false, true, false, false); //set summary to disabled and submit button to enabled
 
             $(":mobile-pagecontainer").pagecontainer('change', '#summary');
+            $('#summary header').css('position', 'fixed');
+            $('#summary footer').css('position', 'fixed');
+            $(window).trigger('resize'); //ensure the background image covers the entire window
 
 
         };//app.SetSummaryPage
@@ -1091,6 +1112,15 @@ $(function () {
                     //bind the menu "About" event
                     $("[data-icon='book']").click(function (event) {
                         app.DisplayAboutPage();
+                    });
+
+                    //bind the back return on tablereport page 
+                    //NOTE: Hack to refix the top navbar. For some reason with google table the return button
+                    //loses this.. So we refix it.
+                    $('#tablereport header [data-icon="back"]').click(function (event) {
+                        window.history.go(-1);
+                        $('#chartreport header').css('position', 'fixed');
+                        $('#tablereport header').css('position', 'fixed');
                     });
 
                     break;
@@ -1248,7 +1278,7 @@ $(function () {
         Responsive UI approach to setting the header image
         */
         app.SetHeaderImage = function () {
-
+            console.log('func SetHeaderImage');
             width = $(window).width();
             height = $(window).height();
 
@@ -1404,9 +1434,9 @@ $(function () {
             if (typeof google != 'undefined') {
 
                 if (gamePlayData.GameType == "Match") {
-                    $('footer').hide(); //hide footer on the page
 
                     if (result.PlayerCount >= 2) {
+                        $('footer').hide(); //hide footer on the page //MNS COMMENTED 12-9-14
                         app.DrawReport(ReportType.MatchSummary, result.GamePlayId, result.GameCode, result.PlayerId, 0);
                     }
                     else {
@@ -1414,6 +1444,7 @@ $(function () {
                     }
 
                 } else { //Test Type
+                    $('footer').hide();
                     app.DrawReport(ReportType.TestDetail, result.GamePlayId, result.GameCode, result.PlayerId, 0);
                 }
 
@@ -1462,12 +1493,17 @@ $(function () {
                     $('parent_chart_div').css('min-height:500px;height: 100%;width: 100%;margin:auto;background:#fff;text-align:center');
                     $('chart_div').css('min-height:500px;height: 100%;width: 100%;margin:auto;background:#fff;text-align:center');
 
+                    $(window).off('resize'); //turn off resize event; because we are going to reload
                     switch (reportType) {
                         case ReportType.MatchSummary:
 
                             $(window).resize(function () {
-                                resize = true;
-                                app.RenderPlayerMatchSummary(data);
+                                console.log('MatchSummary-Resize: ' + $.mobile.pageContainer.pagecontainer("getActivePage").attr('id'));
+                                app.SetHeaderImage();
+                                if ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id') == 'chartreport') {
+                                    resize = true;
+                                    app.RenderPlayerMatchSummary(data);
+                                }
                             });
 
                             $('#chart_div').html(''); //erase any old chart
@@ -1476,8 +1512,12 @@ $(function () {
                         case ReportType.MatchDetail:
 
                             $(window).resize(function () {
-                                resize = true;
-                                app.RenderPlayerMatchDetail(data);
+                                console.log('MatchDetail-Resize: ' + $.mobile.pageContainer.pagecontainer("getActivePage").attr('id'));
+                                app.SetHeaderImage();
+                                if ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id') == 'tablereport') {
+                                    resize = true;
+                                    app.RenderPlayerMatchDetail(data);
+                                }
                             });
 
                             $('#table_div').html(''); //erase any old table
@@ -1486,8 +1526,12 @@ $(function () {
                         case ReportType.TestDetail:
 
                             $(window).resize(function () {
-                                resize = true;
-                                app.RenderPlayerTestDetail(data);
+                                console.log('TestDetail-Resize: ' + $.mobile.pageContainer.pagecontainer("getActivePage").attr('id'));
+                                app.SetHeaderImage();
+                                if ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id') == 'tablereport') {
+                                    resize = true;
+                                    app.RenderPlayerTestDetail(data);
+                                }
                             });
 
                             $('#table_div').html(''); //erase any old table
