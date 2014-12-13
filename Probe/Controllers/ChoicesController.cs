@@ -20,6 +20,13 @@ namespace Probe.Controllers
 
         public ActionResult Index(long? SelectedQuestion)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)SelectedQuestion))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             //limit the questions to only what the user possesses
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
@@ -43,6 +50,14 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Choice choice = db.Choice.Find(id);
             if (choice == null)
             {
@@ -56,6 +71,13 @@ namespace Probe.Controllers
         // GET: Choices/Create
         public ActionResult Create(long? SelectedQuestion)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)SelectedQuestion))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", SelectedQuestion);
             ChoiceQuestion cq = (ChoiceQuestion)db.Question.Find(SelectedQuestion);
 
@@ -80,6 +102,13 @@ namespace Probe.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser(choice.ChoiceQuestionId))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
             if (ModelState.IsValid)
             {
@@ -99,6 +128,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Choice choice = db.Choice.Find(id);
             if (choice == null)
             {
@@ -115,6 +151,13 @@ namespace Probe.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsChoiceForLoggedInUser(choice.Id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
             if (ModelState.IsValid)
             {
@@ -133,6 +176,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Choice choice = db.Choice.Find(id);
             if (choice == null)
             {
@@ -146,6 +196,13 @@ namespace Probe.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsChoiceForLoggedInUser(id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Choice choice = db.Choice.Find(id);
             db.Choice.Remove(choice);
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);

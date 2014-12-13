@@ -17,6 +17,18 @@
         $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
             drawContent();
         });
+
+        function AlignTableCellContent() {
+            //set the alignment of the cell contents. Can only do this after the fact
+            $('.googleReportTableHeader').css('vertical-align', 'top');
+            $('.googleReportCellYES').css('vertical-align', 'top');
+            $('.googleReportCellNO').css('vertical-align', 'top');
+            $('.googleReportCell').css('vertical-align', 'top');
+            $('.googleReportCellYESWB').css('vertical-align', 'top');
+            $('.googleReportCellNOWB').css('vertical-align', 'top');
+            $('.googleReportCellWB').css('vertical-align', 'top');
+        }//function AlignTableCellContent
+
         function drawContent() {
             console.log('func drawContent');
             logError('PlayerMatchDetail - func drawContent start', arguments.callee.trace()); //Logging an event on the server
@@ -60,7 +72,7 @@
                     */
                     if (data.length >= 1) {
                         if (DoStyleMobile()) {
-                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + '<br/><span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
+                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: <span class="reportLabelText">' + data[0].PlayerName + '</span><br/><span class="reportLabel reportLabelMargin">Matchup:</span> <span class="reportLabelText">' + data[0].MatchedPlayerName + '</span>');
                             $('#appHome').click(function (event) {
                                 //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
                                 if (ClientIsCordovaApp()) {
@@ -71,7 +83,7 @@
                             });
                             $('.reportReturnLink').hide();
                         } else {
-                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: ' + data[0].PlayerName + ' <span class="reportLabel reportLabelMargin">Matchup:</span> ' + data[0].MatchedPlayerName);
+                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: <span class="reportLabelText">' + data[0].PlayerName + '</span> <span class="reportLabel reportLabelMargin">Matchup:</span> <span class="reportLabelText">' + data[0].MatchedPlayerName + '</span>');
                             $('.reportReturnLink').html('@Html.ActionLink("Back to Player Match Totals", "PlayerMatchSummary", "Reports")');
                         }
                     }
@@ -92,19 +104,19 @@
                     matchCount = 0;
                     for (var i = 0; i < data.length; i++) {
                         
-                        cellClassName = 'googleReportCellNO';
+                        cellClassName = 'googleReportCellNOWB';
                         if (data[i].Match == 1) {
-                            cellClassName = 'googleReportCellYES'
+                            cellClassName = 'googleReportCellYESWB'
                             matchCount++;
                         } else {
-                            cellClassName = 'googleReportCellNO';
+                            cellClassName = 'googleReportCellNOWB';
                         }
 
                         row = 0;
-                        rowVector[row++] = { v: data[i].Question, p: { 'className': cellClassName } };
-                        rowVector[row++] = { v:data[i].PlayerChoice, p: { 'className': cellClassName } };
+                        rowVector[row++] = { v: data[i].Question, p: { 'className': 'googleReportCell' } };
+                        rowVector[row++] = { v: data[i].PlayerChoice, p: { 'className': 'googleReportCellWB' } };
                         rowVector[row++] = { v:data[i].MatchedPlayerChoice, p: { 'className': cellClassName } };
-                        rowVector[row++] = { v: data[i].PercentChosen, p: { 'className': cellClassName } };
+                        rowVector[row++] = { v: data[i].PercentChosen, p: { 'className': 'googleReportCell' } };
 
                         tdata.addRow(rowVector);
                     }
@@ -113,11 +125,13 @@
 
                     var options = {
                         allowHtml: true,
+                        alternatingRowStyle: true,
                         cssClassNames: {
                             headerCell: 'googleReportTableHeader',
                             tableCell: 'googleReportTableNonHeader',
                             tableRow: 'googleReportTableNonHeader'
-                    }
+                        },
+                        backgroundColor: 'transparent' //doesn't work for tables
                     };
 
 
@@ -125,6 +139,8 @@
                     google.visualization.events.addListener(tableAll, 'ready', setColumnWidths);
                     google.visualization.events.addListener(tableAll, 'select', selectHandler);
                     tableAll.draw(tdata, options);
+
+                    AlignTableCellContent();
 
                     if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
 
@@ -149,7 +165,7 @@
     <div id="title" class="reportTitle">Player - Player Match Details</div>
     <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
-    <div class="reportGameHeader"><span class="reportLabel" style="margin-right: 20px">Game</span>: @ViewBag.GamePlayName</div>
+    <div class="reportGameHeader"><span class="reportLabel" style="margin-right: 20px">Game</span>: <span class="reportLabelText">@ViewBag.GamePlayName</span></div>
     <div id="header" class="reportHeader"></div>
     <div class="tableHeader"></div>
     <div id="table_div" class="tableMatch"></div>

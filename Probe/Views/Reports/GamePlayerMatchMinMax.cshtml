@@ -80,7 +80,7 @@
                  /*
                  SETUP REPORT HEADER
                  */
-                 $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName');
+                 $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>');
 
                  /*
                  SETUP GOOGLE CHART DATA
@@ -154,6 +154,7 @@
                          },
                          ticks: tickArray
                      },
+                     backgroundColor: 'transparent',
                      bar: { groupWidth: "85%" },
                      annotations: {
                          textStyle: {
@@ -166,18 +167,6 @@
                      },
                      legend: { position: 'top', alignment: 'end', textStyle: { color: 'blue', fontSize: 16 } },
                  };
-
-                 /*
-                var options = {
-                    title: 'Game Players Match Max Min',
-                    isStacked: true,
-                    width: 900,
-                    height: Math.round(150 * data.length),
-                    chartArea: { left: 200, top: 10, width: '80%', height: '80%' },
-                    vAxis: { title: 'Players', titleTextStyle: { fontSize: '25' } },
-                    //hAxis: { title: '# Matches', format: '#', titleTextStyle: { fontSize: '25' } }
-                };
-                 */
 
                  var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
                  google.visualization.events.addListener(chart, 'select', selectHandler);

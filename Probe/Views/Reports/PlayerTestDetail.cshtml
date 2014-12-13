@@ -27,6 +27,17 @@
         return Math.round(nbrCorrect * 100 / data.length);
     }
 
+    function AlignTableCellContent() {
+        //set the alignment of the cell contents. Can only do this after the fact
+        $('.googleReportTableHeader').css('vertical-align', 'top');
+        $('.googleReportCellYES').css('vertical-align', 'top');
+        $('.googleReportCellNO').css('vertical-align', 'top');
+        $('.googleReportCell').css('vertical-align', 'top');
+        $('.googleReportCellYESWB').css('vertical-align', 'top');
+        $('.googleReportCellNOWB').css('vertical-align', 'top');
+        $('.googleReportCellWB').css('vertical-align', 'top');
+    }//function AlignTableCellContent
+
     function drawContent() {
         console.log('func drawContent');
         logError('PlayerTestDetail - func drawContent start', arguments.callee.trace()); //Logging an event on the server
@@ -66,9 +77,9 @@
                  */
                  if (data.length >= 1) {
                      if (DoStyleMobile()) {
-                         $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName'
-                             + '<br/><span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
-                             + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
+                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>'
+                             + '<br/><span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
+                             + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
                          $('#appHome').click(function (event) {
                              //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
                              if (ClientIsCordovaApp()) {
@@ -79,9 +90,9 @@
                          });
                          $('.reportReturnLink').hide();
                      } else {
-                         $('#header').html('<span class="reportLabel">Game:</span> ' + '@ViewBag.GamePlayName'
-                             + ' <span class="reportLabel reportLabelMargin">Player:</span> ' + data[0].PlayerName
-                             + ' <span class="reportLabel reportLabelMargin">Score:</span> ' + CalcTestScore(data) + '%');
+                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>'
+                             + ' <span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
+                             + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
                          $('.reportReturnLink').html('@Html.ActionLink("Back to Player Test Scores", "PlayerTestSummary", "Reports")');
                      }
                  }
@@ -103,18 +114,18 @@
                  correctCount = 0;
                  for (var i = 0; i < data.length; i++) {
 
-                     cellClassName = 'googleReportCellNO';
+                     cellClassName = 'googleReportCellNOWB';
                      if (data[i].QuestionCorrect == 1) {
-                         cellClassName = 'googleReportCellYES'
+                         cellClassName = 'googleReportCellYESWB'
                          correctCount++;
                      } else {
-                         cellClassName = 'googleReportCellNO';
+                         cellClassName = 'googleReportCellNOWB';
                      }
 
                      row = 0;
-                     rowVector[row++] = { v: data[i].Question, p: { 'className': cellClassName } };
+                     rowVector[row++] = { v: data[i].Question, p: { 'className': 'googleReportCell' } };
                      rowVector[row++] = { v: data[i].SelectedChoices, p: { 'className': cellClassName } };
-                     rowVector[row++] = { v: data[i].CorrectChoices, p: { 'className': cellClassName } };
+                     rowVector[row++] = { v: data[i].CorrectChoices, p: { 'className': 'googleReportCellWB' } };
                      if (!DoStyleMobile()) rowVector[row++] = { v: data[i].PercentCorrect, p: { 'className': cellClassName } };
 
                      tdata.addRow(rowVector);
@@ -125,11 +136,13 @@
 
                  var options = {
                      allowHtml: true,
+                     alternatingRowStyle: true,
                      cssClassNames: {
                          headerCell: 'googleReportTableHeader',
                          tableCell: 'googleReportTableNonHeader',
                          tableRow: 'googleReportTableNonHeader'
-                     }
+                     },
+                     backgroundColor: 'transparent' //doesn't work for tables
                  };
 
 
@@ -140,6 +153,8 @@
 
                  if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
                  logError('PlayerTestDetail - func drawContent end', null); //Logging an event on the server
+
+                 app.AlignTableCellContent();
 
              } catch (err) {
                  if (arguments != null && arguments.callee != null && arguments.callee.trace) {

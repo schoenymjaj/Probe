@@ -39,6 +39,14 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Game game = db.Game.Find(id);
             if (game == null)
             {
@@ -98,6 +106,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Game game = db.Game.Find(id);
             if (game == null)
             {
@@ -114,6 +129,13 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,GameTypeId,Name,Description,AspNetUsersId")] Game game)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser(game.Id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             ValidateGameEdit(game);
             if (ModelState.IsValid)
             {
@@ -132,6 +154,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Game game = db.Game.Find(id);
             if (game == null)
             {
@@ -145,6 +174,13 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser(id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Game game = db.Game.Find(id);
             db.Game.Remove(game);
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);

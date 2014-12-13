@@ -90,6 +90,18 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
+        public static bool IsGamePlayForLoggedInUser(long gamePlayId)
+        {
+            bool status = false;
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var db = new ProbeDataContext();
+            status = db.GamePlay.Where(gp => gp.Game.AspNetUsersId == AspNetUsersId && gp.Id == gamePlayId).Count() > 0;
+
+            return status;
+        }
+
         public static bool IsGamePlayActive(GamePlay gp)
         {
             bool status = false;
@@ -178,6 +190,18 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
+        public static bool IsGameQuestionForLoggedInUser(long gameQuestionId)
+        {
+            bool status = false;
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var db = new ProbeDataContext();
+            status = db.GameQuestion.Where(gq => gq.Id == gameQuestionId && gq.Game.AspNetUsersId == AspNetUsersId).Count() > 0;
+
+            return status;
+        }
+
         #endregion
 
         #region Question Validations
@@ -214,6 +238,18 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
+        public static bool IsQuestionForLoggedInUser(long questionId)
+        {
+            bool status = false;
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var db = new ProbeDataContext();
+            status = db.Question.Where(q => q.Id == questionId && q.AspNetUsersId == AspNetUsersId).Count() > 0;
+
+            return status;
+        }
+
         public static bool IsQuestionNameExistForLoggedInUser(long questionId, string questionName)
         {
             bool status = false;
@@ -231,6 +267,22 @@ namespace Probe.Helpers.Validations
             ProbeDataContext db = new ProbeDataContext();
             return db.ChoiceQuestion.Find(questionId).Choices.Count() > 0;
 
+        }
+
+        #endregion
+
+        #region Choice Validations
+
+        public static bool IsChoiceForLoggedInUser(long choiceId)
+        {
+            bool status = false;
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var db = new ProbeDataContext();
+            status = db.Choice.Where(c => c.Id == choiceId && c.ChoiceQuestion.AspNetUsersId == AspNetUsersId).Count() > 0;
+
+            return status;
         }
 
         #endregion
@@ -257,6 +309,18 @@ namespace Probe.Helpers.Validations
 
             var db = new ProbeDataContext();
             status = db.Game.Where(g => g.Name == gameName && g.AspNetUsersId == AspNetUsersId && g.Id != gameId).Count() > 0;
+
+            return status;
+        }
+
+        public static bool IsGameForLoggedInUser(long gameId)
+        {
+            bool status = false;
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var db = new ProbeDataContext();
+            status = db.Game.Where(g => g.AspNetUsersId == AspNetUsersId && g.Id == gameId).Count() > 0;
 
             return status;
         }

@@ -144,7 +144,7 @@ textarea {
     margin-top: 10px;
     font-size:  2.3em;
     font-weight: bold;
-    color: blue;
+    color: black;
     float: left; 
     width: 70%;
     /*text-align: center;*/
@@ -152,19 +152,25 @@ textarea {
 
 .reportGameHeader {
     font-size:  1.4em;
-    font-weight: bold;
+    font-weight: bolder;
     color: black;
 }
 
 .reportHeader {
     font-size:  1.4em;
-    font-weight: bold;
+    font-weight: bolder;
     color: black;
 }
 
 .reportLabel {
     font-size:  1.2em;
-    color: blue;
+    color: black;
+}
+
+.reportLabelText {
+    font-size: 1.0em;
+    color: black;
+    font-style: italic;
 }
 
 .reportLabelMargin {
@@ -182,20 +188,33 @@ textarea {
 
 .tableHeader {
     margin-top: 10px;
+    margin-bottom: 5px;
     font-size: 1.2em;
     font-weight: bold;
-    color: green;
+    color: black;
+}
+
+.googleReportTableBGTransparent {
+    background: transparent;
+    opacity: 1.0;
 }
 
 .googleReportTableHeader {
     font-weight: bold;
-    color: black;
+    color: white;
+    background-color: #262626;
     text-align: left;
-    vertical-align: top;
+    font-size:1.2em;
 }
 
 .googleReportTableNonHeader {
     text-align: left;
+    background-color: #ededed;
+}
+
+.googleReportCell {
+    font-size:1.2em;
+    color: #262626;
 }
 
 .googleReportCellYES {
@@ -205,6 +224,42 @@ textarea {
 .googleReportCellNO {
     color: red;
 }
+
+/* we do word break depending on the width of the device*/
+@media only screen and (min-width: 901px) {
+    .googleReportCellNOWB {
+        font-size:1.2em;
+        color: red;
+    }
+
+    .googleReportCellYESWB {
+        font-size:1.2em;
+        color: #262626;
+    }
+
+    .googleReportCellWB {
+        font-size:1.2em;
+        color: #262626;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .googleReportCellNOWB {
+        color: red;
+        word-break: break-all;
+    }
+
+    .googleReportCellYESWB {
+        color: #262626;
+        word-break: break-all;
+    }
+
+    .googleReportCellWB {
+        color: #262626;
+        word-break: break-all;
+    }
+}
+
 
 /*
     GamePlay page specific

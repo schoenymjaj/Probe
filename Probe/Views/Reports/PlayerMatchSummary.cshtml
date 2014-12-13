@@ -54,7 +54,7 @@
                 Back button will not exist if report loads within an iFrame (then its in mobile mode)
                 */
                 if (DoStyleMobile()) {
-                    $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
+                    $('#header').html('<span class="reportLabel">Game</span>: ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '<span class="reportLabelText">@ViewBag.PlayerName</span>');
                     $('#appHome').click(function (event) {
                         //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
                         if (ClientIsCordovaApp()) {
@@ -65,7 +65,7 @@
                     });
                     $('.reportReturnLink').hide();
                 } else {
-                    $('#header').html('<span class="reportLabel">Game</span>: ' + '@ViewBag.GamePlayName' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '@ViewBag.PlayerName');
+                    $('#header').html('<span class="reportLabel">Game</span>: ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '<span class="reportLabelText">@ViewBag.PlayerName</span>');
                     $('.reportReturnLink').html('@Html.ActionLink("Back to Game Match Summary", "GamePlayerMatchMinMax", "Reports")');
                 }
 
@@ -118,16 +118,17 @@
 
                 var options = {};
                 if (DoStyleMobile()) {
-
                     options = {
                         height: Math.round(70 * data.length),
                         chartArea: { left: 10, top: 25, right: 10, width: '95%', height: '75%' }, //WIDTH CONTROLS IF YOU CAN SEE THE LAST TICK NUMBER
+                        colors: ['#262626'],
                         hAxis: {
                             title: vAxisText,
                             format: '#',
                             titleTextStyle: { fontSize: '20' },
                             ticks: tickArray
                         },
+                        backgroundColor: 'transparent',
                         bar: { groupWidth: "75%" }, //CONTROLS SIZE OF BAR AND SPACE BETWEEN BARS
                         annotations: {
                             textStyle: {
@@ -138,7 +139,7 @@
                                 opacity: 0.8          // The transparency of the text.
                             }
                         },
-                        legend: { position: 'top', alignment: 'end', textStyle: { color: 'blue', fontSize: 16 } },
+                        legend: { position: 'top', alignment: 'end', textStyle: { color: 'black', fontSize: 16 } },
                     };
 
 
@@ -149,6 +150,7 @@
                         //width: 95%, DONT NEED THIS; WE HAVE TURNED ON RESIZING
                         height: Math.round(100 * data.length),
                         chartArea: { left: 150, top: 25, width: '80%', height: '75%' }, //WIDTH CONTROLS IF YOU CAN SEE THE LAST TICK NUMBER
+                        colors: ['#262626'],
                         vAxis: { title: 'Players', titleTextStyle: { fontSize: '25' } },
                         hAxis: {
                             title: vAxisText,
@@ -156,8 +158,9 @@
                             titleTextStyle: { fontSize: '25' },
                             ticks: tickArray
                         },
+                        backgroundColor: 'transparent',
                         bar: { groupWidth: "75%" }, //CONTROLS SIZE OF BAR AND SPACE BETWEEN BARS
-                        legend: { position: 'top', alignment: 'end', textStyle: { color: 'blue', fontSize: 16 } },
+                        legend: { position: 'top', alignment: 'end', textStyle: { color: 'black', fontSize: 16 } },
                     };
 
                 }//if (DoStyleMobile()) {

@@ -35,6 +35,16 @@ namespace Probe.Controllers
             ViewBag.SelectedGame = new SelectList(games, "Id", "Name", SelectedGame);
             int gameId = SelectedGame.GetValueOrDefault();
 
+            if (SelectedGame != null)
+            {
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsGameForLoggedInUser((long)SelectedGame))
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
             Session["CurrentSelectedGame"] = SelectedGame;
             ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
             ViewBag.DctGameActive = ProbeValidate.GetAllGamesActiveStatus();
@@ -53,6 +63,14 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             GameQuestion gameQuestion = db.GameQuestion.Find(id);
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId); //persist the selected game
 
@@ -66,6 +84,13 @@ namespace Probe.Controllers
         // GET: GameQuestions/Create
         public ActionResult Create(int? SelectedGame)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser((long)SelectedGame))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name",SelectedGame);
@@ -88,6 +113,17 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameForLoggedInUser((long)gameQuestion.GameId))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)gameQuestion.QuestionId))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
@@ -112,6 +148,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             GameQuestion gameQuestion = db.GameQuestion.Find(id);
             if (gameQuestion == null)
             {
@@ -131,6 +174,17 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameQuestionForLoggedInUser(gameQuestion.Id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)gameQuestion.QuestionId))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
             if (ModelState.IsValid)
@@ -153,6 +207,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             GameQuestion gameQuestion = db.GameQuestion.Find(id);
 
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId); //persist the selected game
@@ -169,6 +230,13 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsGameQuestionForLoggedInUser(id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             GameQuestion gameQuestion = db.GameQuestion.Find(id);
 
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId); //persist the selected game

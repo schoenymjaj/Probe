@@ -42,6 +42,14 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
             if (choiceQuestion == null)
             {
@@ -93,6 +101,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
             if (choiceQuestion == null)
             {
@@ -109,6 +124,13 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,QuestionTypeId,Name,Text,OneChoice,AspNetUsersId")] ChoiceQuestion choiceQuestion)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser(choiceQuestion.Id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             choiceQuestion.OneChoice = true; //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
             ValidateQuestionEdit(choiceQuestion);
             if (ModelState.IsValid)
@@ -128,6 +150,13 @@ namespace Probe.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
             if (choiceQuestion == null)
             {
@@ -141,6 +170,13 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
+            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+            //Somebody is trying to do bad stuff.
+            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
             db.Question.Remove(choiceQuestion);
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
