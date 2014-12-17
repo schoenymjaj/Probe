@@ -26,6 +26,7 @@ namespace Probe.Controllers
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
             ViewBag.DctQuestionActive = ProbeValidate.GetAllQuestionsActiveStatus();
+            ViewBag.DctQuestionForATest = ProbeValidate.GetAllQuestionPossessCorrectChoice();
 
             //sort the choices of the questions
             var question = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId)

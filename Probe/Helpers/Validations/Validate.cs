@@ -265,9 +265,32 @@ namespace Probe.Helpers.Validations
         public static bool IsQuestionPossessCorrectChoice(long questionId)
         {
             ProbeDataContext db = new ProbeDataContext();
-            return db.ChoiceQuestion.Find(questionId).Choices.Count() > 0;
-
+            return db.ChoiceQuestion.Find(questionId).Choices.Count(c => c.Correct) > 0;
         }
+
+        public static bool IsQuestionPossessCorrectChoice(long questionId, long choiceId)
+        {
+            ProbeDataContext db = new ProbeDataContext();
+            return db.ChoiceQuestion.Find(questionId).Choices.Count(c => c.Correct && c.Id != choiceId) > 0;
+        }
+
+        public static Dictionary<long, bool> GetAllQuestionPossessCorrectChoice()
+        {
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            //All Questions - Do they possess a correct choice
+            ProbeDataContext db = new ProbeDataContext();
+
+            return db.ChoiceQuestion
+                    .Where(cq => cq.AspNetUsersId == AspNetUsersId)
+                    .Select(cq => new
+                    {
+                        Id = cq.Id,
+                        CanUseForTest = cq.Choices.Count(c => c.Correct) > 0
+                    }).ToDictionary(gp => gp.Id, gp => gp.CanUseForTest);
+
+        }//public static Dictionary<long,bool> GetAllQuestionPossessCorrectChoice()
 
         #endregion
 

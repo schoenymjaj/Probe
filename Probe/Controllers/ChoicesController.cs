@@ -158,7 +158,7 @@ namespace Probe.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
+            if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId,choice.Id); //only validate if choice selected uses correct
             if (ModelState.IsValid)
             {
                 db.Entry(choice).State = EntityState.Modified;
@@ -213,6 +213,16 @@ namespace Probe.Controllers
         {
             //GamePlay Business Rules
             if (ProbeValidate.IsQuestionPossessCorrectChoice(questionId))
+            {
+                ModelState.AddModelError("Correct", "The question can only have one correct choice.");
+            }
+
+        }
+
+        private void ValidateChoice(long questionId, long choiceId)
+        {
+            //GamePlay Business Rules
+            if (ProbeValidate.IsQuestionPossessCorrectChoice(questionId, choiceId))
             {
                 ModelState.AddModelError("Correct", "The question can only have one correct choice.");
             }

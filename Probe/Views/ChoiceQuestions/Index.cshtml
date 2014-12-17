@@ -46,7 +46,7 @@
                     @Html.DisplayNameFor(model => model.QuestionType.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.OneChoice)
+                    Test Enabled
                 </th>
                 <th>
                     Choices
@@ -68,7 +68,7 @@
                         @Html.DisplayFor(modelItem => item.QuestionType.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.OneChoice)
+                        @Html.CheckBox("TestEnabled", (bool)ViewBag.DctQuestionForATest[item.Id], htmlAttributes: new { disabled = "disabled" })
                     </td>
                     <td>
                         <a class="choicesDialogLink" data-questionid="@item.Id" href="#">@Html.DisplayFor(modelItem => item.Choices.Count)</a>
