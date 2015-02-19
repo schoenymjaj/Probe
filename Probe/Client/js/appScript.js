@@ -27,7 +27,7 @@ $(function () {
         /*
         Globals
         */
-        var probeVersion = '1.0.1';
+        var probeVersion = '1.1.0';
         var root = GetRootUrl();  //root directory of the web site serving mobile app (i.e. in-common-app.com)
 
         //alert('Probe Version: ' + probeVersion);
@@ -488,6 +488,21 @@ $(function () {
             playerDTOin["NickName"] = result["NickName"];
             (result["LastName"] != {}) ? playerDTOin["LastName"] : result["LastName"]; //curently last name will always be empty 8/1/14
             playerDTOin["Sex"] = result["Sex"];
+            playerDTOin["ClientVersion"] = probeVersion;
+
+            //BEGIN - ADDED 2/7/15 - TO CONSOLIDATE POST INTO ONE AJAX CALL
+            //create gamePlayAnswers array object for POST
+            gamePlayData = app.GetGamePlayLocalStorage();
+            var gamePlayAnswers = new Array();
+            for (i = 0; i < gamePlayData.GameQuestions.length; i++) {
+                gamePlayAnswers[i] = {};
+                gamePlayAnswers[i]["PlayerId"] = 0; //no player id yet.
+                gamePlayAnswers[i]["GameCode"] = result.GameCode;
+                gamePlayAnswers[i]["ChoiceId"] = result.GameQuestions[i]["SelChoiceId"];
+            }
+            playerDTOin["GamePlayAnswer"] = gamePlayAnswers;
+            //END - ADDED 2/7/15 - TO CONSOLIDATE POST INTO ONE AJAX CALL
+
 
             url = ProbeAPIurl + 'Players/PostPlayer';
             console.log('func app.PostGamePlayAnswersServer AJAX url:' + url);
@@ -526,29 +541,6 @@ $(function () {
                         }
                         return returnErrMsg = errorMessage;
                     }//if (playerDTO.errorid == undefined) {
-
-                    console.log('func app.PostGamePlayAnswersServer AJAX success url:' + url);
-                    app.ajaxHelper(url, 'POST', gamePlayAnswers)
-                        .done(function (item) {
-                            console.log('return POSTGamePlayAnswers success');
-
-                            // On success, 'gamePlayAnswers' contains a GamePlayAnswers object
-                            if (gamePlayAnswers.errorid == undefined) {
-                                //SUCCESS
-
-                                returnErrMsg = null; //successful return
-                            } else {
-                                //THERE WAS A PROBE BUSINESS ERROR
-                                return returnErrMsg = gamePlayAnswers.errormessage + '(Error #: ' + gamePlayAnswers.errorid + ')';
-
-                            }//if (gamePlayAnswers.errorid == undefined) {
-
-                        })
-                        .fail(function (jqxhr, textStatus, error) {
-                            console.log('return POSTGamePlayAnswers fail');
-
-                            return returnErrMsg = app.GetAJAXFailureErrMessage('Post GamePlay Answers', textStatus, error);
-                        });//fail for POST GamePlayAnswers
                 })//done for POST Player
                 .fail(function (jqxhr, textStatus, error) {
                     console.log('return POSTPlayer fail');
@@ -915,6 +907,7 @@ $(function () {
                 app.PutResultLocalStorage(result);
                 app.SetBottomNavButtons(true, true, true, true);
 
+                app.AlertPlayerComplete(currentQuestionNbr, gamePlayData.GameQuestions.length - 1); //Determine if any user alerts are necessary for good usability
             }); //$("input[name ='choice']").on('change', function () {
 
             app.SetBottomNavButtons(true, true, true, true); //set summary and submit button to enabled
@@ -1047,8 +1040,11 @@ $(function () {
 
                     //$('#qfooter #nextButton').click(function (event) { //MNS DEBUG
                     $('.nextButton').click(function (event) {
-                            (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
+                        (currentQuestionNbr == result.GameQuestions.length - 1) ? currentQuestionNbr = 0 : currentQuestionNbr++;
                         app.SetQuestionPage(currentQuestionNbr, 'none');
+
+                        app.AlertPlayerComplete(currentQuestionNbr, 0); //Determine if any user alerts are necessary for good usability
+
                     });
 
                     break;
@@ -1225,6 +1221,33 @@ $(function () {
             }
             $.mobile.loading('hide'); //to show the spinner
         }//app.GameReportAction
+
+
+        /*
+        Alert User Complete
+        */
+        app.AlertPlayerComplete = function (questionNbr, questionNbrToCheck) {
+
+            if (gameState != GameState.ReadOnly) {
+
+                //BEGIN - MNS - ADDED FOR v1.1 - improved usability 2/8/15
+                if (questionNbr == questionNbrToCheck && app.IsAllQuestionsAnswered()) {
+                    app.confirmDialog('Submit', 'You have answered all the questions for the Game <span class="popupGameName">' + gamePlayData.Name + '</span>.' + '<p>Do you want to submit?</p>',
+                        function () {
+                            $.mobile.loading('show'); //to show the spinner
+                            setTimeout(function () { app.ConfirmSubmit(); }, 1000); //give a 1 second delay. So the user see's the spinner when submitting
+
+                        });
+                } else if (questionNbr == questionNbrToCheck && !app.IsAllQuestionsAnswered()) {
+                    app.confirmDialog('Summary', 'You have NOT answered all the questions of the Game <span class="popupGameName">' + gamePlayData.Name + '</span>.' + '<p>Do you want to see the Summary page to find which questions have NOT been answered?</p>',
+                        function () {
+                            app.SetSummaryPage();
+                        });
+                } //END - MNS - ADDED FOR v1.1 - improved usability 2/8/15
+
+            } //if (gameState != GameState.ReadOnly) {
+
+        } //app.AlertPlayerComplete
 
         /*
         Confirm Submit Logic
@@ -1496,8 +1519,10 @@ $(function () {
                     $(window).off('resize'); //turn off resize event; because we are going to reload
                     switch (reportType) {
                         case ReportType.MatchSummary:
+                            console.log('return DrawPlayerMatchSummary AJAX success');
 
                             $(window).resize(function () {
+                                console.log('resize ReportType.MatchSummary');
                                 console.log('MatchSummary-Resize: ' + $.mobile.pageContainer.pagecontainer("getActivePage").attr('id'));
                                 app.SetHeaderImage();
                                 if ($.mobile.pageContainer.pagecontainer("getActivePage").attr('id') == 'chartreport') {
@@ -1558,7 +1583,7 @@ $(function () {
         Actual rendering of the PlayerMatchSummary report
         */
         app.RenderPlayerMatchSummary = function (data) {
-            console.log('return DrawPlayerMatchSummary AJAX success');
+            console.log('func RenderPlayerMatchSummary');
 
             gamePlayData = app.GetGamePlayLocalStorage();
             result = app.GetResultLocalStorage();
@@ -1653,6 +1678,7 @@ $(function () {
                 google.visualization.events.addListener(chart, 'select', selectHandler);
                 chart.draw(tdata, options);
 
+                console.log('END func RenderPlayerMatchSummary')
             } catch (err) {
                 app.popUpHelper('Error',app.GetGoogleChartFailureErrMessage('Chart Player Match Summary',err), null);
             }//try

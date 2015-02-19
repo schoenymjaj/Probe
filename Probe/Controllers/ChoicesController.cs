@@ -30,9 +30,7 @@ namespace Probe.Controllers
             //limit the questions to only what the user possesses
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-            ViewBag.DctQuestionActive = ProbeValidate.GetAllQuestionsActiveStatus();
-
-            var questions = db.Question.Where(q => q.AspNetUsersId == loggedInUserId).OrderBy(q => q.Name).ToList();
+            var questions = db.Question.Where(q => q.AspNetUsersId == loggedInUserId && !q.UsedInGame).OrderBy(q => q.Name).ToList();
             ViewBag.SelectedQuestion = new SelectList(questions, "Id", "Name", SelectedQuestion);
             long questionId = SelectedQuestion.GetValueOrDefault();
 

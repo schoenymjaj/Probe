@@ -80,6 +80,7 @@ namespace Probe.Controllers
             ValidateGameCreate(game);
             if (ModelState.IsValid)
             {
+                game.ACLId = 1; //Private 
                 db.Game.Add(game);
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
 
@@ -127,7 +128,7 @@ namespace Probe.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         ////[ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,GameTypeId,Name,Description,AspNetUsersId")] Game game)
+        public ActionResult Edit([Bind(Include = "Id,GameTypeId,Name,Description,AspNetUsersId,ACLId")] Game game)
         {
             //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
             //Somebody is trying to do bad stuff.

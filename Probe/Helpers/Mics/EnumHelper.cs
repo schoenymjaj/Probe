@@ -7,6 +7,11 @@ using System.ComponentModel;
 
 namespace Probe.Helpers.Mics
 {
+    public static class ProbeConstants
+    {
+        public const string ClientVersionPostPlayerWithoutAnswers = "1.0";
+    }
+
     public static class EnumHelper
     {
         // Get the value of the description attribute if the   
@@ -55,4 +60,5 @@ namespace Probe.Helpers.Mics
                        .Select(e => new SelectListItem { Value = e.ToString(), Text = e.GetDescription() });
         }
     }
+
 }

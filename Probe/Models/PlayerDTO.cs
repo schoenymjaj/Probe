@@ -47,6 +47,9 @@ namespace Probe.Models
 
         public Person.SexType Sex { get; set; }
 
+        public string ClientVersion { get; set; }
+
+        public virtual ICollection<GamePlayAnswer> GamePlayAnswers { get; set; } //MNS - 2/8/15 support one POST approach
 
     }
 }

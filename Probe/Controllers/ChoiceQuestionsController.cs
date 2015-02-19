@@ -25,11 +25,10 @@ namespace Probe.Controllers
             //limit the questions to only what the user possesses
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-            ViewBag.DctQuestionActive = ProbeValidate.GetAllQuestionsActiveStatus();
             ViewBag.DctQuestionForATest = ProbeValidate.GetAllQuestionPossessCorrectChoice();
 
             //sort the choices of the questions
-            var question = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId)
+            var question = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame)
                 .OrderBy(cq => cq.Name)
                 .Include(cq => cq.QuestionType);
 
@@ -83,9 +82,11 @@ namespace Probe.Controllers
         public ActionResult Create([Bind(Include = "Id,QuestionTypeId,Name,Text,OneChoice,AspNetUsersId")] ChoiceQuestion choiceQuestion)
         {
             choiceQuestion.OneChoice = true; //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
+            choiceQuestion.UsedInGame = false;
             ValidateQuestionCreate(choiceQuestion);
             if (ModelState.IsValid)
             {
+                choiceQuestion.ACLId = 1; //question will be private for now 2/15/15
                 db.Question.Add(choiceQuestion);
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
                 return RedirectToAction("Index");
@@ -136,6 +137,7 @@ namespace Probe.Controllers
             ValidateQuestionEdit(choiceQuestion);
             if (ModelState.IsValid)
             {
+                choiceQuestion.ACLId = 1; //question will be private for now 2/15/15
                 db.Entry(choiceQuestion).State = EntityState.Modified;
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
                 return RedirectToAction("Index");

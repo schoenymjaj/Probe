@@ -48,6 +48,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -202,13 +203,29 @@
     <Compile Include="Helpers\Exceptions\GamePlayExceptions.cs" />
     <Compile Include="Helpers\Logging\EventLogging.cs" />
     <Compile Include="Helpers\Mics\EnumHelper.cs" />
+    <Compile Include="Helpers\ModelBinders\ModelBinders.cs" />
+    <Compile Include="Helpers\QuestionHelpers\Question.cs" />
     <Compile Include="Helpers\Redirecting\Redirecting.cs" />
     <Compile Include="Helpers\Validations\Validate.cs" />
+    <Compile Include="Migrations\201409181324416_InitialCreate.cs" />
+    <Compile Include="Migrations\201409181324416_InitialCreate.Designer.cs">
+      <DependentUpon>201409181324416_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501021902358_DecoupleQuestionsFromGames.cs" />
+    <Compile Include="Migrations\201501021902358_DecoupleQuestionsFromGames.Designer.cs">
+      <DependentUpon>201501021902358_DecoupleQuestionsFromGames.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501021941331_CloneQuestionsUsed.cs" />
+    <Compile Include="Migrations\201501021941331_CloneQuestionsUsed.Designer.cs">
+      <DependentUpon>201501021941331_CloneQuestionsUsed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Choice.cs" />
     <Compile Include="Models\ChoiceQuestion.cs" />
     <Compile Include="Models\GameConfiguration.cs" />
     <Compile Include="Models\GamePlayAnswerDTO.cs" />
+    <Compile Include="Models\ACL.cs" />
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\PlayerDTO.cs" />
     <Compile Include="Models\GamePlay.cs" />
@@ -1054,6 +1071,17 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201409181324416_InitialCreate.resx">
+      <DependentUpon>201409181324416_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501021902358_DecoupleQuestionsFromGames.resx">
+      <DependentUpon>201501021902358_DecoupleQuestionsFromGames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501021941331_CloneQuestionsUsed.resx">
+      <DependentUpon>201501021941331_CloneQuestionsUsed.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

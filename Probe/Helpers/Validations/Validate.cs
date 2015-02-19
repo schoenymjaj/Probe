@@ -283,7 +283,7 @@ namespace Probe.Helpers.Validations
             ProbeDataContext db = new ProbeDataContext();
 
             return db.ChoiceQuestion
-                    .Where(cq => cq.AspNetUsersId == AspNetUsersId)
+                    .Where(cq => cq.AspNetUsersId == AspNetUsersId && !cq.UsedInGame)
                     .Select(cq => new
                     {
                         Id = cq.Id,

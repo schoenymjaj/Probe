@@ -121,4 +121,27 @@ namespace Probe.Helpers.Exceptions
         }
     }//public class GamePlayInvalidNickNameException
 
+    public class PlayerDTOMissingAnswersException : Exception
+    {
+        private Exception _ex;
+
+        public PlayerDTOMissingAnswersException()
+        {
+
+        }
+
+        public PlayerDTOMissingAnswersException(Exception ex)
+        {
+            _ex = ex;
+        }
+
+        public Exception GetEx
+        {
+            get
+            {
+                return _ex;
+            }
+        }
+    }//public class PlayerDTOMissingAnswers
+
 }

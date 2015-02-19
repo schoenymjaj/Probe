@@ -11,16 +11,12 @@
 @functions{
     public bool IsQuestionActive(long? questionId)
     {
-        bool status = true;
-        if (questionId != null)
-        {
-            status = ViewBag.DctQuestionActive[(long)questionId];
-        }
-        else
-        {
-            status = false;
-        }
-
+        /*Currently there is no logic that would make the question active
+         * and therefore uneditable. On 1/6/15 - we decouple questions from games
+         * so at least for now this is true
+         */
+        
+        bool status = false;
         return status;
     }
 }

@@ -11,6 +11,7 @@ using Probe.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
+using Probe.Helpers.QuestionHelpers;
 
 namespace Probe.Controllers
 {
@@ -130,6 +131,10 @@ namespace Probe.Controllers
 
             if (ModelState.IsValid)
             {
+                //We need to clone the question and set the UsedInGame field to true
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, gameQuestion.GameId, gameQuestion.QuestionId);
+                gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
+
                 db.GameQuestion.Add(gameQuestion);
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
                 return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
@@ -161,8 +166,11 @@ namespace Probe.Controllers
                 return HttpNotFound();
             }
             ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId,id), "Id", "Name", gameQuestion.QuestionId);
+            //ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId, id), "Id", "Name", gameQuestion.QuestionId);
+            var gameQuestionNames = db.GameQuestion.Where(gq => gq.GameId == gameQuestion.GameId).Select(gq => gq.Question);
+            ViewBag.QuestionId = new SelectList(gameQuestionNames, "Id", "Name", gameQuestion.QuestionId);
             ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
+            Session["GameQuestion-QuestionId"] = gameQuestion.QuestionId;
 
             return View(gameQuestion);
         }
@@ -174,6 +182,9 @@ namespace Probe.Controllers
         ////[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
         {
+            //this question id does not change. For some reason when the dropdown is readonly/disabled it comes back zero. Hence the hack
+            gameQuestion.QuestionId = (long)Session["GameQuestion-QuestionId"]; 
+
             //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
             //Somebody is trying to do bad stuff.
             if (!ProbeValidate.IsGameQuestionForLoggedInUser(gameQuestion.Id))
@@ -190,6 +201,21 @@ namespace Probe.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(gameQuestion).State = EntityState.Modified;
+
+                /*
+                 * MNS 1/9/15 - No need to give the user the ability to change questions from here. It's easy to delete a question and add another.
+                 */
+
+                //if the questionId has changed. then we have to do delete the old UsedInGame question and create the new UsedInGame question
+                //if (gameQuestion.QuestionId != (long)Session["GameQuestion-QuestionId"])
+                //{
+                //    ProbeQuestion.DeleteQuestion(this, db, (long)Session["GameQuestion-QuestionId"]);
+
+                //    //We need to clone the question and set the UsedInGame field to true
+                //    long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, gameQuestion.GameId, gameQuestion.QuestionId);
+                //    gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
+                //}
+
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
 
                 ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
@@ -243,40 +269,85 @@ namespace Probe.Controllers
 
             db.GameQuestion.Remove(gameQuestion);
             db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+
+            //Now that the gamequestion record is gone, get rid of the "UsedInGame" question/choice records
+            ProbeQuestion.DeleteQuestion(this, db, gameQuestion.QuestionId);
+
             return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
         }
+
+        //private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
+        //{
+
+        //    //find all questions for the user that are available for use in a game and set in allQuestions var
+        //    IQueryable<Probe.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
+        //    switch (db.Game.Find(SelectedGame).GameType.Name)
+        //    {
+        //        case "Test":
+        //            allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
+        //            break;
+        //        case "Match":
+        //            allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
+        //            break;
+        //        default:
+        //            allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
+        //            break;
+                
+        //    }
+
+        //    //get all questions (id's only) that are currently in use 
+        //    var usedQuestions = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.QuestionId); //THIS IS THE ORIGINAL
+
+        //    if (gameQuestionId != null)
+        //    {
+        //        //include the question for the current GameQuestion
+        //        long currentQuestionId = db.GameQuestion.Find(gameQuestionId).Question.Id;
+        //        return allQuestions.Where(aq => (aq.Id == currentQuestionId) || (!usedQuestions.Contains(aq.Id))).OrderBy(aq => aq.Name).ToList();
+        //    }
+        //    else
+        //    {
+        //        return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).OrderBy(aq => aq.Name).ToList();
+        //    }
+
+        //}
 
         private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
         {
 
+            //find all questions for the user that are available for use in a game and set in allQuestions var
             IQueryable<Probe.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
             switch (db.Game.Find(SelectedGame).GameType.Name)
             {
                 case "Test":
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && cq.Choices.Any(c => c.Correct));
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
                     break;
                 case "Match":
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId);
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
                     break;
                 default:
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId);
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
                     break;
-                
+
             }
-            var usedQuestions = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.QuestionId);
+
+            //get all questions (question names only) that are currently in use 
+            var usedQuestionNames = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.Question.Name); //THIS IS THE ORIGINAL
 
             if (gameQuestionId != null)
             {
-                //include the question for the current GameQuestion
-                long currentQuestionId = db.GameQuestion.Find(gameQuestionId).Question.Id;
-                return allQuestions.Where(aq => (aq.Id == currentQuestionId) || (!usedQuestions.Contains(aq.Id))).OrderBy(aq => aq.Name).ToList();
+                //include the question for the current GameQuestion. And remove all questions that possess a name that is already been used
+                string currentQuestionName = db.GameQuestion.Find(gameQuestionId).Question.Name;
+
+                return allQuestions.Where(aq => (aq.Name == currentQuestionName) || (!usedQuestionNames.Contains(aq.Name))).OrderBy(aq => aq.Name).ToList();
             }
             else
             {
-                return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).OrderBy(aq => aq.Name).ToList();
+                //remove all questions that possess a name that is already been used
+                return allQuestions.Where(aq => !usedQuestionNames.Contains(aq.Name)).OrderBy(aq => aq.Name).ToList();
             }
 
         }
+
 
         private int GetNextOrderNbr(long SelectedGame) {
             if (db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Count() > 0)

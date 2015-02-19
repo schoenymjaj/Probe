@@ -29,12 +29,19 @@ namespace Probe.Models
         [StringLength(maximumLength: 200, MinimumLength = 5)]
         public string Description { get; set; }
 
+        [Required]
+        [ForeignKey("ACL")]
+        [Display(Name = "ACL")]
+        public long ACLId { get; set; }
+
         public DateTime? DateCreated { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? DateUpdated { get; set; }
         public string UpdatedBy { get; set; }
 
         public virtual GameType GameType { get; set; }
+
+        public virtual ACL ACL { get; set; }
 
         public virtual ICollection<GameQuestion> GameQuestions { get; set; }
 
