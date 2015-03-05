@@ -233,7 +233,7 @@ namespace Probe.Helpers.Validations
             string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
             var db = new ProbeDataContext();
-            status = db.Question.Where(q => q.Name == questionName && q.AspNetUsersId == AspNetUsersId).Count() > 0;
+            status = db.Question.Where(q => q.Name == questionName && !q.UsedInGame && q.AspNetUsersId == AspNetUsersId).Count() > 0;
 
             return status;
         }
@@ -256,8 +256,9 @@ namespace Probe.Helpers.Validations
 
             string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
+            //check if a question name already exists that is not the selected and is not used. We don't look at used in game questions
             var db = new ProbeDataContext();
-            status = db.Question.Where(q => q.Name == questionName && q.AspNetUsersId == AspNetUsersId && q.Id != questionId).Count() > 0;
+            status = db.Question.Where(q => q.Name == questionName && !q.UsedInGame && q.AspNetUsersId == AspNetUsersId && q.Id != questionId).Count() > 0;
 
             return status;
         }
