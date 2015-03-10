@@ -13,8 +13,100 @@ using Probe.Models;
 using Probe.Helpers.Exceptions;
 using Probe.Helpers.Validations;
 
+using System.Runtime.Serialization.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+
 namespace Probe.Controllers.api
 {
+    #region Public Classes to Support GetGamePlay(code) Serialization
+
+    public class GetGamePlayforCodeData
+    {
+        public long gpId { get; set; }
+        public string gameType { get; set; }
+        public long gId { get; set; }
+        public string gpName { get; set; }
+        public string gpDescription { get; set; }
+        public string Code { get; set; }
+        public DateTime gpStartDate { get; set; }
+        public DateTime gpEndDate { get; set; }
+        public bool TestMode { get; set; }
+        public string GameName { get; set; }
+        public long QuestionId { get; set; }
+        public string qName { get; set; }
+        public string qText { get; set; }
+        public string QuestionType { get; set; }
+        public bool OneChoice { get; set; }
+        public int gqWeight { get; set; }
+        public long gqOrderNbr { get; set; }
+        public long cId { get; set; }
+        public string cName { get; set; }
+        public string cText { get; set; }
+        public bool Correct { get; set; }
+        public long cOrderNbr { get; set; }   
+    }
+
+    public class JChoice
+    {
+        public long Id;
+        public string Name;
+        public string Text;
+        public bool Correct;
+        public long OrderNbr;
+
+        public JChoice()
+        {
+        }
+    }
+
+    public class JQuestion
+    {
+        public string Name;
+        public string Text;
+        public string QuestionType;
+        public bool OneChoice;
+        public List<JChoice> Choices;
+        public int Weight;
+        public long OrderNbr;
+
+        public JQuestion()
+        {
+        }
+    }
+
+
+    public class JGameQuestion
+    {
+        public JQuestion Question;
+
+        public JGameQuestion()
+        {
+        }
+    }
+
+    public class JGamePlay
+    {
+        public long Id;
+        public string GameType;
+        public long GameId;
+        public string Name;
+        public string Description;
+        public string Code;
+        public DateTime StartDate;
+        public DateTime EndDate;
+        public bool TestMode;
+        public string GameName;
+        public List<JGameQuestion> GameQuestions;
+
+        public JGamePlay()
+        {
+        }
+
+    }
+
+    #endregion
+
     public class GamePlaysController : ApiController
     {
         private ProbeDataContext db = new ProbeDataContext();
@@ -119,10 +211,11 @@ namespace Probe.Controllers.api
         }//public IHttpActionResult GetGamePlayByCode(string code)
 
 
-        // GET: api/GamePlays/GetGamePlay/{code} NOTE: currently used by client (11/2/14)
-        [Route("api/GamePlays/GetGamePlay/{code}")]
+        ////MNS Deprecated API - 3-10-15
+        //// GET: api/GamePlays/GetGamePlay/{code} NOTE: currently used by client (11/2/14)
+        [Route("api/GamePlays/GetGamePlayDep/{code}")]
         [ResponseType(typeof(GamePlay))]
-        public IHttpActionResult GetGamePlay(string code)
+        public IHttpActionResult GetGamePlayDep(string code)
         {
             db.Configuration.LazyLoadingEnabled = false;
 
@@ -204,7 +297,7 @@ namespace Probe.Controllers.api
 
 
 
-                
+
                 if (gamePlayResponse == null)
                 {
                     return NotFound();
@@ -246,7 +339,173 @@ namespace Probe.Controllers.api
 
             }
 
-        }
+        } //public IHttpActionResult GetGamePlayDep(string code)
+
+        // GET: api/GamePlays/GetGamePlay/{code} NOTE: currently used by client (11/2/14) - updated big time on 3/10/15 MNS
+        [Route("api/GamePlays/GetGamePlay/{code}")]
+        [ResponseType(typeof(GamePlay))]
+        public HttpResponseMessage GetGamePlay(string code)
+        {
+            /*
+             * Given a GamePlay ID. We return the GamePlay, Game, GameQuestions, Question/ChoiceQuestion, Choices
+             */
+
+            try
+            {
+                var gamePlay = db.GamePlay
+                                 .Where(gp => gp.Code == code);
+
+                try
+                {
+                    GamePlay isGamePlay = gamePlay.Single();
+                    if (!ProbeValidate.IsGamePlayActive(isGamePlay))
+                    {
+                        throw new GamePlayNotActiveException();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex is GamePlayDoesNotExistException)
+                    {
+                        throw ex;
+                    }
+                    else if (ex.HResult == -2146233079)
+                    {
+                        throw new GamePlayDoesNotExistException();
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
+                }
+
+                //Go to the Database and get the GamePlay - Questions - Choices All at Once Time
+                var result = db.Database.SqlQuery<GetGamePlayforCodeData>
+                                     ("exec GetGamePlayforCode " + code).ToList();
+
+
+                var lnqGamePlay = result.First(); 
+
+                //Lets fill the GamePlay level
+                JGamePlay jsnGamePlay = new JGamePlay();
+                jsnGamePlay.Id = lnqGamePlay.gpId;
+                jsnGamePlay.GameType = lnqGamePlay.gameType;
+                jsnGamePlay.GameId = lnqGamePlay.gId;
+                jsnGamePlay.Name = lnqGamePlay.gpName;
+                jsnGamePlay.Description = lnqGamePlay.gpDescription;
+                jsnGamePlay.Code = lnqGamePlay.Code;
+                jsnGamePlay.StartDate = lnqGamePlay.gpStartDate;
+                jsnGamePlay.EndDate = lnqGamePlay.gpEndDate;
+                jsnGamePlay.TestMode = lnqGamePlay.TestMode;
+                jsnGamePlay.GameName = lnqGamePlay.GameName;
+                jsnGamePlay.GameQuestions = new List<JGameQuestion>();
+
+                var lnqQuestions = result.OrderBy(q => q.gqOrderNbr).Select(q => new
+                    {
+                        q.QuestionId,
+                        q.qName,
+                        q.qText,
+                        q.QuestionType,
+                        q.OneChoice,
+                        q.gqWeight,
+                        q.gqOrderNbr
+                    }).Distinct().ToList();
+
+
+                foreach (var lnqQuestion in lnqQuestions)
+                {
+                    JQuestion jsnQuestion = new JQuestion();
+                    jsnQuestion.Name = lnqQuestion.qName;
+                    jsnQuestion.Text = lnqQuestion.qText;
+                    jsnQuestion.OrderNbr = lnqQuestion.gqOrderNbr;
+                    jsnQuestion.Weight = lnqQuestion.gqWeight;
+                    jsnQuestion.QuestionType = lnqQuestion.QuestionType;
+                    jsnQuestion.OneChoice = lnqQuestion.OneChoice;
+                    jsnQuestion.Choices = new List<JChoice>();
+
+                    var lnqChoices = result.Where(c => c.QuestionId == lnqQuestion.QuestionId).OrderBy(c => c.cOrderNbr)
+                        .Select(c => new
+                        {
+                            c.cId,
+                            c.cName,
+                            c.cText,
+                            c.Correct,
+                            c.cOrderNbr
+                        }).ToList();
+
+                    foreach (var lnqChoice in lnqChoices)
+                    {
+                        JChoice jsnChoice = new JChoice();
+                        jsnChoice.Id = lnqChoice.cId;
+                        jsnChoice.Name = lnqChoice.cName;
+                        jsnChoice.Text = lnqChoice.cText;
+                        jsnChoice.OrderNbr = lnqChoice.cOrderNbr;
+                        jsnChoice.Correct = lnqChoice.Correct;
+
+                        //Add each choice to the current question
+                        jsnQuestion.Choices.Add(jsnChoice);
+                    }
+                    //For every question - we create a GameQuestion, and Question object then
+                    //we add this to the GamePlay object
+                    JGameQuestion jsnGameQuestion = new JGameQuestion();
+                    jsnGameQuestion.Question = jsnQuestion;
+                    jsnGamePlay.GameQuestions.Add(jsnGameQuestion);
+
+                }
+
+                if (jsnGamePlay == null)
+                {
+                    throw new Exception("Game Play is Corrupted");
+                }
+
+                //We will serialize the jnsGamePlay object and all its children and then we will package it for an HTTP Response
+                string aResp = JsonConvert.SerializeObject(jsnGamePlay);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+
+
+            }
+            catch (GamePlayDoesNotExistException)
+            {
+                var errorObject = new
+                {
+                    errorid = 1,
+                    errormessage = "A game play was not found for the code specified.",
+                    code = code
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+            }
+            catch (GamePlayNotActiveException)
+            {
+                var errorObject = new
+                {
+                    errorid = 2,
+                    errormessage = "This game play is not active at this time.",
+                    code = code
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                var errorObject = new
+                {
+                    errorid = ex.HResult,
+                    errormessage = ex.Message,
+                    errorinner = ex.InnerException,
+                    errortrace = ex.StackTrace
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+
+            }
+
+        } //public HttpResponseMessage GetGamePlay(string code)
+
 
         // PUT: api/GamePlays/5
         [ResponseType(typeof(void))]

@@ -34,7 +34,7 @@ namespace Probe.Controllers
             ViewBag.SelectedQuestion = new SelectList(questions, "Id", "Name", SelectedQuestion);
             long questionId = SelectedQuestion.GetValueOrDefault();
 
-            var choices = db.Choice.Where(c => c.ChoiceQuestionId == questionId);
+            var choices = db.Choice.Where(c => c.ChoiceQuestionId == questionId).OrderBy(c => c.OrderNbr);
 
             return View(choices.ToList());
         }
