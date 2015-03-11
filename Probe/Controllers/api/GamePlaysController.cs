@@ -381,7 +381,7 @@ namespace Probe.Controllers.api
 
                 //Go to the Database and get the GamePlay - Questions - Choices All at Once Time
                 var result = db.Database.SqlQuery<GetGamePlayforCodeData>
-                                     ("exec GetGamePlayforCode " + code).ToList();
+                                     ("exec GetGamePlayforCode '" + code + "'").ToList();
 
 
                 var lnqGamePlay = result.First(); 
