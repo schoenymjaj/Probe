@@ -852,6 +852,7 @@ $(function () {
             ClientDateSync = new Date();
             ServerDateSync = new Date(Date.parse(JSONdata.ServerNowDate));
             ServerClientDateDifInSecs = (ClientDateSync - ServerDateSync) / 1000;
+            console.log('Date: Client=' + ClientDateSync + ' Server=' + ServerDateSync + 'DateDif=' + ServerClientDateDifInSecs);
             if (Math.abs(ServerClientDateDifInSecs) <= ServerClientTimeSyncInSecs || ServerClientTimeSyncInSecs == 0) {
                 //This appears to be converting to local time (from UTC). Because some browswers (i.e. Safari) to support the 2015-04-12 format,
                 //we convert using the Date.parse method of a 3rd party iso8601 library
