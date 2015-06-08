@@ -39,8 +39,6 @@ namespace Probe.Controllers
             return View(choices.ToList());
         }
 
-
-
         // GET: Choices/Details/5
         public ActionResult Details(long? id)
         {

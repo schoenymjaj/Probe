@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
 using Probe.Helpers.QuestionHelpers;
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
@@ -32,6 +33,12 @@ namespace Probe.Controllers
             var question = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame)
                 .OrderBy(cq => cq.Name)
                 .Include(cq => cq.QuestionType);
+
+            if (Session["ResultMessage"] != null)
+            {
+                ViewBag.ResultMessage = (ResultMessage)Session["ResultMessage"];
+                Session["ResultMessage"] = null;
+            }
 
             return View(question.ToList());
         }
@@ -97,7 +104,6 @@ namespace Probe.Controllers
             return View(choiceQuestion);
         }
 
-
         // GET: ChoiceQuestions/Clone
         public ActionResult Clone(long id)
         {
@@ -105,6 +111,15 @@ namespace Probe.Controllers
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
             ProbeQuestion.CloneQuestion(this, db, false, id);
+
+            //The message that the calling RAZOR can use
+            ResultMessage resultMessage = new ResultMessage
+            {
+                MessageId = ProbeConstants.MSG_QuestionCloneSuccessful,
+                MessageType = Helpers.Mics.MessageType.Informational,
+                Message = "The question '" + db.Question.Find(id).Name + "' has been cloned successfully"
+            };
+            Session["ResultMessage"] = resultMessage;
 
             return RedirectToAction("Index");
 

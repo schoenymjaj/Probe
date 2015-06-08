@@ -129,39 +129,59 @@ body {
 .dynamicFontSize {
 }
 
-
 /*
-    
-CLIENT TEST - NEW STYLES (MNS - 9/25/14
-    
-    */
-.summaryButton {
+    GAME PLAYER PROMT PAGE
+*/
+#homePageContent label {
+    font-size: 0.8em;
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
 }
-
-.submitButton {
+.gpType {
+    font-size: 0.8em;
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
 }
-
+#homePageContent legend {
+    font-size: 0.8em;
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+}
+#homePageContent input {
+    font-size: 0.8em;
+    color: black;
+    text-shadow: 0 0 0; 
+}
+#homePageContent button {
+    color: black;
+    text-shadow: 0 0 0; 
+}
 
 /*
     QUESTION PAGE
 */
-
-.nextButton {
-    margin: 2px;
-}
-
-.backButton {
-    margin: 2px;
-} 
-
 .bodyText {
     color: black;
     font-weight: bold;
+    text-shadow: 0 0 0; 
 }
 
+/*
+    .questionText and #choiceList .ui-btn classes determine the question and choice text font
+ */
 .questionText {
     padding-top: 6px;
-    font-size: 1.4em;
+    font-size: 1.1em;
+    text-shadow: 0 0 0; 
+}
+
+#choiceList .ui-btn {
+    font-size: 0.8em;
+    color:  black;
+    text-shadow: 0 0 0; 
 }
 
 .questionNavButtonsParentDiv {
@@ -187,6 +207,7 @@ CLIENT TEST - NEW STYLES (MNS - 9/25/14
     text-align: center;
     padding-top: 8px;
     padding-bottom: 0px;
+    text-shadow: 0 0 0; 
 }
 
 .nextButtonDiv {
@@ -264,11 +285,26 @@ CLIENT TEST - NEW STYLES (MNS - 9/25/14
 
 }
 
+/* text for listview text*/
+#gameList a {
+    color: black;
+    text-shadow: 0 0 0; 
+}
+
 /*
   SUMMARY PAGE   
  */
-.summaryTest {
-    padding-bottom: 1px;
+.summaryText {
+    padding-top: 15px;
+    font-size: 1.1em;
+    text-shadow: 0 0 0; 
+    padding-bottom: 12px;
+}
+
+#questionList .ui-btn {
+    font-size: 0.8em;
+    color:  black;
+    text-shadow: 0 0 0; 
 }
 
 /*
@@ -410,3 +446,38 @@ CLIENT TEST - NEW STYLES (MNS - 9/25/14
     width: 100%;
 }
 
+
+/*
+ Navigation Bar   
+ */
+#question .summaryButton {
+   color: black;
+}
+
+#question .submitButton {
+    color: black;
+}
+
+#question .nextButton {
+    color: black;
+}
+
+#question .backButton {
+    color: black;
+} 
+
+#summary .summaryButton {
+   color: black;
+}
+
+#summary .submitButton {
+    color: black;
+}
+
+#summary .nextButton {
+    color: black;
+}
+
+#summary .backButton {
+    color: black;
+} 

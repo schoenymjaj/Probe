@@ -45,6 +45,7 @@ namespace Probe.Helpers.Mics
         public const int MSG_GameDoesNotExist = 20;
         public const int MSG_GamePublishSuccessful = 21;
         public const int MSG_GameUnpublishSuccessful = 22;
+        public const int MSG_QuestionCloneSuccessful = 23;
 
         public const string MatchGameType = "Match";
         public const string TestGameType = "Test";

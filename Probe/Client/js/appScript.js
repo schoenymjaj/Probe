@@ -709,10 +709,10 @@ $(function () {
             if (GameData.Description != null) gameDescription = GameData.Description;
 
             promptforPlayerHtml =
-                '<div style="margin-top: 10px; font-weight:bold">' +
-                '<label for="gpName" style="font-size: 1.2em; font-weight: bolder">(' + GameData.GameType + ' Game)' +
+                '<div style="margin-top: 10px">' +
+                '<label for="gpType">(' + GameData.GameType + ' Game)' +
                 '</label>' +
-                '<textarea name="gpName" id="gpName" disabled="disabled">' + GameData.Name + ' (' +
+                '<textarea name="gpType" id="gpType" class="gpType" disabled="disabled">' + GameData.Name + ' (' +
                 gameDescription + ')</textarea>' +
 
                 new app.JQMWidget("firstName").JQMRender() +
@@ -1000,7 +1000,7 @@ $(function () {
                 '<input name="choice" id="choice-' + selectChoiceId + '" type="radio" data-theme="a"' + checkedStr + '>'
 
                 fieldset +=
-                '<label for="choice-' + selectChoiceId + '" data-theme="a" class="style:"color:black">' + choiceText + '</label>';
+                '<label for="choice-' + selectChoiceId + '" data-theme="a">' + choiceText + '</label>';
             });
             fieldset += '</fieldset>'
 
@@ -1082,7 +1082,7 @@ $(function () {
             };
             listViewHtml += '</ul>';
 
-            $('#summaryText h2').html(summaryText);
+            $('#summaryText').html(summaryText);
             $('#questionList').html(listViewHtml);
 
             $('#questionList').listview().trigger("create")
@@ -3156,24 +3156,24 @@ $(function () {
             if (this.Enabled) {
                 switch (this.Widget) {
                     case "firstName":
-                        returnJQM = '<label for="firstName" style="font-size: 1.2em; font-weight: bolder">First Name</label>' +
+                        returnJQM = '<label for="firstName">First Name</label>' +
                         '<input name="firstName" id="firstName" type="text" value="" data-clear-btn="true">';
                         break;
                     case "nickName":
-                        returnJQM = '<label for="nickName" style="font-size: 1.2em; font-weight: bolder">Nickname</label>' +
+                        returnJQM = '<label for="nickName">Nickname</label>' +
                         '<input name="nickName" id="nickName" type="text" value="" data-clear-btn="true">';
                         break;
                     case "lastName":
-                        returnJQM = '<label for="lastName" style="font-size: 1.2em; font-weight: bolder">Last Name</label>' +
+                        returnJQM = '<label for="lastName">Last Name</label>' +
                         '<input name="lastName" id="lastName" type="text" value="" data-clear-btn="true">';
                         break;
                     case "email":
-                        returnJQM = '<label for="email" style="font-size: 1.2em; font-weight: bolder">Email</label>' +
+                        returnJQM = '<label for="email">Email</label>' +
                         '<input name="email" id="email" type="text" value="" data-clear-btn="true">';
                         break;
                     case "sex":
                         returnJQM = '<fieldset data-role="controlgroup" data-type="horizontal">' +
-                        '<legend style="font-size: 1.2em; font-weight: bolder">Sex</legend>' +
+                        '<legend>Sex</legend>' +
                         '<input name="sex" id="sex-male" type="radio" checked="checked" value="on">' +
                         '<label for="sex-male">Male</label>' +
                         '<input name="sex" id="sex-female" type="radio">' +
