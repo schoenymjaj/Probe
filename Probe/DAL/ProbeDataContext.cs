@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System;
-
 using System.Collections.Generic;
 using System.Data;
 
@@ -17,16 +16,18 @@ namespace Probe.DAL
         public DbSet<Person> Person { get; set; }
 
         public DbSet<Game> Game { get; set; }
+        public DbSet<ConfigurationG> ConfigurationG { get; set; }
         public DbSet<GameConfiguration> GameConfiguration { get; set; }
         public DbSet<Question> Question { get; set; }
         public DbSet<ChoiceQuestion> ChoiceQuestion { get; set; }
         public DbSet<Choice> Choice { get; set; }
         public DbSet<GameQuestion> GameQuestion { get; set; }
 
-        public DbSet<GamePlay> GamePlay { get; set; }
+        //public DbSet<GamePlay> GamePlay { get; set; }
         public DbSet<Player> Player { get; set; }
-        public DbSet<GamePlayAnswer> GamePlayAnswer { get; set; }
-        public DbSet<GamePlayReport> GamePlayReport { get; set; }
+        public DbSet<GameAnswer> GameAnswer { get; set; }
+        //public DbSet<GamePlayReport> GamePlayReport { get; set; }
+
 
         static ProbeDataContext()
         {
@@ -65,14 +66,14 @@ namespace Probe.DAL
             {
                 if (entity.State == EntityState.Added && entity.Entity is IDateCreated)
                 {
-                    ((IDateCreated)entity.Entity).DateCreated = DateTime.Now;
+                    ((IDateCreated)entity.Entity).DateCreated = DateTime.UtcNow;
                     ((ICreatedBy)entity.Entity).CreatedBy = windowsIdentityName;
                 }
                 if (entity.State == EntityState.Modified && entity.Entity is IDateUpdated)
                 {
                     ((IDateCreated)entity.Entity).DateCreated = entity.GetDatabaseValues().GetValue<DateTime>("DateCreated");
                     ((ICreatedBy)entity.Entity).CreatedBy = entity.GetDatabaseValues().GetValue<string>("CreatedBy");
-                    ((IDateUpdated)entity.Entity).DateUpdated = DateTime.Now;
+                    ((IDateUpdated)entity.Entity).DateUpdated = DateTime.UtcNow;
                     ((IUpdatedBy)entity.Entity).UpdatedBy = windowsIdentityName;
                 }
             }

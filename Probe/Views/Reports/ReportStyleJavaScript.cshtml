@@ -1,4 +1,17 @@
 ﻿var resize = false;
+var VAR_NONE = -1;
+var ANSWER_REASON_INCORRECT = 1;
+var ANSWER_REASON_DEADLINE = 2;
+var ANSWER_REASON_UNKNOWN = 3;
+var GAME_STATUS_UNKNOWN = 0;
+var GAME_STATUS_NOTSTARTED = 1;
+var GAME_STATUS_STARTEDNOQUESTIONPASSED = 2;
+var GAME_STATUS_ACTIVE = 3;
+var GAME_STATUS_SUSPENDED = 4;
+var GAME_STATUS_COMPLETED = 5;
+var DATETIME_MINIMUM = -62135596800000;
+
+
 $('parent_chart_div').css('min-height:500px;height: 100%;width: 100%;margin:auto;background:#fff;text-align:center');
 $('chart_div').css('min-height:500px;height: 100%;width: 100%;margin:auto;background:#fff;text-align:center');
 

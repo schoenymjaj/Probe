@@ -11,6 +11,7 @@ using Probe.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
+using Probe.Helpers.QuestionHelpers;
 
 namespace Probe.Controllers
 {
@@ -96,6 +97,19 @@ namespace Probe.Controllers
             return View(choiceQuestion);
         }
 
+
+        // GET: ChoiceQuestions/Clone
+        public ActionResult Clone(long id)
+        {
+            //limit the questions to only what the user possesses
+            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+            ProbeQuestion.CloneQuestion(this, db, false, id);
+
+            return RedirectToAction("Index");
+
+        } //public ActionResult Clone(long id)
+
         // GET: ChoiceQuestions/Edit/5
         public ActionResult Edit(long? id)
         {
@@ -180,9 +194,7 @@ namespace Probe.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
-            db.Question.Remove(choiceQuestion);
-            db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+            ProbeQuestion.DeleteQuestion(this, db, id);
             return RedirectToAction("Index");
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Probe.Helpers.Mics;
 
 namespace Probe.Models
 {
@@ -22,11 +23,11 @@ namespace Probe.Models
 
         [Required]
         [DataType(DataType.Text)]
-        [StringLength(maximumLength: 60, MinimumLength = 5)]
+        [StringLength(maximumLength: ProbeConstants.QuestionNameMaxChars, MinimumLength = 5)]
         public string Name { get; set; }
 
         [DataType(DataType.MultilineText)]
-        [StringLength(maximumLength: 300, MinimumLength = 5)]
+        [StringLength(maximumLength: ProbeConstants.QuestionDescriptionMaxChars, MinimumLength = 5)]
         public string Text { get; set; }
 
         public bool UsedInGame { get; set; }

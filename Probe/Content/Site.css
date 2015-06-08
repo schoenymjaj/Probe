@@ -186,6 +186,13 @@ textarea {
     clear:both;
 }
 
+.reportNoDataText {
+    font-size: 1.0em;
+    font-weight: bold;
+    color: black;
+    font-style: italic;
+}
+
 .tableHeader {
     margin-top: 10px;
     margin-bottom: 5px;
@@ -260,6 +267,35 @@ textarea {
     }
 }
 
+    .reportInCommonTable {
+        display: table;
+    }
+
+    .reportInCommonTitle {
+        display: table-caption;
+        text-align: center;
+        font-weight: bold;
+        font-size: larger;
+    }
+
+    .reportInCommonHeading {
+        display: table-row;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .reportInCommonRow {
+        display: table-row;
+    }
+
+    .reportInCommonCell {
+        display: table-cell;
+        text-align: left;
+        /*border: solid;*/
+        border-width: thin;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 
 /*
     GamePlay page specific

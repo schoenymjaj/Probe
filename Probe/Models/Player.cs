@@ -9,10 +9,18 @@ namespace Probe.Models
     public class Player : Person
     {
 
+        public enum PlayerGameReasonType
+        {
+            UNKNOWN = 0,
+            ANSWER_REASON_INCORRECT = 1,
+            ANSWER_REASON_DEADLINE = 2,
+            ANSWER_REASON_UNKNOWN = 3
+        }
+
         [Required]
-        [ForeignKey("GamePlay")]
-        [Display(Name = "GamePlay")]
-        public long GamePlayId { get; set; }
+        [ForeignKey("Game")]
+        [Display(Name = "Game")]
+        public long GameId { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Submit Date")]
@@ -22,9 +30,13 @@ namespace Probe.Models
         [Display(Name = "Submit Time")]
         public DateTime SubmitTime { get; set; }
 
-        public virtual ICollection<GamePlayAnswer> GamePlayAnswers { get; set; }
+        public bool Active { get; set; }
 
-        public virtual GamePlay GamePlay { get; set; }
+        public PlayerGameReasonType PlayerGameReason { get; set; }
+        
+        public virtual ICollection<GameAnswer> GameAnswers { get; set; }
+
+        public virtual Game Game { get; set; }
 
 
     }

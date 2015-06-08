@@ -24,7 +24,7 @@ namespace Probe.Models
         public DateTime? DateUpdated { get; set; }
         public string UpdatedBy { get; set; }
 
-        public virtual ICollection<GamePlay> GamePlays { get; set; }
+        public virtual ICollection<Game> Games { get; set; }
 
     }
 }

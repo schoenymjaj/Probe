@@ -23,10 +23,10 @@
 
             if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
-            var gamePlayId = '@ViewBag.GamePlayId';
+            var gameId = '@ViewBag.GameId';
             var gameCode = '@ViewBag.GameCode';
 
-            $.post('@Url.Content("~")' + 'Reports/GetPlayerTestSummaryData/' + gamePlayId + '/' + gameCode, {},
+            $.post('@Url.Content("~")' + 'Reports/GetPlayerTestSummaryData/' + gameId + '/' + gameCode, {},
              function (data) {
 
                  //HANDLER FOR INTERACTIVITY
@@ -38,7 +38,7 @@
                          console.log('The player selected ' + playerId);
 
                          window.location = '@Url.Content("~")' + 'Reports/PlayerTestDetail/'
-                             + gamePlayId + '/' + gameCode + '/' + playerId + (DoStyleMobile() ? '/1' : '');
+                             + gameId + '/' + gameCode + '/' + playerId + (DoStyleMobile() ? '/1' : '');
 
                      }
                  };
@@ -50,14 +50,14 @@
                      SETUP REPORT HEADER
                     Back button will not exist if report loads within an iFrame (then its in mobile mode)
                      */
-                     $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>');
+                     $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>');
                      if (DoStyleMobile()) {
                          $('#appHome').click(function (event) {
                              GoBack();
                          });
                          $('.reportReturnLink').hide();
                      } else {
-                         $('.reportReturnLink').html('@Html.ActionLink("Back to Game Plays", "Index", "GamePlays", new { SelectedGame = ViewBag.CurrentSelectedGame },null)');
+                         $('.reportReturnLink').html('@Html.ActionLink("Back to Game", "Index", "Games")');
                      }
 
                      /*

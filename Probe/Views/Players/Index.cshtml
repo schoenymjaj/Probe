@@ -16,7 +16,7 @@
 @using (Html.BeginForm())
 {
     <p>
-        Select Game Play: @Html.DropDownList("SelectedGamePlay")
+        Select Game Play: @Html.DropDownList("SelectedGame")
         <input type="submit" value="Filter" />
     </p>
 }
@@ -36,6 +36,9 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.LastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Active)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.SubmitDate)
@@ -63,6 +66,9 @@
                         @Html.DisplayFor(modelItem => item.LastName)
                     </td>
                     <td>
+                        @Html.DisplayFor(modelItem => item.Active)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.SubmitDate)
                     </td>
                     <td>
@@ -71,9 +77,9 @@
                     <td>
                         @*Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
                         @Html.ActionLink("Details", "Details", new { id = item.Id }) @*|*@
-                        @if (!ViewBag.DctGamePlayActive[ViewBag.SelectedGamePlay.SelectedValue])
+                        @if (!ViewBag.DctAllGamesActiveStatus[ViewBag.SelectedGame.SelectedValue])
                         {<span>|</span> @Html.ActionLink("Edit", "Edit", new { id = item.Id })}
-                        @if (!ViewBag.DctGamePlayActive[ViewBag.SelectedGamePlay.SelectedValue])
+                        @if (!ViewBag.DctAllGamesActiveStatus[ViewBag.SelectedGame.SelectedValue])
                         {<span>|</span> @Html.ActionLink("Delete", "Delete", new { id = item.Id })}
                     </td>
                 </tr>
@@ -83,6 +89,6 @@
     </table>
     @Html.Partial("TablesorterPager")
     <div style="margin-top: 20px">
-        @Html.ActionLink("Back to Game Play List", "Index", "GamePlays", new { SelectedGame = ViewBag.SelectedGame }, null)
+        @Html.ActionLink("Back to Game List", "Index", "Games", new { SelectedGame = ViewBag.SelectedGame }, null)
     </div>
 </div>

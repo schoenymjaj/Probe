@@ -34,6 +34,33 @@ namespace Probe.Models
         [Display(Name = "ACL")]
         public long ACLId { get; set; }
 
+        //[Required]
+        [DataType(DataType.Text)]
+        [StringLength(maximumLength: 60, MinimumLength = 5)]
+        public string Code { get; set; }
+
+        [DataType(DataType.ImageUrl)]
+        [Display(Name = "Game URL")]
+        public string GameUrl { get; set; }
+
+        [Display(Name = "Start Date")]
+        public DateTime StartDate { get; set; }
+
+        [Display(Name = "End Date")]
+        public DateTime EndDate { get; set; }
+
+        [Display(Name = "Suspend Mode")]
+        public bool SuspendMode { get; set; }
+
+        [Display(Name = "Client Report Access")]
+        public bool ClientReportAccess { get; set; }
+
+        [Display(Name = "Test Mode")]
+        public bool TestMode { get; set; }
+
+        [Display(Name = "Published")]
+        public bool Published { get; set; }
+
         public DateTime? DateCreated { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? DateUpdated { get; set; }
@@ -45,9 +72,9 @@ namespace Probe.Models
 
         public virtual ICollection<GameQuestion> GameQuestions { get; set; }
 
-        public virtual ICollection<GamePlay> GamePlays { get; set; }
-
         public virtual ICollection<GameConfiguration> GameConfigurations { get; set; }
+
+        public virtual ICollection<Player> Players { get; set; }
 
         public Game()
         {

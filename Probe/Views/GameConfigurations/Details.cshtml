@@ -1,4 +1,4 @@
-﻿@model Probe.Models.GameConfiguration
+﻿@model Probe.Models.GameConfigurationDTO
 
 @{
     ViewBag.Title = "Details";
@@ -15,7 +15,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Game.Name)
+            @Html.DisplayFor(model => model.GameName)
         </dd>
 
         <dt>
@@ -35,6 +35,14 @@
         </dd>
 
         <dt>
+            DataType
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataTypeG)
+        </dd>
+
+        <dt>
             @Html.DisplayNameFor(model => model.Value)
         </dt>
 
@@ -46,5 +54,5 @@
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index", new {SelectedGame = ViewBag.CurrentSelectedGame})
 </p>

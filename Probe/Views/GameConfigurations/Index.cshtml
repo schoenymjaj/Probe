@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Probe.Models.GameConfiguration>
+﻿@model IEnumerable<Probe.Models.GameConfigurationDTO>
 
 @{
     ViewBag.Title = "Index";
@@ -7,16 +7,29 @@
 <script src="@Url.Content("~/Scripts/probe/probe-setup-tablesorter.js")"
         type="text/javascript"></script>
 
-<h2>Game Configuration Library</h2>
+@functions{
+    public bool IsGameActive(int? gameId)
+    {
+        bool returnStatus = true;
+        if (gameId != null)
+        {
+            returnStatus = ViewBag.DctGameActive[(long)gameId];
+        }
+        else
+        {
+            returnStatus = false;
+        }
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+        return returnStatus;
+    }
+}
+
+<h2>Game Configuration Library</h2>
 
 @using (Html.BeginForm())
 {
     <p>
-        Select Game: @Html.DropDownList("SelectedGame","All")
+        Select Game: @Html.DropDownList("SelectedGame")
         <input type="submit" value="Filter" />
     </p>
 }
@@ -45,7 +58,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Game.Name)
+                        @Html.DisplayFor(modelItem => item.GameName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Name)
@@ -57,13 +70,16 @@
                         @Html.DisplayFor(modelItem => item.Value)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                        @if (!IsGameActive(ViewBag.SelectedGame.SelectedValue)) 
+                        {@Html.ActionLink("Edit", "Edit", new { gameid = item.GameId, configurationGid = item.ConfigurationGId }) <span> | </span> }
+                        @Html.ActionLink("Details", "Details", new { gameid = item.GameId, configurationGid = item.ConfigurationGId })
                     </td>
                 </tr>
             }
         </tbody>
     </table>
     @Html.Partial("TablesorterPager")
+    <div style="margin-top: 20px">
+        @Html.ActionLink("Back to Game List", "Index", "Games", new { SelectedGame = ViewBag.SelectedGame }, null)
+    </div>
 </div>

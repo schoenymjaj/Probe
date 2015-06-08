@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Probe.DAL;
 using Probe.Models;
+using Probe.Helpers.Validations;
 
 namespace Probe.Controllers.api
 {
@@ -25,28 +26,37 @@ namespace Probe.Controllers.api
 
             if (code != "incommon-code-around")
             {
-                return NotFound();
+                var errorObject = new
+                {
+                    errorid = 7,
+                    errormessage = "Universal game code is incorrect."               
+                };
+
+                return Ok(errorObject);
             }
 
-            List<GameConfiguration> gameConfigurationsList = new List<GameConfiguration>
+            try
             {
-                new GameConfiguration {
-                    GameId = 0,
-                    Name = "InCommon-About",
-                    Description = "InCommon-About",
-                    Value = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(@"~/Content/AboutContent.html"))
-                },
-                new GameConfiguration {
-                    GameId = 0,
-                    Name = "InCommon-CacheMinutes",
-                    Description = "InCommon-CacheMinutes",
-                    Value = "30"
-                }
-            };
+                db.Configuration.LazyLoadingEnabled = false;
+                List<ConfigurationG> configurationsList = db.ConfigurationG
+                    .Where(c => c.ConfigurationType == ConfigurationG.ProbeConfigurationType.GLOBAL).ToList();
 
-            IQueryable<GameConfiguration> gameConfigurations = gameConfigurationsList.AsQueryable<GameConfiguration>();
+                IQueryable<ConfigurationG> configurations = configurationsList.AsQueryable<ConfigurationG>();
 
-            return Ok(gameConfigurations);
+                return Ok(configurations);
+            }
+            catch (Exception ex)
+            {
+                var errorObject = new
+                {
+                    errorid = ex.HResult,
+                    errormessage = ex.Message,
+                    errorinner = ex.InnerException,
+                    errortrace = ex.StackTrace
+                };
+                return Ok(errorObject);
+
+            }
         }
 
         // GET: api/GameConfigurations/5 NOTE: currently used by client (11/2/14)
@@ -54,31 +64,72 @@ namespace Probe.Controllers.api
         [Route("api/GameConfigurations/GetGameConfiguration/{code}")]
         public IHttpActionResult GetGameConfiguration(string code)
         {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
 
-            var gameConfigurations = db.GameConfiguration.Where(gc => gc.GameId == db.GamePlay.Where(gp => gp.Code == code).FirstOrDefault().GameId);
-            if (gameConfigurations.Count() == 0)
+            if (!ProbeValidate.IsCodeExistInProbe(code))
             {
-                return NotFound();
+                //GameDoesNotExistException
+                var errorObject = new
+                {
+                    errorid = 1,
+                    errormessage = "A game was not found for the code specified.",
+                    code = code
+                };
+                return Ok(errorObject);
             }
 
-            return Ok(gameConfigurations); //we are getting the first only because there is one config at the moment
+            try
+            {
+                var gameConfigurations = db.ConfigurationG
+                    .Where(c => c.ConfigurationType != ConfigurationG.ProbeConfigurationType.GLOBAL)
+                    .SelectMany(c => c.GameConfigurations.Where(gc => gc.Game.Code == code).DefaultIfEmpty(),
+                    (c, gc) =>
+                        new
+                        {
+                            Name = c.Name,
+                            //Description = c.Description,
+                            DataType = c.DataTypeG,
+                            //ConfigurationType = c.ConfigurationType,
+                            Value = (gc.Value != null) ? gc.Value : c.Value
+                        }
+                    );
+
+                return Ok(gameConfigurations);
+            }
+            catch (Exception ex)
+            {
+                var errorObject = new
+                {
+                    errorid = ex.HResult,
+                    errormessage = ex.Message,
+                    errorinner = ex.InnerException,
+                    errortrace = ex.StackTrace
+                };
+                return Ok(errorObject);
+
+            }
+
         }
 
         // GET: api/GameConfigurations/5 - get all game configurations for a gameId (foreign key)
         [ResponseType(typeof(GameConfiguration))]
         public IHttpActionResult GetGameConfigurationByGame(long id)
         {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
-            var gameConfigurations = db.GameConfiguration.Where(gc => gc.GameId == id);
-            if (gameConfigurations == null)
-            {
-                return NotFound();
-            }
 
-            return Ok(gameConfigurations);
+            var gameConfigurations = db.ConfigurationG
+                .Where(c => c.ConfigurationType != ConfigurationG.ProbeConfigurationType.GLOBAL)
+                .SelectMany(c => c.GameConfigurations.Where(gc => gc.Game.Id == id).DefaultIfEmpty(),
+                (c, gc) =>
+                    new
+                    {
+                        Name = c.Name,
+                        Description = c.Description,
+                        DataType = c.DataTypeG,
+                        ConfigurationType = c.ConfigurationType,
+                        Value = (gc.Value != null) ? gc.Value : c.Value
+                    }
+                );
+
+            return Ok(gameConfigurations); 
         }
 
         // PUT: api/GameConfigurations/5

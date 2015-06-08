@@ -18,7 +18,7 @@
         @Html.HiddenFor(model => model.Id)
         @Html.HiddenFor(model => model.SubmitDate)
         @Html.HiddenFor(model => model.SubmitTime)
-        @Html.HiddenFor(model => model.GamePlayId)
+        @Html.HiddenFor(model => model.GameId)
 
 
         <div class="form-group">
@@ -77,6 +77,17 @@
                 @Html.ValidationMessageFor(model => model.MobileNbr, "", new { @class = "text-danger" })
             </div>
         </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Active, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Active)
+                    @Html.ValidationMessageFor(model => model.Active, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

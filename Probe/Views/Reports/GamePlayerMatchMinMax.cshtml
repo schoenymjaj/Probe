@@ -54,10 +54,10 @@
 
         ActivityIndicatorOn('#spinner');
 
-        var gamePlayId = '@ViewBag.GamePlayId';
+        var gameId = '@ViewBag.GameId';
         var gameCode = '@ViewBag.GameCode';
 
-        $.post('@Url.Content("~")' + 'Reports/GetGamePlayerMatchMinMaxData/' + gamePlayId + '/' + gameCode, {},
+        $.post('@Url.Content("~")' + 'Reports/GetGamePlayerMatchMinMaxData/' + gameId + '/' + gameCode, {},
          function (data) {
 
              //HANDLER FOR INTERACTIVITY
@@ -68,7 +68,7 @@
                      var playerId = data[selectedItem.row].PlayerId  //get the playerId
                      console.log('The player selected ' + playerId);
 
-                     window.location = '@Url.Content("~")' + 'Reports/PlayerMatchSummary/' + gamePlayId + '/' + gameCode + '/' + playerId;
+                     window.location = '@Url.Content("~")' + 'Reports/PlayerMatchSummary/' + gameId + '/' + gameCode + '/' + playerId;
 
                  }
              };
@@ -80,7 +80,7 @@
                  /*
                  SETUP REPORT HEADER
                  */
-                 $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>');
+                 $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>');
 
                  /*
                  SETUP GOOGLE CHART DATA
@@ -145,7 +145,7 @@
                      //width: 900,
                      height: Math.round(250 * data.length),
                      chartArea: { left: 200, top: 50, width: '80%', height: '85%' },
-                     vAxis: { title: 'Players', titleTextStyle: { fontSize: '20' } },
+                     vAxis: { title: 'Players', titleTextStyle: { fontSize: '20' }, textStyle: {fontSize: '13'}  },
                      hAxis: {
                          title: vAxisText,
                          format: '#',
@@ -195,7 +195,7 @@
 <body>
     <div id='spinner'></div>
     <div id="title" class="reportTitle">Game Match Summary</div>
-    <div class="reportReturnLink">@Html.ActionLink("Back to Game Plays", "Index", "GamePlays", new { SelectedGame = ViewBag.CurrentSelectedGame }, null)</div>
+    <div class="reportReturnLink">@Html.ActionLink("Back to Game", "Index", "Games")</div>
     <div class="reportResetSytle"></div>
     <div id="header" class="reportHeader"></div>
     <div id="parent_chart_div">

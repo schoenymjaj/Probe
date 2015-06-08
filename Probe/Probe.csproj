@@ -43,11 +43,21 @@
     <Reference Include="Elmah">
       <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.WebApi.MessageHandlers.Compression">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.MessageHandlers.Compression.1.2.2\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Microsoft.AspNet.WebApi.MessageHandlers.Compression.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -175,16 +185,17 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\api\GameConfigurationsController.cs" />
-    <Compile Include="Controllers\api\GamePlayAnswersController.cs" />
-    <Compile Include="Controllers\api\GamePlaysController.cs" />
-    <Compile Include="Controllers\api\ReportsController.cs" />
+    <Compile Include="Controllers\api\GameAnswersController.cs" />
+    <Compile Include="Controllers\api\GamesController.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controllers\api\PlayersController.cs" />
     <Compile Include="Controllers\api\QuestionsController.cs" />
+    <Compile Include="Controllers\api\ReportsController.cs" />
     <Compile Include="Controllers\ChoiceQuestionsController.cs" />
     <Compile Include="Controllers\ChoicesController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\GameConfigurationsController.cs" />
-    <Compile Include="Controllers\GamePlaysController.cs" />
     <Compile Include="Controllers\GameQuestionsController.cs" />
     <Compile Include="Controllers\GamesController.cs" />
     <Compile Include="Controllers\GameTypesController.cs" />
@@ -200,10 +211,13 @@
     <Compile Include="Helpers\Authorize\Authorize.cs" />
     <Compile Include="Helpers\Exceptions\ExceptionHandling.cs" />
     <Compile Include="Helpers\Exceptions\MiscExceptions.cs" />
-    <Compile Include="Helpers\Exceptions\GamePlayExceptions.cs" />
+    <Compile Include="Helpers\Exceptions\GameExceptions.cs" />
+    <Compile Include="Helpers\GameHelpers\Game.cs" />
     <Compile Include="Helpers\Logging\EventLogging.cs" />
     <Compile Include="Helpers\Mics\EnumHelper.cs" />
+    <Compile Include="Helpers\Mics\ReadSQLScriptFile.cs" />
     <Compile Include="Helpers\ModelBinders\ModelBinders.cs" />
+    <Compile Include="Helpers\PlayerHelpers\ProbePlayer.cs" />
     <Compile Include="Helpers\QuestionHelpers\Question.cs" />
     <Compile Include="Helpers\Redirecting\Redirecting.cs" />
     <Compile Include="Helpers\Validations\Validate.cs" />
@@ -219,19 +233,63 @@
     <Compile Include="Migrations\201501021941331_CloneQuestionsUsed.Designer.cs">
       <DependentUpon>201501021941331_CloneQuestionsUsed.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503261548158_UpgradeDBMinusGameIdFKforPlayer-GameQuestionforv1.2.cs" />
+    <Compile Include="Migrations\201503261548158_UpgradeDBMinusGameIdFKforPlayer-GameQuestionforv1.2.Designer.cs">
+      <DependentUpon>201503261548158_UpgradeDBMinusGameIdFKforPlayer-GameQuestionforv1.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503282351322_DataMigrationv1.2.cs" />
+    <Compile Include="Migrations\201503282351322_DataMigrationv1.2.Designer.cs">
+      <DependentUpon>201503282351322_DataMigrationv1.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503301413470_AddGameIdFKforPlayerAndGameQuestionv1.2.cs" />
+    <Compile Include="Migrations\201503301413470_AddGameIdFKforPlayerAndGameQuestionv1.2.Designer.cs">
+      <DependentUpon>201503301413470_AddGameIdFKforPlayerAndGameQuestionv1.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504091725053_AddConfigurationTablev1.2.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Migrations\201504091725053_AddConfigurationTablev1.2.Designer.cs">
+      <DependentUpon>201504091725053_AddConfigurationTablev1.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504091726307_SeedConfigurationAndRemoveGameConfigurationTablev1.2.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Migrations\201504091726307_SeedConfigurationAndRemoveGameConfigurationTablev1.2.Designer.cs">
+      <DependentUpon>201504091726307_SeedConfigurationAndRemoveGameConfigurationTablev1.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504211742316_AddActivePropertyToPlayer.cs" />
+    <Compile Include="Migrations\201504211742316_AddActivePropertyToPlayer.Designer.cs">
+      <DependentUpon>201504211742316_AddActivePropertyToPlayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504221225105_RemoveFullandNickNameRequirementToPerson.cs" />
+    <Compile Include="Migrations\201504221225105_RemoveFullandNickNameRequirementToPerson.Designer.cs">
+      <DependentUpon>201504221225105_RemoveFullandNickNameRequirementToPerson.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505191952109_AddPlayerGameReasonPropertyToPlayer.cs" />
+    <Compile Include="Migrations\201505191952109_AddPlayerGameReasonPropertyToPlayer.Designer.cs">
+      <DependentUpon>201505191952109_AddPlayerGameReasonPropertyToPlayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506052008583_AddPublishedPropertyToGame.cs" />
+    <Compile Include="Migrations\201506052008583_AddPublishedPropertyToGame.Designer.cs">
+      <DependentUpon>201506052008583_AddPublishedPropertyToGame.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Choice.cs" />
     <Compile Include="Models\ChoiceQuestion.cs" />
+    <Compile Include="Models\ConfigurationG.cs" />
+    <Compile Include="Models\GameConfigurationDTO.cs" />
     <Compile Include="Models\GameConfiguration.cs" />
-    <Compile Include="Models\GamePlayAnswerDTO.cs" />
-    <Compile Include="Models\ACL.cs" />
-    <Compile Include="Models\IEntity.cs" />
-    <Compile Include="Models\PlayerDTO.cs" />
+    <Compile Include="Models\GameAnswer.cs" />
     <Compile Include="Models\GamePlay.cs" />
-    <Compile Include="Models\Game.cs" />
-    <Compile Include="Models\GamePlayAnswer.cs" />
+    <Compile Include="Models\GameAnswerDTO.cs" />
+    <Compile Include="Models\ACL.cs" />
     <Compile Include="Models\GamePlayReport.cs" />
+    <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Models\ResultMessage.cs" />
+    <Compile Include="Models\PlayerGameStatus.cs" />
+    <Compile Include="Models\PlayerDTO.cs" />
+    <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameQuestion.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Player.cs" />
@@ -246,6 +304,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
+    <Content Include="Client\ajaxtestharness.html" />
     <Content Include="Client\config.xml" />
     <Content Include="Client\css\custom-accordian\images\animated-overlay.gif" />
     <Content Include="Client\css\custom-accordian\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -414,6 +473,7 @@
     <Content Include="Client\images\screen\ios\screen-iphone-portrait.png" />
     <Content Include="Client\images\screen\windows\screen-480-800.jpg" />
     <Content Include="Client\index.html" />
+    <Content Include="Client\js\3party\iso8601.min.js" />
     <Content Include="Client\js\appScript.js" />
     <Content Include="Client\js\appScript.min.js" />
     <Content Include="Client\js\commonGraphicScript.js" />
@@ -428,6 +488,9 @@
     <Content Include="Client\js\jqm\jquery.mobile.inline-svg-1.4.3.min.css" />
     <Content Include="Client\js\jqm\jquery.mobile.structure-1.4.3.min.css" />
     <Content Include="Client\js\jqm\jquery.mobile.theme-1.4.3.min.css" />
+    <Content Include="Client\js\jquery.countdown.css" />
+    <Content Include="Client\js\jquery.countdown.js" />
+    <Content Include="Client\js\jquery.countdown.min.js" />
     <Content Include="Client\js\jquery\jquery-2.1.1.min.js" />
     <Content Include="Client\js\set-weinre.js" />
     <Content Include="Client\main.html" />
@@ -705,6 +768,15 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
+    <Content Include="Scripts\sql\03-Copy-All-GamePlay-to-Game-Table.sql" />
+    <Content Include="Scripts\sql\06-Update-GameId-From-Player-Table-Based-On-Copied-GamePlay-Records.sql" />
+    <Content Include="Scripts\sql\08-Update-GameId-From-GameQuestion-Table-Based-On-Copied-GamePlay-Records.sql" />
+    <Content Include="Scripts\sql\081-Update-GameId-From-GameConfiguration-Table-Based-On-Copied-GamePlay-Records.sql" />
+    <Content Include="Scripts\sql\09-Delete-OLD-Games.sql" />
+    <Content Include="Scripts\sql\10-Delete-Corrupt-Player-Without-GameAnswer-Records.sql" />
+    <Content Include="Scripts\sql\15-InsertGlobalConfigurationRecordsAndRemoveAllGameConfigurationRecords.sql" />
+    <Content Include="Scripts\sql\20-InsertLMSGameType.sql" />
+    <Content Include="Scripts\sql\AboutContent.html" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\first.png" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\last.png" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\loading.gif" />
@@ -989,11 +1061,6 @@
     <Content Include="Views\GameTypes\Details.cshtml" />
     <Content Include="Views\GameTypes\Edit.cshtml" />
     <Content Include="Views\GameTypes\Index.cshtml" />
-    <Content Include="Views\Games\Create.cshtml" />
-    <Content Include="Views\Games\Delete.cshtml" />
-    <Content Include="Views\Games\Details.cshtml" />
-    <Content Include="Views\Games\Edit.cshtml" />
-    <Content Include="Views\Games\Index.cshtml" />
     <Content Include="Views\Players\Create.cshtml" />
     <Content Include="Views\Players\Delete.cshtml" />
     <Content Include="Views\Players\Details.cshtml" />
@@ -1058,10 +1125,17 @@
     <Content Include="Views\Reports\_MobileLayout.cshtml" />
     <Content Include="Views\Reports\ReportStyleJavaScript.cshtml" />
     <Content Include="Views\Home\_MobileLayout.cshtml" />
+    <Content Include="Views\Games\Index.cshtml" />
+    <Content Include="Views\Games\Create.cshtml" />
+    <Content Include="Views\Games\Edit.cshtml" />
+    <Content Include="Views\Games\Details.cshtml" />
+    <Content Include="Views\Games\Delete.cshtml" />
+    <Content Include="Views\Reports\GameLMSSummary.cshtml" />
+    <Content Include="Views\Reports\PlayerLMSSummary.cshtml" />
+    <Content Include="Views\Reports\PlayerLMSDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Client\js\3party\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Error\" />
   </ItemGroup>
@@ -1081,6 +1155,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501021941331_CloneQuestionsUsed.resx">
       <DependentUpon>201501021941331_CloneQuestionsUsed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503261548158_UpgradeDBMinusGameIdFKforPlayer-GameQuestionforv1.2.resx">
+      <DependentUpon>201503261548158_UpgradeDBMinusGameIdFKforPlayer-GameQuestionforv1.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503282351322_DataMigrationv1.2.resx">
+      <DependentUpon>201503282351322_DataMigrationv1.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503301413470_AddGameIdFKforPlayerAndGameQuestionv1.2.resx">
+      <DependentUpon>201503301413470_AddGameIdFKforPlayerAndGameQuestionv1.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504091725053_AddConfigurationTablev1.2.resx">
+      <DependentUpon>201504091725053_AddConfigurationTablev1.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504091726307_SeedConfigurationAndRemoveGameConfigurationTablev1.2.resx">
+      <DependentUpon>201504091726307_SeedConfigurationAndRemoveGameConfigurationTablev1.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504211742316_AddActivePropertyToPlayer.resx">
+      <DependentUpon>201504211742316_AddActivePropertyToPlayer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504221225105_RemoveFullandNickNameRequirementToPerson.resx">
+      <DependentUpon>201504221225105_RemoveFullandNickNameRequirementToPerson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505191952109_AddPlayerGameReasonPropertyToPlayer.resx">
+      <DependentUpon>201505191952109_AddPlayerGameReasonPropertyToPlayer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506052008583_AddPublishedPropertyToGame.resx">
+      <DependentUpon>201506052008583_AddPublishedPropertyToGame.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -1111,6 +1212,11 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

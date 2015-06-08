@@ -24,11 +24,11 @@
 
         if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
-        var gamePlayId = '@ViewBag.GamePlayId';
+        var gameId = '@ViewBag.GameId';
         var gameCode = '@ViewBag.GameCode';
         var playerId = '@ViewBag.PlayerId';
 
-        $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchSummaryData/' + gamePlayId + '/' + gameCode + '/' + playerId, {},
+        $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchSummaryData/' + gameId + '/' + gameCode + '/' + playerId, {},
         function (data) {
 
             //HANDLER FOR INTERACTIVITY
@@ -40,7 +40,7 @@
                     console.log('The player selected ' + matchedPlayerId);
 
                     window.location = '@Url.Content("~")' + 'Reports/PlayerMatchDetail/'
-                        + gamePlayId + '/' + gameCode + '/' + playerId + '/' + matchedPlayerId + (DoStyleMobile() ? '/1' : '');
+                        + gameId + '/' + gameCode + '/' + playerId + '/' + matchedPlayerId + (DoStyleMobile() ? '/1' : '');
 
                 }
             };
@@ -54,7 +54,7 @@
                 Back button will not exist if report loads within an iFrame (then its in mobile mode)
                 */
                 if (DoStyleMobile()) {
-                    $('#header').html('<span class="reportLabel">Game</span>: ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '<span class="reportLabelText">@ViewBag.PlayerName</span>');
+                    $('#header').html('<span class="reportLabel">Game</span>: ' + '<span class="reportLabelText">@ViewBag.GameName</span>' + '<br/><span class="reportLabel reportLabelMargin">Player</span>: ' + '<span class="reportLabelText">@ViewBag.PlayerName</span>');
                     $('#appHome').click(function (event) {
                         //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
                         if (ClientIsCordovaApp()) {
@@ -65,7 +65,7 @@
                     });
                     $('.reportReturnLink').hide();
                 } else {
-                    $('#header').html('<span class="reportLabel">Game</span>: ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '<span class="reportLabelText">@ViewBag.PlayerName</span>');
+                    $('#header').html('<span class="reportLabel">Game</span>: ' + '<span class="reportLabelText">@ViewBag.GameName</span>' + '  <span class="reportLabel reportLabelMargin">Player</span>: ' + '<span class="reportLabelText">@ViewBag.PlayerName</span>');
                     $('.reportReturnLink').html('@Html.ActionLink("Back to Game Match Summary", "GamePlayerMatchMinMax", "Reports")');
                 }
 

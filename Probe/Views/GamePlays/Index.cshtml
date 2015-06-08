@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Probe.Models.GamePlay>
+﻿@model IEnumerable<Probe.Models.Game>
 
 @{
     ViewBag.Title = "Index";
@@ -12,19 +12,19 @@
 <script src="@Url.Content("~/Scripts/probe/probe-setup-tablesorter.js")"
         type="text/javascript"></script>
 
-@helper RenderChoices(Probe.Models.GamePlay item)
+@helper RenderChoices(Probe.Models.Game item)
 {
         
     <div id="menuOptionsDiv" style="float: left">
         <label for="menuOptions"></label>
-        <select name="menuOptions" id="menuOptions" data-gameplayid="@item.Id" data-gametype="@item.Game.GameType.Name" data-code="@item.Code" data-pcount="@item.Players.Count()">
+        <select name="menuOptions" id="menuOptions" data-gameid="@item.Id" data-gametype="@item.GameType.Name" data-code="@item.Code" data-pcount="@item.Players.Count()">
             <option>Selection</option>
-            @if (ViewBag.DctGamePlayActive[item.Id])
+            @if (ViewBag.DctAllGamesActiveStatus[item.Id])
             {<option>Preview</option>}
             @if (item.Players.Count > 0) {<option>Players</option><option>Report</option>}
             <option>Edit</option>
             <option>Details</option>
-            @if (!ViewBag.DctGamePlayActive[item.Id] && item.Players.Count == 0)
+            @if (!ViewBag.DctAllGamesActiveStatus[item.Id] && item.Players.Count == 0)
             {<option>Delete</option>}
         </select>
     </div>
@@ -35,14 +35,6 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-
-@using (Html.BeginForm())
-{
-    <p>
-        Select Game: @Html.DropDownList("SelectedGame", "All")
-        <input type="submit" value="Filter" />
-    </p>
-}
 
 <div>
     <table class="tablesorter">
@@ -82,12 +74,12 @@
                     <td>
                         @if (item.Players.Count > 0)
                         {
-                            <a class="playersDialogLink" data-gameplayid="@item.Id" data-code="@item.Code" data-gametype="@item.Game.GameType.Name"
+                            <a class="playersDialogLink" data-gameid="@item.Id" data-code="@item.Code" data-gametype="@item.GameType.Name"
                                href="#">@Html.DisplayFor(modelItem => item.Players.Count)</a>
                         }
                         else
                         {
-                        <a data-gameplayid="@item.Id" data-gametype="@item.Game.GameType.Name"  
+                        <a data-gameid="@item.Id" data-gametype="@item.GameType.Name"  
                            href="#">@Html.DisplayFor(modelItem => item.Players.Count)</a>
                             
                         }
@@ -166,12 +158,12 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
                     reportURL = "";
                     if (gameType == 'Match') {
                         if (reportName == "Game Match Summary") {
-                            reportURL = 'Reports/GamePlayerMatchMinMax/' + gamePlayId + '/' + code;
+                            reportURL = 'Reports/GamePlayerMatchMinMax/' + gameId + '/' + code;
                         } else if (reportName == "Player Match Summary") {
-                            reportURL = 'Reports/PlayerMatchSummary/' + gamePlayId + '/' + code + '/' + playerId;
+                            reportURL = 'Reports/PlayerMatchSummary/' + gameId + '/' + code + '/' + playerId;
                         }
                     } else if (gameType == 'Test') {
-                        reportURL = 'Reports/PlayerTestSummary/' + gamePlayId + '/' + code;
+                        reportURL = 'Reports/PlayerTestSummary/' + gameId + '/' + code;
                     }
 
                     window.location = reportURL;
@@ -188,7 +180,7 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
 
             ActivityIndicatorOn('#spinner');
 
-            gamePlayId = $(this).attr('data-gameplayid');
+            gameId = $(this).attr('data-gameid');
             gameType = $(this).attr('data-gametype');
             code = $(this).attr('data-code');
             playerCount = $(this).attr('data-pcount');
@@ -198,19 +190,19 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
                     ShowPreviewDialog(code,'TestName','TestName')
                     break;
                 case 'Players':
-                    window.location = 'Players?SelectedGamePlay=' + gamePlayId;
+                    window.location = 'Players?SelectedGamePlay=' + gameId;
                     break;
                 case 'Report':
-                    ShowReportDialog(code, gamePlayId, gameType, playerCount);
+                    ShowReportDialog(code, gameId, gameType, playerCount);
                     break;
                 case 'Edit':
-                    window.location = 'GamePlays/Edit/' + gamePlayId;
+                    window.location = 'Games/Edit/' + gameId;
                     break;
                 case 'Details':
-                    window.location = 'GamePlays/Details/' + gamePlayId;
+                    window.location = 'Games/Details/' + gameId;
                     break;
                 case 'Delete':
-                    window.location = 'GamePlays/Delete/' + gamePlayId;
+                    window.location = 'Games/Delete/' + gameId;
                     break;
             }
 
@@ -280,7 +272,7 @@ AND PLAYERS JQUERY UI MODAL DIALOGS
         return false;
     }//function ShowPreviewDialog
 
-    function ShowReportDialog(code, gamePlayId, gameType, playerCount) {
+    function ShowReportDialog(code, gameId, gameType, playerCount) {
 
         $.getJSON('api/Players/GetPlayerByGameCode/' + code, {},
         function (data) {

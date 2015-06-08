@@ -17,6 +17,10 @@ namespace Probe.Helpers.ModelBinders
 {
     public class PlayerModelBinder : IModelBinder
     {
+        /*
+         * Updates: MNS 4-15-15 -   Added support for LastName, and Email. Also support the possibility that FirstName,
+         *                          NickName, LastName, or Email may be missing. This is a valid use case.
+         */ 
         public bool BindModel(System.Web.Http.Controllers.HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
             PlayerDTO playerDto = new PlayerDTO();
@@ -25,19 +29,16 @@ namespace Probe.Helpers.ModelBinders
 
             string ct = actionContext.Request.Content.ReadAsStringAsync().Result;
 
-            //THIS DESERIALIZATION ONLY GETS THE FIRST LEVEL OF DATA. IT DOES NOT GET THE GAMEPLAYANSWER NESTED LIST
-            //byte[] byteArray = Encoding.ASCII.GetBytes(ct);
-            //MemoryStream stream = new MemoryStream(byteArray);
-            //stream.Position = 0;
-            //playerDto = (PlayerDTO)ser.ReadObject(stream);
-
             JObject root = JObject.Parse(ct);
-            playerDto.Id = 0; //just a placeholder
-            playerDto.FirstName = root["FirstName"].ToString();
+            playerDto.Id = (long)root["Id"];
             playerDto.GameCode = (string)root["GameCode"];
-            playerDto.GamePlayId = (long)root["GamePlayId"];
-            playerDto.NickName = (string)root["NickName"];
-            playerDto.Sex = (Person.SexType)((int)root["Sex"]);
+            playerDto.GameId = (long)root["GameId"];
+
+            if (root["Sex"] != null) playerDto.Sex = (Person.SexType)((int)root["Sex"]);
+            if (root["FirstName"] != null) playerDto.FirstName = root["FirstName"].ToString();
+            if (root["NickName"] != null) playerDto.NickName = (string)root["NickName"];
+            if (root["LastName"] != null) playerDto.LastName = (string)root["LastName"];
+            if (root["Email"] != null) playerDto.EmailAddr = (string)root["Email"];
 
             try
             {
@@ -58,18 +59,20 @@ namespace Probe.Helpers.ModelBinders
             if (playerDto.ClientVersion != ProbeConstants.ClientVersionPostPlayerWithoutAnswers)
             {
 
-                List<GamePlayAnswer> gpaList = new List<GamePlayAnswer>();
-                JArray gpaArray = (JArray)root["GamePlayAnswer"];
-                for (int i = 0; i < gpaArray.Count; i++) //loop through rows
+                List<GameAnswerDTO> gaList = new List<GameAnswerDTO>();
+                JArray gaArray = (JArray)root["GameAnswer"];
+                for (int i = 0; i < gaArray.Count; i++) //loop through rows
                 {
-                    GamePlayAnswer gpa = new GamePlayAnswer();
-                    gpa.Id = 0; //just a placeholder
-                    gpa.PlayerId = 0; //just a placeholder
-                    gpa.ChoiceId = (long)gpaArray[i]["ChoiceId"];
-                    gpaList.Add(gpa);
+                    GameAnswerDTO ga = new GameAnswerDTO();
+                    ga.Id = 0; //just a placeholder
+                    ga.PlayerId = 0; //just a placeholder
+                    ga.QuestionNbr = (int)gaArray[i]["QuestionNbr"];
+                    ga.QuestionId = (long)gaArray[i]["QuestionId"];
+                    ga.ChoiceId = (long)gaArray[i]["ChoiceId"];
+                    gaList.Add(ga);
                 }
 
-                playerDto.GamePlayAnswers = gpaList;
+                playerDto.GameAnswers = gaList;
             }
 
             return true;

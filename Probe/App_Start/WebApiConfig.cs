@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Probe.Helpers.Logging;
+using Microsoft.AspNet.WebApi.MessageHandlers.Compression;
+using Microsoft.AspNet.WebApi.MessageHandlers.Compression.Compressors;
 
 namespace Probe
 {
@@ -42,6 +44,10 @@ namespace Probe
                 filters.Add(new WebApiLogFilterAttribute());
             }
 
-        }
+            //enable the gzip compression of all Web API 2 responses.
+            GlobalConfiguration.Configuration.MessageHandlers.Insert(0, new ServerCompressionHandler(new GZipCompressor(), new DeflateCompressor()));
+
+
+        }//public static void Register(HttpConfiguration config)
     }
 }

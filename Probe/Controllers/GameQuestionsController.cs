@@ -48,7 +48,7 @@ namespace Probe.Controllers
 
             Session["CurrentSelectedGame"] = SelectedGame;
             ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
-            ViewBag.DctGameActive = ProbeValidate.GetAllGamesActiveStatus();
+            ViewBag.DctGameActive = ProbeValidate.GetAllGamesStatus();
 
             IQueryable<GameQuestion> gameQuestions = db.GameQuestion
                 .Where(gq => gq.GameId == gameId)
@@ -132,7 +132,7 @@ namespace Probe.Controllers
             if (ModelState.IsValid)
             {
                 //We need to clone the question and set the UsedInGame field to true
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, gameQuestion.GameId, gameQuestion.QuestionId);
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db,true, gameQuestion.QuestionId);
                 gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
 
                 db.GameQuestion.Add(gameQuestion);
@@ -319,6 +319,9 @@ namespace Probe.Controllers
             switch (db.Game.Find(SelectedGame).GameType.Name)
             {
                 case "Test":
+                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
+                    break;
+                case "Last Man Standing":
                     allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
                     break;
                 case "Match":

@@ -21,17 +21,17 @@ namespace Probe.Controllers
         #region PlayerMatch Reporting
 
         [AllowAnonymous]
-        public JsonResult GetGamePlayerMatchMinMaxData(long gameplayid, string code)
+        public JsonResult GetGamePlayerMatchMinMaxData(long gameid, string code)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
             var result = db.Database.SqlQuery<GamePlayerMatchMinMaxData>
-                                             ("exec GetGamePlayerMatchMinMax " + gameplayid).ToList();
+                                             ("exec GetGamePlayerMatchMinMax " + gameid).ToList();
 
             List<GamePlayerMatchMinMaxReturn> reportData = new List<GamePlayerMatchMinMaxReturn>();
             foreach (GamePlayerMatchMinMaxData row in result)
@@ -64,20 +64,19 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult GamePlayerMatchMinMax(long gameplayid, string code, int? mobileind)
+        public ActionResult GamePlayerMatchMinMax(long gameid, string code, int? mobileind)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
-            ViewBag.GamePlayId = gameplayid;
+            ViewBag.GameId = gameid;
             ViewBag.GameCode = code;
-            ViewBag.GamePlayName = db.GamePlay.Find(gameplayid).Name;
-            ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"]; //get current selected game from GamePlay controller
-            ViewBag.NbrQuestions = db.GamePlay.Find(gameplayid).Game.GameQuestions.Count();
+            ViewBag.GameName = db.Game.Find(gameid).Name;
+            ViewBag.NbrQuestions = db.Game.Find(gameid).GameQuestions.Count();
 
             if (mobileind == null || mobileind == 0)
             {
@@ -102,17 +101,17 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public JsonResult GetPlayerMatchSummaryData(long gameplayid, string code, long playerid)
+        public JsonResult GetPlayerMatchSummaryData(long gameid, string code, long playerid)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
             var result = db.Database.SqlQuery<PlayerMatchSummaryData>
-                                             ("exec GetPlayerMatchSummary " + gameplayid + "," + playerid).ToList();
+                                             ("exec GetPlayerMatchSummary " + gameid + "," + playerid).ToList();
 
             List<PlayerMatchSummaryReturn> reportData = new List<PlayerMatchSummaryReturn>();
             foreach (PlayerMatchSummaryData row in result)
@@ -132,22 +131,22 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult PlayerMatchSummary(long gameplayid, string code, long playerid, int? mobileind)
+        public ActionResult PlayerMatchSummary(long gameid, string code, long playerid, int? mobileind)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
-            ViewBag.GamePlayId = gameplayid;
+            ViewBag.GameId = gameid;
             ViewBag.GameCode = code;
-            ViewBag.GamePlayName = db.GamePlay.Find(gameplayid).Name;
+            ViewBag.GameName = db.Game.Find(gameid).Name;
             ViewBag.PlayerName = db.Player.Find(playerid).FirstName + " - " + db.Player.Find(playerid).NickName;
             ViewBag.PlayerId = playerid;
 
-            ViewBag.NbrQuestions = db.GamePlay.Find(gameplayid).Game.GameQuestions.Count();
+            ViewBag.NbrQuestions = db.Game.Find(gameid).GameQuestions.Count();
 
             if (mobileind == null || mobileind == 0)
             {
@@ -171,19 +170,19 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public JsonResult GetPlayerMatchDetailData(long gameplayid, string code, long playerid, long matchedplayerid)
+        public JsonResult GetPlayerMatchDetailData(long gameId, string code, long playerid, long matchedplayerid)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameId, code);
 
             int filterType = 0; //get all questions match or no-match
 
             var result = db.Database.SqlQuery<PlayerMatchDetailData>
-                                             ("exec GetPlayerMatchDetail " + gameplayid + "," + playerid + ","
+                                             ("exec GetPlayerMatchDetail " + gameId + "," + playerid + ","
                                              + matchedplayerid + "," + filterType + ",'order by OrderNbr asc'").ToList();
 
 
@@ -209,18 +208,18 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult PlayerMatchDetail(long gameplayid, string code, long playerid, long matchedplayerid, int? mobileind)
+        public ActionResult PlayerMatchDetail(long gameid, string code, long playerid, long matchedplayerid, int? mobileind)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
-            ViewBag.GamePlayId = gameplayid;
+            ViewBag.GameId = gameid;
             ViewBag.GameCode = code;
-            ViewBag.GamePlayName = db.GamePlay.Find(gameplayid).Name;
+            ViewBag.GameName = db.Game.Find(gameid).Name;
             ViewBag.PlayerId = playerid;
             ViewBag.MatchedPlayerId = matchedplayerid;
 
@@ -246,22 +245,133 @@ namespace Probe.Controllers
 
         }
 
+        [AllowAnonymous]
+        public ActionResult GameLMSSummary(long gameid, string code, int? mobileind)
+        {
+            /*
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
+            the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
+            have to be improved big-time
+            */
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
+
+            ViewBag.GameId = gameid;
+            ViewBag.GameCode = code;
+            ViewBag.GameName = db.Game.Find(gameid).Name;
+
+            if (mobileind == null || mobileind == 0)
+            {
+                ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
+                return View();
+            }
+            else
+            {
+                ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
+                return View("GameLMSSummary", "_MobileLayout");
+            }
+
+        }
+
+        [AllowAnonymous]
+        public ActionResult PlayerLMSSummary(long gameid, string code, int playerstatusfilter, int? mobileind)
+        {
+            /*
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
+            the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
+            have to be improved big-time
+            */
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
+
+            ViewBag.GameId = gameid;
+            ViewBag.GameCode = code;
+            ViewBag.PlayerStatusFilter = playerstatusfilter;
+            ViewBag.GameName = db.Game.Find(gameid).Name;
+
+            if (mobileind == null || mobileind == 0)
+            {
+                ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
+                return View();
+            }
+            else
+            {
+                ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
+                return View("PlayerLMSSummary", "_MobileLayout");
+            }
+
+        }
+
+        [AllowAnonymous]
+        public ActionResult PlayerLMSDetail(long gameid, string code, long playerid, int? mobileind)
+        {
+            /*
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
+            the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
+            have to be improved big-time
+            */
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
+
+            ViewBag.GameId = gameid;
+            ViewBag.GameCode = code;
+            ViewBag.PlayerId = playerid;
+            ViewBag.GameName = db.Game.Find(gameid).Name;
+
+            if (mobileind == null || mobileind == 0)
+            {
+                ViewBag.MobileInd = false;
+                ViewBag.CordovaInd = false;
+                return View();
+            }
+            else
+            {
+                ViewBag.MobileInd = true;
+                if (mobileind == 2)
+                {
+                    ViewBag.CordovaInd = true;
+                }
+                else
+                {
+                    ViewBag.CordovaInd = false;
+                }
+                return View("PlayerLMSDetail", "_MobileLayout");
+            }
+
+        }
+
+
         #endregion
 
         #region PlayerTest Reporting
 
         [AllowAnonymous]
-        public JsonResult GetPlayerTestSummaryData(long gameplayid, string code)
+        public JsonResult GetPlayerTestSummaryData(long gameid, string code)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
             var result = db.Database.SqlQuery<PlayerTestSummaryData>
-                                             ("exec GetPlayerTestSummary " + gameplayid).ToList();
+                                             ("exec GetPlayerTestSummary " + gameid).ToList();
 
             List<PlayerTestSummaryReturn> reportData = new List<PlayerTestSummaryReturn>();
             foreach (PlayerTestSummaryData row in result)
@@ -281,20 +391,19 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult PlayerTestSummary(long gameplayid, string code, int? mobileind)
+        public ActionResult PlayerTestSummary(long gameid, string code, int? mobileind)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
-            ViewBag.GamePlayId = gameplayid;
+            ViewBag.GameId = gameid;
             ViewBag.GameCode = code;
-            ViewBag.GamePlayName = db.GamePlay.Find(gameplayid).Name;
-            ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
-            ViewBag.NbrQuestions = db.GamePlay.Find(gameplayid).Game.GameQuestions.Count();
+            ViewBag.GameName = db.Game.Find(gameid).Name;
+            ViewBag.NbrQuestions = db.Game.Find(gameid).GameQuestions.Count();
 
             if (mobileind == null || mobileind == 0)
             {
@@ -319,17 +428,17 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public JsonResult GetPlayerTestDetailData(long gameplayid, string code, long playerid)
+        public JsonResult GetPlayerTestDetailData(long gameId, string code, long playerid)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameId, code);
 
             var result = db.Database.SqlQuery<PlayerTestDetailData>
-                                             ("exec GetPlayerTestDetail " + gameplayid + "," + playerid).ToList();
+                                             ("exec GetPlayerTestDetail " + gameId + "," + playerid).ToList();
 
 
             List<PlayerTestDetailReturn> reportData = new List<PlayerTestDetailReturn>();
@@ -354,18 +463,18 @@ namespace Probe.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult PlayerTestDetail(long gameplayid, string code, long playerid, int? mobileind)
+        public ActionResult PlayerTestDetail(long gameid, string code, long playerid, int? mobileind)
         {
             /*
-            the gameplayid and code passed must correlate or they may be something malicious going on. so we stop 
+            the gameId and code passed must correlate or they may be something malicious going on. so we stop 
             the response ASAP and throw an exception AND WE DO NOT CATCH IT, which should be picked up by Elmah. Exception handling here
             have to be improved big-time
             */
-            ProbeValidate.ValidateGameCodeVersusId(gameplayid, code);
+            ProbeValidate.ValidateGameCodeVersusId(gameid, code);
 
-            ViewBag.GamePlayId = gameplayid;
+            ViewBag.GameId = gameid;
             ViewBag.GameCode = code;
-            ViewBag.GamePlayName = db.GamePlay.Find(gameplayid).Name;
+            ViewBag.GameName = db.Game.Find(gameid).Name;
             ViewBag.PlayerId = playerid;
 
             //check mobile indicator from request

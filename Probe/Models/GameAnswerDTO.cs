@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Probe.Models
 {
-    public class GamePlayAnswerDTO
+    public class GameAnswerDTO
     {
 
         public long Id { get; set; }
@@ -13,11 +13,15 @@ namespace Probe.Models
         [Required]
         public string GameCode { get; set; }
 
+        public int QuestionNbr { get; set; }
+
+        public long QuestionId { get; set; }
+
         [Required]
         public long PlayerId { get; set; }
 
         [Required]
-        public long ChoiceId { get; set; }
+        public long ChoiceId { get; set; } 
 
     }
 }

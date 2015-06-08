@@ -44,10 +44,10 @@
 
         if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
-        var gamePlayId = '@ViewBag.GamePlayId';
+        var gameId = '@ViewBag.GameId';
         var gameCode = '@ViewBag.GameCode';
         var playerId = '@ViewBag.PlayerId';
-        $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gamePlayId + '/' + gameCode + '/' + playerId, {},
+        $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gameId + '/' + gameCode + '/' + playerId, {},
          function (data) {
 
              //SET COLUMN WIDTHS
@@ -77,7 +77,7 @@
                  */
                  if (data.length >= 1) {
                      if (DoStyleMobile()) {
-                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>'
+                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>'
                              + '<br/><span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
                              + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
                          $('#appHome').click(function (event) {
@@ -90,7 +90,7 @@
                          });
                          $('.reportReturnLink').hide();
                      } else {
-                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GamePlayName</span>'
+                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>'
                              + ' <span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
                              + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
                          $('.reportReturnLink').html('@Html.ActionLink("Back to Player Test Scores", "PlayerTestSummary", "Reports")');

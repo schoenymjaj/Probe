@@ -11,7 +11,7 @@ namespace Probe.Models
         public long Id { get; set; }
 
         [Required]
-        [ForeignKey("Game")]
+        [ForeignKey("Game")] //MNS NEXT MIGRATION STEP
         public long GameId { get; set; }
 
         [Required]

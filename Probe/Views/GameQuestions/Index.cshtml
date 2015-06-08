@@ -51,7 +51,7 @@
     }
     else
     {
-        @:NOTE: Game is Ready-Only (A Game Play is Active for Game)
+        @:NOTE: Game is Ready-Only (A Game is Active for Game)
     }
 </p>
 
@@ -109,4 +109,7 @@
         </tbody>
     </table>
     @Html.Partial("TablesorterPager")
+    <div style="margin-top: 20px">
+        @Html.ActionLink("Back to Game List", "Index", "Games", new { SelectedGame = ViewBag.SelectedGame }, null)
+    </div>
 </div>

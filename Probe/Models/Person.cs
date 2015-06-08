@@ -22,7 +22,6 @@ namespace Probe.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Required]
         [StringLength(50, ErrorMessage = "First name cannot be longer than 50 characters.")]
         [Column("FirstName")]
         [Display(Name = "First Name")]
@@ -41,7 +40,6 @@ namespace Probe.Models
         [Display(Name = "Middle Initial")]
         public string MiddleName { get; set; }
 
-        [Required]
         [StringLength(50, ErrorMessage = "First name cannot be longer than 50 characters.")]
         [Column("NickName")]
         [Display(Name = "Nick Name")]

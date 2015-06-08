@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
 using Probe.Helpers.Mics;
+using Probe.Helpers.GameHelpers;
 
 namespace Probe.Controllers
 {
@@ -20,23 +21,23 @@ namespace Probe.Controllers
         private ProbeDataContext db = new ProbeDataContext();
          
         // GET: Players
-        public ActionResult Index(int? SelectedGamePlay)
+        public ActionResult Index(int? SelectedGame)
         {
-            ViewBag.DctGamePlayActive = ProbeValidate.GetAllGamePlaysStatus();
+            ViewBag.DctAllGamesActiveStatus = ProbeValidate.GetAllGamesStatus();
 
             string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-            var gamePlays = db.GamePlay
-                .Where(gp => gp.Game.AspNetUsersId == loggedInUserId)
-                .OrderBy(gp => gp.Name);
+            var games = db.Game
+                .Where(g => g.AspNetUsersId == loggedInUserId)
+                .OrderBy(g => g.Name);
 
-            if (gamePlays.Count() > 0 && !SelectedGamePlay.HasValue)
+            if (games.Count() > 0 && !SelectedGame.HasValue)
             {
-                SelectedGamePlay = (int)gamePlays.First().Id;
+                SelectedGame = (int)games.First().Id;
             }
 
-            ViewBag.SelectedGamePlay = new SelectList(gamePlays, "Id", "Name", SelectedGamePlay);
+            ViewBag.SelectedGame = new SelectList(games, "Id", "Name", SelectedGame);
 
-            return View(db.Player.Where(p => p.GamePlayId == SelectedGamePlay || !SelectedGamePlay.HasValue).ToList());
+            return View(db.Player.Where(p => p.GameId == SelectedGame || !SelectedGame.HasValue).ToList());
         }
 
         // GET: Players/Details/5
@@ -65,7 +66,7 @@ namespace Probe.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,LastName,FirstName,MiddleName,EmailAddr,MobileNbr")] Player player)
+        public ActionResult Create([Bind(Include = "Id,LastName,FirstName,MiddleName,EmailAddr,MobileNbr,Active")] Player player)
         {
             if (ModelState.IsValid)
             {
@@ -100,15 +101,15 @@ namespace Probe.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,GamePlayId,LastName,FirstName,MiddleName,EmailAddr,MobileNbr,NickName,Sex,SubmitDate,SubmitTime")] Player player)
+        public ActionResult Edit([Bind(Include = "Id,GameId,LastName,FirstName,MiddleName,EmailAddr,MobileNbr,NickName,Sex,Active,SubmitDate,SubmitTime")] Player player)
         {
             if (ModelState.IsValid)
             {
-                long gamePlayId = player.GamePlayId;
+                long gameId = player.GameId;
 
                 db.Entry(player).State = EntityState.Modified;
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", new { SelectedGamePlay = gamePlayId });
+                return RedirectToAction("Index", new { SelectedGame = gameId });
             }
             return View(player);
         }
@@ -136,17 +137,11 @@ namespace Probe.Controllers
             //will delete the game play submissions of the player and then the player.
             Player player = db.Player.Find(id);
 
-            long gamePlayId = player.GamePlayId;
+            long gameId = player.GameId;
 
-            var gpas = db.GamePlayAnswer.Where(gpa => gpa.PlayerId == player.Id);
-            foreach (GamePlayAnswer gpa in gpas)
-            {
-                db.GamePlayAnswer.Remove(gpa);
-            }
-            db.Player.Remove(player);
+            ProbeGame.DeletePlayer(db, player);
 
-            db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-            return RedirectToAction("Index", new { SelectedGamePlay = gamePlayId});
+            return RedirectToAction("Index", new { SelectedGame = gameId});
         }
 
         protected override void Dispose(bool disposing)

@@ -35,12 +35,12 @@
 
             if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
 
-            var gamePlayId = '@ViewBag.GamePlayId';
+            var gameId = '@ViewBag.GameId';
             var gameCode = '@ViewBag.GameCode';
             var playerId = '@ViewBag.PlayerId';
             var matchedPlayerId = '@ViewBag.MatchedPlayerId';
 
-            $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchDetailData/' + gamePlayId + '/' + gameCode + '/' + playerId + '/' + matchedPlayerId, {},
+            $.post('@Url.Content("~")' + 'Reports/GetPlayerMatchDetailData/' + gameId + '/' + gameCode + '/' + playerId + '/' + matchedPlayerId, {},
             function (data) {
 
 
@@ -165,7 +165,7 @@
     <div id="title" class="reportTitle">Player - Player Match Details</div>
     <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
-    <div class="reportGameHeader"><span class="reportLabel" style="margin-right: 20px">Game</span>: <span class="reportLabelText">@ViewBag.GamePlayName</span></div>
+    <div class="reportGameHeader"><span class="reportLabel" style="margin-right: 20px">Game</span>: <span class="reportLabelText">@ViewBag.GameName</span></div>
     <div id="header" class="reportHeader"></div>
     <div class="tableHeader"></div>
     <div id="table_div" class="tableMatch"></div>

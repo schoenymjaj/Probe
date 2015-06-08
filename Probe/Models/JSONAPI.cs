@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Probe.Helpers.Mics;
 
 namespace Probe.Models
 {
@@ -10,8 +11,8 @@ namespace Probe.Models
 
     public class GamePlayerDemos
     {
-        public long GamePlayId { get; set; }
-        public string GamePlayName { get; set; }
+        public long GameId { get; set; }
+        public string GameName { get; set; }
         public string GameType { get; set; }
         public long PlayerId { get; set; }
         public string PlayerName { get; set; }
@@ -123,8 +124,74 @@ namespace Probe.Models
 
     #endregion
 
+    #region PlayerLMS JSON Data Structures
+
+    #region GetGameLMSSummaryData JSON Data Structures
+
+    public class GameLMSSummaryData
+    {
+        public GameStatusType GameStatus { get; set; }
+        public int GameNbrQuestions { get; set; }
+        public int NbrPlayers { get; set; }
+        public int NbrPlayersActive { get; set; }
+        public int NbrPlayersInactive { get; set; }
+        public int MostRecentQuestionNbrDeadlinePassed { get; set; }
+        public string MostRecentQuestionNameDeadlinePassed { get; set; }
+        public DateTime MostRecentQuestionDeadlinePassed { get; set; }
+        public int NextQuestionNbr { get; set; }
+        public string NextQuestionName { get; set; }
+        public DateTime NextQuestionDeadline { get; set; }
+        public int MaxQuestionNbrSubmitted { get; set; }
+    }
+
+    public class GameLMSSummaryReturn : GameLMSSummaryData
+    {
+
+    }
 
     #endregion
 
+    public class PlayerLMSSummaryData
+    {
+        public long PlayerId { get; set; }
+        public string PlayerName { get; set; }
+        public bool PlayerStatus { get; set; }
+        public Player.PlayerGameReasonType PlayerGameReason { get; set; }
+        public int QuestionNbrLastSubmitted { get; set; }
+    }
 
+    public class PlayerLMSSummaryReturn : PlayerLMSSummaryData
+    {
+        public int MostRecentQuestionNbrDeadlinePassed { get; set; }
+        public DateTime MostRecentQuestionDeadlinePassed { get; set; }
+    }
+
+    public class PlayerLMSDetailData : GamePlayerDemos
+    {
+        public bool PlayerStatus { get; set; }
+        public Player.PlayerGameReasonType PlayerGameReason { get; set; }
+        public long QuestionId { get; set; }
+        public string Question { get; set; }
+        public long OrderNbr { get; set; }
+        public string SelectedChoices { get; set; }
+        public string CorrectChoices { get; set; }
+    }
+
+    public class PlayerLMSDetailReturn
+    {
+        public long PlayerId { get; set; }
+        public string PlayerName { get; set; }
+        public bool PlayerStatus { get; set; }
+        public Player.PlayerGameReasonType PlayerGameReason { get; set; }
+        public long QuestionId { get; set; }
+        public string Question { get; set; }
+        public long OrderNbr { get; set; }
+        public string SelectedChoices { get; set; }
+        public string CorrectChoices { get; set; }
+    }
+
+
+    #endregion
+
+    #endregion
 }

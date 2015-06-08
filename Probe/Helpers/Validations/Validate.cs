@@ -8,6 +8,7 @@ using System.Net;
 using Probe.DAL;
 using Probe.Models;
 using Probe.Helpers.Exceptions;
+using Probe.Helpers.Mics;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -28,17 +29,17 @@ namespace Probe.Helpers.Validations
             string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
             var db = new ProbeDataContext();
-            status = db.GamePlay.Where(gp => gp.Code == code).Count() > 0;
+            status = db.Game.Where(g => g.Code == code).Count() > 0;
 
             return status;
         }
 
-        public static bool IsCodeExistInProbe(long gamePlayId, string code)
+        public static bool IsCodeExistInProbe(long gameId, string code)
         {
             bool status = false;
 
             var db = new ProbeDataContext();
-            status = db.GamePlay.Where(gp => gp.Code == code && gp.Id != gamePlayId).Count() > 0;
+            status = db.Game.Where(g => g.Code == code && g.Id != gameId).Count() > 0;
 
             return status;
         }
@@ -66,91 +67,38 @@ namespace Probe.Helpers.Validations
             return returnStatus;
         }
 
-        public static bool IsGamePlayNameExistForLoggedInUser(string gamePlayName)
-        {
-            bool status = false;
-
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-
-            var db = new ProbeDataContext();
-            status = db.GamePlay.Where(gp => gp.Name == gamePlayName && gp.Game.AspNetUsersId == AspNetUsersId).Count() > 0;
-
-            return status;
-        }
-
-        public static bool IsGamePlayNameExistForLoggedInUser(long gamePlayId, string gamePlayName)
-        {
-            bool status = false;
-
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-
-            var db = new ProbeDataContext();
-            status = db.GamePlay.Where(gp => gp.Name == gamePlayName && gp.Game.AspNetUsersId == AspNetUsersId && gp.Id != gamePlayId).Count() > 0;
-
-            return status;
-        }
-
-        public static bool IsGamePlayForLoggedInUser(long gamePlayId)
-        {
-            bool status = false;
-
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-
-            var db = new ProbeDataContext();
-            status = db.GamePlay.Where(gp => gp.Game.AspNetUsersId == AspNetUsersId && gp.Id == gamePlayId).Count() > 0;
-
-            return status;
-        }
-
-        public static bool IsGamePlayActive(GamePlay gp)
-        {
-            bool status = false;
-            if (((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
-                                DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
-                                || (gp.Players.Count() > 0))
-                                && !gp.SuspendMode)
-            {
-                status = true;
-            }
-            else
-            {
-                status = false;
-            }
-
-            return status;
-        }
-
         //player name. is it unique. does it meet requirements (returns exceptions if player name invalid
-        public static void IsGamePlayPlayerValid(long gamePlayId, Player player)
+        //Validation is a function of first name, nick name, last name, email address
+        public static void IsGamePlayerValid(long gameId, Player player)
         {
 
             //determine if there is another player with the same name that has already submitted for a game play
             var db = new ProbeDataContext();
-            int recordCount = db.Player.Where(p => p.GamePlayId == gamePlayId 
+            int recordCount = db.Player.Where(p => p.GameId == gameId 
                                               && p.FirstName == player.FirstName 
                                               && p.NickName == player.NickName).Count();
             if (recordCount > 0)
             {
-                throw new GamePlayDuplicatePlayerNameException();
+                throw new GameDuplicatePlayerNameException();
             }
 
             if (player.FirstName.Length == 0 || player.FirstName.Length > 10)
             {
-                throw new GamePlayInvalidFirstNameException();
+                throw new GameInvalidFirstNameException();
             }
 
             if (player.FirstName.Length == 0 || player.NickName.Length > 10)
             {
-                throw new GamePlayInvalidNickNameException();
+                throw new GameInvalidNickNameException();
             }
 
         }
 
-        public static bool DoesGamePlayHaveSubmissions(long gamePlayId)
+        public static bool DoesGameHaveSubmissions(long gameId)
         {
             bool status = false;
             var db = new ProbeDataContext();
-            int recordCount = db.Player.Where(p => p.GamePlayId == gamePlayId).Count();
+            int recordCount = db.Player.Where(p => p.GameId == gameId).Count();
             if (recordCount > 0)
             {
                 status = true;
@@ -164,14 +112,14 @@ namespace Probe.Helpers.Validations
 
         }
 
-        public static void ValidateGameCodeVersusId(long gamePlayId, string code)
+        public static void ValidateGameCodeVersusId(long gameId, string code)
         {
             var db = new ProbeDataContext();
 
-            var gamePlay = db.GamePlay.Where(gp => gp.Id == gamePlayId && gp.Code == code);
-            if (gamePlay.Count() != 1)
+            var game = db.Game.Where(g => g.Id == gameId && g.Code == code);
+            if (game.Count() != 1)
             {
-                throw new ApiArgException("The GamePlayId and GameCode do not correlate. GamePlayId: " + gamePlayId + " GameCode: " + code);
+                throw new ApiArgException("The GameId and GameCode do not correlate. GameId: " + gameId + " GameCode: " + code);
             }
 
         }
@@ -206,23 +154,24 @@ namespace Probe.Helpers.Validations
 
         #region Question Validations
 
-        public static bool IsQuestionUsedByActivatedGamePlay(Question question)
+        public static bool IsQuestionUsedByActivatedGame(Question question)
         {
 
             bool status = false;
 
             ProbeDataContext db = new ProbeDataContext();
-            var nbrGamePlaysActiveForQuestion = db.GamePlay
-                .Where(gp =>
-                ((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
-                DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
-                || (gp.Players.Count() > 0))
-                && !gp.SuspendMode)
-                .Where(gp => gp.Game.GameQuestions
+            var nbrGamesActiveForQuestion = db.Game
+                .Where(g =>
+                ((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
+                DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0)
+                || (g.Players.Count() > 0))
+                && !g.SuspendMode
+                && g.Published)
+                .Where(g => g.GameQuestions
                                 .Any(gq => gq.QuestionId == question.Id))
                 .Count(); //STILL A COUNT OF GAMEPLAYS
 
-            if (nbrGamePlaysActiveForQuestion > 0) status = true;
+            if (nbrGamesActiveForQuestion > 0) status = true;
             return status;
         }
 
@@ -366,12 +315,13 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
-        public static bool DoesGameHaveAGamePlay(long gameId)
+        public static bool IsGameActive(Game g)
         {
             bool status = false;
-            var db = new ProbeDataContext();
-            int recordCount = db.Game.Find(gameId).GamePlays.Count();
-            if (recordCount > 0)
+            if (((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
+                                DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0))
+                                && !g.SuspendMode
+                                && g.Published)
             {
                 status = true;
             }
@@ -381,28 +331,68 @@ namespace Probe.Helpers.Validations
             }
 
             return status;
-        }
+        }//public static bool IsGameActive(Game g)
 
-        public static bool IsGameUsedByActivatedGamePlay(Game game)
+        public static bool IsGameStartPassed(Game g)
         {
-
             bool status = false;
+            if ((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0))
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
 
-            ProbeDataContext db = new ProbeDataContext();
-            var nbrGamePlaysActiveForGame = db.GamePlay
-                .Where(gp =>
-                ((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
-                DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
-                || (gp.Players.Count() > 0))
-                && !gp.SuspendMode)
-                .Where(gp => gp.Game.Id == game.Id)
-                .Count(); //STILL A COUNT OF GAMEPLAYS
-
-            if (nbrGamePlaysActiveForGame > 0) status = true;
             return status;
-        }
+        }//public static bool IsGameStartPassed(Game g)
 
-        public static Dictionary<long,bool> GetAllGamePlaysStatus()
+        ////DEPRECATED MNS 3/25/15
+        //public static bool DoesGameHaveAGamePlay(long gameId)
+        //{
+        //    bool status = false;
+        //    var db = new ProbeDataContext();
+        //    int recordCount = db.Game.Find(gameId).GamePlays.Count();
+        //    if (recordCount > 0)
+        //    {
+        //        status = true;
+        //    }
+        //    else
+        //    {
+        //        status = false;
+        //    }
+
+        //    return status;
+        //}
+
+        ////DEPRECATED MNS 3/25/15
+        //public static bool IsGameUsedByActivatedGamePlay(Game game)
+        //{
+
+        //    bool status = false;
+
+        //    ProbeDataContext db = new ProbeDataContext();
+        //    var nbrGamePlaysActiveForGame = db.GamePlay
+        //        .Where(gp =>
+        //        ((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
+        //        DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
+        //        || (gp.Players.Count() > 0))
+        //        && !gp.SuspendMode
+        //        && g.Published)
+        //        .Where(gp => gp.Game.Id == game.Id)
+        //        .Count(); //STILL A COUNT OF GAMEPLAYS
+
+        //    if (nbrGamePlaysActiveForGame > 0) status = true;
+        //    return status;
+        //}
+
+        /*
+         * Any game returns active if
+         * (Current datetime is in the window of game start date and end date OR
+         * Player count is greater than zero) AND game is NOT suspended
+         */
+        public static Dictionary<long,bool> GetAllGamesStatus()
         {
 
             string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
@@ -410,90 +400,116 @@ namespace Probe.Helpers.Validations
             //All GamePlays Active or Inactive (GamePlayId, true or false)
             ProbeDataContext db = new ProbeDataContext();
 
-            return    db.GamePlay
-                        .Where(gp => gp.Game.AspNetUsersId == AspNetUsersId)
-                        .Select(gp => new
-                        {
-                            Id = gp.Id,
-                            Active =
-                                (((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
-                                DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
-                                || (gp.Players.Count() > 0))
-                                && !gp.SuspendMode)
-                        }).ToDictionary(gp => gp.Id, gp => gp.Active);
-
-        }//public static Dictionary<long,bool> GetGamePlaysStatus()
-
-        public static Dictionary<long, bool> GetAllGamesActiveStatus()
-        {
-
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-
-            //All Games (Active or InActive)
-            ProbeDataContext db = new ProbeDataContext();
-
-            //All Games - Active or Inactive (GameId, true or false)
             return    db.Game
-                      .Where(g => g.AspNetUsersId == AspNetUsersId)
-                      .Select(g => new
-                      {
-                          Id = g.Id,
-                          Active = g.GamePlays
-                        .Where(gp =>
-                                ((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
-                                DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
-                                || (gp.Players.Count() > 0))
-                                && !gp.SuspendMode)
-                                .Count() > 0
-                      }).ToDictionary(gpa => gpa.Id, gpa => gpa.Active);
+                        .Where(g => g.AspNetUsersId == AspNetUsersId)
+                        .Select(g => new
+                        {
+                            Id = g.Id,
+                            Active =
+                                (((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
+                                DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0)
+                                || (g.Players.Count() > 0))
+                                && !g.SuspendMode
+                                && g.Published)
+                        }).ToDictionary(g => g.Id, g => g.Active);
 
-        }//public static Dictionary<long, bool> GetGamesStatus()
+        }//public static Dictionary<long,bool> GetGamesStatus()
 
-        public static Dictionary<long, bool> GetAllQuestionsActiveStatus()
+        /*
+         * Will return a List of Games that are LMS games AND
+         * (Current datetime is in the window of game start date and end date AND at least one
+         * Player is (Active) AND game is NOT suspended
+         * 
+         * returns 
+         */ 
+        public static IList<Game> GetAllActiveLMSGamesWithActivePlayers()
         {
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-
-            //All Questions (Active or InActive). Gets statuses only for the user specified
             ProbeDataContext db = new ProbeDataContext();
 
-            /*
-            * Business Rules - Question will be Inactive if 
-            *  1. If there are no Game's using the Question
-            *                  -OR-
-            *  2. If there are no GamePlay's using the Question
-            *                  -OR-
-            *  3. If there are no GamePlay's using the Question with Player submissions 
-            *     -OR- the GamePlay is in suspend mode 
-            *     -OR- the date/time is not within the GamePlay Start and End DateTime Window
-            *     -OR- a players has NOT submitted a game for the GamePlay
-            */
+            return db.Game
+                        .Where(g => g.GameType.Name == ProbeConstants.LMSGameType &&
+                               (DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
+                                DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0) &&
+                                //(g.Players.Where(p => p.Active && p.GameAnswers.Count() != db.GameQuestion.Where(gq => gq.GameId == g.Id).Count()).Count() > 0) &&
+                                (g.Players.Where(p => p.Active).Count() > 0) 
+                                && !g.SuspendMode
+                                && g.Published).ToList();
 
-            /*left joined GameQuestion to Question
-             * Then got all the games - game plays for each question and determined if the game plays were active or inactive
-             * Then (since there may be multiple games with a question, we had to group all the results (quesionId, Active), and 
-             *      determine if any of the game-gameplays were Active for any question. If so, then the question was Active
-             */
-            return db.Question.OfType<ChoiceQuestion>()
-                    .Where(q => q.AspNetUsersId == AspNetUsersId)
-                    .SelectMany(cq => cq.GameQuestions.DefaultIfEmpty(),
-                    (cq, gq) =>
-                        new
-                        {
-                            QuestionId = cq.Id,
-                            Active = gq.Game.GamePlays
-                            .Where(gp =>
-                                        (((DateTime.Compare(DateTime.Now, gp.StartDate) > 0 &&
-                                        DateTime.Compare(DateTime.Now, gp.EndDate) <= 0)
-                                        || (gp.Players.Count() > 0))
-                                        && !gp.SuspendMode)
-                                ).Count() > 0
-                        }
-                    )
-                    .GroupBy(qDict => qDict.QuestionId)
-                    .Select(qDict => new { QuestionId = qDict.Key, Active = qDict.Any(qAny => qAny.Active) })
-                    .ToDictionary(qgp => qgp.QuestionId, qgp => qgp.Active);
+        }//public static Dictionary<long,bool> GetAllGamesStatusForLMS()
 
-        }// public static Dictionary<long, bool> GetQuestionsStatus()
+        //DEPRECATED MNS - 3/25/15
+        //public static Dictionary<long, bool> GetAllGamesActiveStatus()
+        //{
+
+        //    string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+        //    //All Games (Active or InActive)
+        //    ProbeDataContext db = new ProbeDataContext();
+
+        //    //All Games - Active or Inactive (GameId, true or false)
+        //    return    db.Game
+        //              .Where(g => g.AspNetUsersId == AspNetUsersId)
+        //              .Select(g => new
+        //              {
+        //                  Id = g.Id,
+        //                  Active = g
+        //                .Where(g =>
+        //                        ((DateTime.Compare(DateTime.Now, g.StartDate) > 0 &&
+        //                        DateTime.Compare(DateTime.Now, g.EndDate) <= 0)
+        //                        || (g.Players.Count() > 0))
+        //                        && !g.SuspendMode
+        //                        && g.Published)
+        //                        .Count() > 0
+        //              }).ToDictionary(gpa => gpa.Id, gpa => gpa.Active);
+
+        //}//public static Dictionary<long, bool> GetGamesStatus()
+
+        //public static Dictionary<long, bool> GetAllQuestionsActiveStatus()
+        //{
+        //    string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+        //    //All Questions (Active or InActive). Gets statuses only for the user specified
+        //    ProbeDataContext db = new ProbeDataContext();
+
+        //    /*
+        //    * Business Rules - Question will be Inactive if 
+        //    *  1. If there are no Game's using the Question
+        //    *                  -OR-
+        //    *  2. If there are no GamePlay's using the Question
+        //    *                  -OR-
+        //    *  3. If there are no GamePlay's using the Question with Player submissions 
+        //    *     -OR- the GamePlay is in suspend mode 
+        //    *     -OR- the date/time is not within the GamePlay Start and End DateTime Window
+        //    *     -OR- a players has NOT submitted a game for the GamePlay
+        //    */
+
+        //    /*left joined GameQuestion to Question
+        //     * Then got all the games - game plays for each question and determined if the game plays were active or inactive
+        //     * Then (since there may be multiple games with a question, we had to group all the results (quesionId, Active), and 
+        //     *      determine if any of the game-gameplays were Active for any question. If so, then the question was Active
+        //     */
+        //    return db.Question.OfType<ChoiceQuestion>()
+        //            .Where(q => q.AspNetUsersId == AspNetUsersId)
+        //            .SelectMany(cq => cq.GameQuestions.DefaultIfEmpty(),
+        //            (cq, gq) =>
+        //                new
+        //                {
+        //                    QuestionId = cq.Id,
+        //                    Active = gq.Game
+        //                    .Where(g =>
+        //                                (((DateTime.Compare(DateTime.Now, g.StartDate) > 0 &&
+        //                                DateTime.Compare(DateTime.Now, g.EndDate) <= 0)
+        //                                || (g.Players.Count() > 0))
+        //                                && !g.SuspendMode
+        //                                && g.Published)
+        //                        ).Count() > 0
+        //                }
+        //            )
+        //            .GroupBy(qDict => qDict.QuestionId)
+        //            .Select(qDict => new { QuestionId = qDict.Key, Active = qDict.Any(qAny => qAny.Active) })
+        //            .ToDictionary(qgp => qgp.QuestionId, qgp => qgp.Active);
+
+        //}// public static Dictionary<long, bool> GetQuestionsStatus()
 
         public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
         {
@@ -514,24 +530,24 @@ namespace Probe.Helpers.Validations
 
         }//public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
 
-        public static Dictionary<long, bool> GetAllGamesHaveGamePlays()
-        {
+        //public static Dictionary<long, bool> GetAllGamesHaveGamePlays()
+        //{
 
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+        //    string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
-            //All Games
-            ProbeDataContext db = new ProbeDataContext();
+        //    //All Games
+        //    ProbeDataContext db = new ProbeDataContext();
 
-            //All Games - Active or Inactive (GameId, true or false)
-            return db.Game
-                      .Where(g => g.AspNetUsersId == AspNetUsersId)
-                      .Select(g => new
-                      {
-                          Id = g.Id,
-                          DoesHaveGamePlays = g.GamePlays.Count() > 0
-                      }).ToDictionary(gp => gp.Id, gp => gp.DoesHaveGamePlays);
+        //    //All Games - Active or Inactive (GameId, true or false)
+        //    return db.Game
+        //              .Where(g => g.AspNetUsersId == AspNetUsersId)
+        //              .Select(g => new
+        //              {
+        //                  Id = g.Id,
+        //                  DoesHaveGamePlays = g.GamePlays.Count() > 0
+        //              }).ToDictionary(gp => gp.Id, gp => gp.DoesHaveGamePlays);
 
-        }//public static Dictionary<long, bool> GetAllGamesDoesHaveQuestions()
+        //}//public static Dictionary<long, bool> GetAllGamesHaveGamePlays()
 
         #endregion
 
@@ -541,7 +557,7 @@ namespace Probe.Helpers.Validations
         {
             var db = new ProbeDataContext();
 
-            bool doesGameCodeRelateWithPlayerId = db.Player.Where(p => p.Id == playerId && p.GamePlay.Code == code).Count() > 0;
+            bool doesGameCodeRelateWithPlayerId = db.Player.Where(p => p.Id == playerId && p.Game.Code == code).Count() > 0;
             if (!doesGameCodeRelateWithPlayerId)
             {
                 throw new ApiArgException("The PlayerId and GameCode do not correlate. PlayerId: " + playerId + " GameCode: " + code);
@@ -554,7 +570,7 @@ namespace Probe.Helpers.Validations
             var db = new ProbeDataContext();
 
             bool returnStatus = false;
-            if (db.GamePlayAnswer.Where(gpa => gpa.PlayerId == playerId).Count() > 0)
+            if (db.GameAnswer.Where(ga => ga.PlayerId == playerId).Count() > 0)
             {
                 returnStatus = true;
             }

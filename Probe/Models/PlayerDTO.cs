@@ -12,7 +12,7 @@ namespace Probe.Models
         public long Id { get; set; }
 
         [Required]
-        public long GamePlayId { get; set; }
+        public long GameId { get; set; }
 
         [Required]
         public string GameCode { get; set; }
@@ -22,14 +22,6 @@ namespace Probe.Models
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
-
-        public string FullName
-        {
-            get
-            {
-                return LastName + ", " + FirstName + " " + MiddleName;
-            }
-        }
 
         [StringLength(1)]
         public string MiddleName { get; set; }
@@ -41,6 +33,16 @@ namespace Probe.Models
         [DataType(DataType.EmailAddress)]
         public string EmailAddr { get; set; }
 
+        public string FullName
+        {
+            get
+            {
+                return LastName + ", " + FirstName + " " + MiddleName;
+            }
+        }
+
+        public string PlayerGameName { get; set; }
+
         [DataType(DataType.PhoneNumber)]
         [DisplayFormat(DataFormatString = "{0:###-###-####}", ApplyFormatInEditMode = true)]
         public string MobileNbr { get; set; }
@@ -49,7 +51,9 @@ namespace Probe.Models
 
         public string ClientVersion { get; set; }
 
-        public virtual ICollection<GamePlayAnswer> GamePlayAnswers { get; set; } //MNS - 2/8/15 support one POST approach
+        public virtual ICollection<GameAnswerDTO> GameAnswers { get; set; } //MNS - 2/8/15 support one POST approach
+
+        public virtual PlayerGameStatus PlayerGameStatus { get; set; }
 
     }
 }

@@ -447,64 +447,64 @@ namespace Probe.DAL
             #endregion
 
             #region Seed the Game Types
-            context.GameType.Add(new GameType
-            {
-                Name = "Match",
-                Description = "Players answer a series of questions. Compatible matches are found amongst players.",
-                Games = new List<Game> 
-                    {
-                       new Game 
-                       {
-                           Name = "You're Full of Crap Party - Match",
-                           Description = "At 9510 Red Apple Lane. It's a tasting contest",
-                           AspNetUsersId = "f61058a8-c3d1-4586-b560-a7b651f430f3",
-                           GameConfigurations = new List<GameConfiguration>
-                           {
-                               new GameConfiguration
-                               {
-                                   Name = "DeviceCanPlayGameOnlyOnce",
-                                   Value = "false"
-                               }
-                           }
-                       },
-                       new Game 
-                       {
-                           Name = "You're Full of Crap Party II - Match",
-                           Description = "At 9510 Red Apple Lane. It's a tasting contest",
-                           AspNetUsersId = "f61058a8-c3d1-4586-b560-a7b651f430f3",
-                           GameConfigurations = new List<GameConfiguration>
-                           {
-                               new GameConfiguration
-                               {
-                                   Name = "DeviceCanPlayGameOnlyOnce",
-                                   Value = "false"
-                               }
-                           }
-                       }
-                    }
-            });
-            context.GameType.Add(new GameType
-            {
-                Name = "Test",
-                Description = "Players answer a series of questions. Assess the players competance of the topic(s) based on percentage correct answers.",
-                Games = new List<Game> 
-                    {
-                       new Game 
-                       {
-                           Name = "You're Full of Crap Party - Test",
-                           Description = "At 9510 Red Apple Lane. It's a tasting contest",
-                           AspNetUsersId = "f61058a8-c3d1-4586-b560-a7b651f430f3",
-                           GameConfigurations = new List<GameConfiguration>
-                           {
-                               new GameConfiguration
-                               {
-                                   Name = "DeviceCanPlayGameOnlyOnce",
-                                   Value = "false"
-                               }
-                           }
-                       }
-                    }
-            });
+            //context.GameType.Add(new GameType
+            //{
+            //    Name = "Match",
+            //    Description = "Players answer a series of questions. Compatible matches are found amongst players.",
+            //    Games = new List<Game> 
+            //        {
+            //           new Game 
+            //           {
+            //               Name = "You're Full of Crap Party - Match",
+            //               Description = "At 9510 Red Apple Lane. It's a tasting contest",
+            //               AspNetUsersId = "f61058a8-c3d1-4586-b560-a7b651f430f3",
+            //               GameConfigurations = new List<GameConfiguration>
+            //               {
+            //                   new GameConfiguration
+            //                   {
+            //                       Name = "DeviceCanPlayGameOnlyOnce",
+            //                       Value = "false"
+            //                   }
+            //               }
+            //           },
+            //           new Game 
+            //           {
+            //               Name = "You're Full of Crap Party II - Match",
+            //               Description = "At 9510 Red Apple Lane. It's a tasting contest",
+            //               AspNetUsersId = "f61058a8-c3d1-4586-b560-a7b651f430f3",
+            //               GameConfigurations = new List<GameConfiguration>
+            //               {
+            //                   new GameConfiguration
+            //                   {
+            //                       Name = "DeviceCanPlayGameOnlyOnce",
+            //                       Value = "false"
+            //                   }
+            //               }
+            //           }
+            //        }
+            //});
+            //context.GameType.Add(new GameType
+            //{
+            //    Name = "Test",
+            //    Description = "Players answer a series of questions. Assess the players competance of the topic(s) based on percentage correct answers.",
+            //    Games = new List<Game> 
+            //        {
+            //           new Game 
+            //           {
+            //               Name = "You're Full of Crap Party - Test",
+            //               Description = "At 9510 Red Apple Lane. It's a tasting contest",
+            //               AspNetUsersId = "f61058a8-c3d1-4586-b560-a7b651f430f3",
+            //               GameConfigurations = new List<GameConfiguration>
+            //               {
+            //                   new GameConfiguration
+            //                   {
+            //                       Name = "DeviceCanPlayGameOnlyOnce",
+            //                       Value = "false"
+            //                   }
+            //               }
+            //           }
+            //        }
+            //});
 
 
 
@@ -679,9 +679,9 @@ namespace Probe.DAL
             {
                 Name = "Match Report 1",
                 Description = "Graphic report that identifies each player and the most and least compatible matches.",
-                GamePlays = new List<GamePlay> 
+                Games = new List<Game> 
                     {
-                       new GamePlay 
+                       new Game 
                        {
                            Name = "#1 - You're Full of Crap Party - Match",
                            Description = "One of many Full of Crap Party Matches",
@@ -690,7 +690,6 @@ namespace Probe.DAL
                            StartDate = Convert.ToDateTime("7/13/2013 8:00PM"),
                            EndDate = Convert.ToDateTime("7/13/2015 8:00PM"),
 
-                           GameId = gameId
                            //Players = new List<Player>
                            //{
                            //    new Player 
@@ -738,7 +737,7 @@ namespace Probe.DAL
                            //    },
                            //}
                        },
-                       new GamePlay 
+                       new Game 
                        {
                            Name = "#2 - You're Full of Crap Party - Match",
                            Description = "Two of many Full of Crap Party Matches",
@@ -747,9 +746,8 @@ namespace Probe.DAL
                            StartDate = Convert.ToDateTime("7/13/2013 8:00PM"),
                            EndDate = Convert.ToDateTime("7/13/2015 8:00PM"),
 
-                           GameId = gameId,
                        },
-                       new GamePlay 
+                       new Game
                        {
                            Name = "#3 - You're Full of Crap Party - Match",
                            Description = "Three of many Full of Crap Parties",
@@ -758,7 +756,6 @@ namespace Probe.DAL
                            StartDate = Convert.ToDateTime("7/13/2013 8:00PM"),
                            EndDate = Convert.ToDateTime("7/13/2015 8:00PM"),
 
-                           GameId = gameId,
                        },
                        //new GamePlay 
                        //{
@@ -807,9 +804,9 @@ namespace Probe.DAL
             {
                 Name = "Test Report 1",
                 Description = "Graphic report that identifies each player and their test scores.",
-                GamePlays = new List<GamePlay> 
+                Games = new List<Game> 
                     {
-                       new GamePlay 
+                       new Game 
                        {
                            Name = "#1 - You're Full of Crap Party - Test",
                            Description = "One of many Full of Crap Party Tests",
@@ -818,9 +815,8 @@ namespace Probe.DAL
                            StartDate = Convert.ToDateTime("7/13/2013 8:00PM"),
                            EndDate = Convert.ToDateTime("7/13/2015 8:00PM"),
 
-                           GameId = gameTestId,
                        },
-                       new GamePlay 
+                       new Game 
                        {
                            Name = "#2 - You're Full of Crap Party - Test",
                            Description = "Two of many Full of Crap Party Tests",
@@ -829,7 +825,6 @@ namespace Probe.DAL
                            StartDate = Convert.ToDateTime("7/13/2013 8:00PM"),
                            EndDate = Convert.ToDateTime("7/13/2015 8:00PM"),
 
-                           GameId = gameTestId,
                        },
                        //new GamePlay 
                        //{

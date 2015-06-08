@@ -15,6 +15,8 @@ using Probe.Helpers.Exceptions;
 using System.Web.Http.ModelBinding;
 using Probe.Helpers.ModelBinders;
 using Probe.Helpers.Mics;
+using Probe.Helpers.GameHelpers;
+using Probe.Helpers.PlayerHelpers;
 
 namespace Probe.Controllers.api
 {
@@ -32,12 +34,12 @@ namespace Probe.Controllers.api
             return players;
         }
 
-        // GET: api/Players
-        public List<PlayerDTO> GetPlayerByGamePlay(long id)
+        // GET: api/Players NOTE: currently used by server client page (games)
+        public List<PlayerDTO> GetPlayerByGame(long id)
         {
             //without this command there would be a serializer error when returning the db.Players
             db.Configuration.LazyLoadingEnabled = false;
-            var players = db.Player.Where(p => p.GamePlayId == id).OrderBy(p => p.FirstName + "-" + p.NickName);
+            var players = db.Player.Where(p => p.GameId == id).OrderBy(p => p.FirstName + "-" + p.NickName);
 
             List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
 
@@ -57,13 +59,13 @@ namespace Probe.Controllers.api
             return playerDTOs;
         }
 
-        // GET: api/Players NOTE: currently used by server client page (gameplays)
+        // GET: api/Players NOTE: currently used by server client page (games)
         [Route("api/Players/GetPlayerByGameCode/{code}")]
         public List<PlayerDTO> GetPlayerByGameCode(string code)
         {
             //without this command there would be a serializer error when returning the db.Players
             db.Configuration.LazyLoadingEnabled = false;
-            var players = db.Player.Where(p => p.GamePlay.Code == code).OrderBy(p => p.FirstName + "-" + p.NickName);
+            var players = db.Player.Where(p => p.Game.Code == code).OrderBy(p => p.FirstName + "-" + p.NickName);
 
             List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
 
@@ -75,7 +77,9 @@ namespace Probe.Controllers.api
                     FirstName = player.FirstName,
                     LastName = player.LastName,
                     NickName = player.NickName,
-                    Sex = player.Sex
+                    EmailAddr = player.EmailAddr,
+                    Sex = player.Sex,
+                    PlayerGameName = new ProbePlayer(player).PlayerGameName
                 };
                 playerDTOs.Add(playerDTO);
             }
@@ -132,119 +136,6 @@ namespace Probe.Controllers.api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        //// POST: api/Players NOTE: currently used by the client 11/2/14 (DEPRECATED - AS OF 2/14/15)
-        //[ResponseType(typeof(PlayerDTO))]
-        //public IHttpActionResult PostPlayer(PlayerDTO playerDTO)
-        //{
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    /*
-        //     * Let's make sure the gameplayid and gamecode match up correctly. check for malicious activity
-        //     */
-        //    try
-        //    {
-        //        ProbeValidate.ValidateGameCodeVersusId(playerDTO.GamePlayId, playerDTO.GameCode);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    /*
-        //     * If we've gotten this far, then the required fields and game code security
-        //     * validations have passed
-        //     */
-        //    try
-        //    {
-        //        GamePlay gp = db.GamePlay.Find(playerDTO.GamePlayId);
-        //        //business validations
-        //        if (!ProbeValidate.IsGamePlayActive(gp))
-        //        {
-        //            throw new GamePlayNotActiveException();
-        //        }
-
-        //        DateTime dateTimeNow = DateTime.Now;
-        //        Player player = new Player
-        //        {
-        //            GamePlayId = playerDTO.GamePlayId,
-        //            FirstName = playerDTO.FirstName,
-        //            LastName = playerDTO.LastName,
-        //            NickName = playerDTO.NickName,
-        //            Sex = playerDTO.Sex,
-        //            SubmitDate = dateTimeNow.Date,
-        //            SubmitTime = DateTime.Parse(dateTimeNow.ToShortTimeString())
-        //        };
-
-        //        //will throw the following exceptions if there is a problem
-        //        //GamePlayDuplicatePlayerNameException, GamePlayInvalidFirstNameException, GamePlayInvalidNickNameException
-        //        ProbeValidate.IsGamePlayPlayerValid(gp.Id, player);
-
-        //        db.Person.Add(player);
-        //        db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-
-        //        playerDTO.Id = player.Id; //after db.SaveChanges. The id is set 
-        //        return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO); //EVERYTHING IS GOOD!
-
-        //    } //try
-        //    catch (GamePlayNotActiveException)
-        //    {
-        //        var errorObject = new
-        //        {
-        //            errorid = 2,
-        //            errormessage = "This game play is not active at this time.",
-        //            gameplayid = playerDTO.GamePlayId
-        //        };
-        //        return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
-        //    }
-        //    catch (GamePlayDuplicatePlayerNameException)
-        //    {
-        //        var errorObject = new
-        //        {
-        //            errorid = 3,
-        //            errormessage = "The player's name has already been used in this game.",
-        //            playername = playerDTO.FirstName + '-' + playerDTO.NickName
-        //        };
-        //        return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
-        //    }
-        //    catch (GamePlayInvalidFirstNameException)
-        //    {
-        //        var errorObject = new
-        //        {
-        //            errorid = 4,
-        //            errormessage = "The player's first name is invalid.",
-        //            playername = playerDTO.FirstName + '-' + playerDTO.NickName
-        //        };
-        //        return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
-        //    }
-        //    catch (GamePlayInvalidNickNameException)
-        //    {
-        //        var errorObject = new
-        //        {
-        //            errorid = 5,
-        //            errormessage = "The player's nick name is invalid.",
-        //            playername = playerDTO.FirstName + '-' + playerDTO.NickName
-        //        };
-        //        return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var errorObject = new
-        //        {
-        //            errorid = ex.HResult,
-        //            errormessage = ex.Message,
-        //            errorinner = ex.InnerException,
-        //            errortrace = ex.StackTrace
-        //        };
-        //        return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
-
-        //    }
-        //}
-
         // POST: api/Players NOTE: currently used by the client 11/2/14 - NEW API AS OF 2/14/15
         [ResponseType(typeof(PlayerDTO))]
         public IHttpActionResult PostPlayer([ModelBinder(typeof(PlayerModelBinderProvider))] PlayerDTO playerDTO)
@@ -260,7 +151,7 @@ namespace Probe.Controllers.api
              */
             try
             {
-                ProbeValidate.ValidateGameCodeVersusId(playerDTO.GamePlayId, playerDTO.GameCode);
+                ProbeValidate.ValidateGameCodeVersusId(playerDTO.GameId, playerDTO.GameCode);
             }
             catch (Exception ex)
             {
@@ -268,132 +159,271 @@ namespace Probe.Controllers.api
                 return BadRequest(ModelState);
             }
 
+            int nbrPlayersAnswersCorrect = 0;
+            DateTime dateTimeNow = DateTime.UtcNow;
+            Player player = new Player();
+            
+            //Create a GameAnswers Collection
+            ICollection<GameAnswer> gameAnswers = new List<GameAnswer>();
+            foreach (GameAnswerDTO gameAnswerDTO in playerDTO.GameAnswers)
+            {
+                //we need to create a gameAnswer (to record in the database)
+                GameAnswer gameAnswer = new GameAnswer
+                {
+                    PlayerId = playerDTO.Id,
+                    ChoiceId = gameAnswerDTO.ChoiceId
+                };
+                gameAnswers.Add(gameAnswer);
+            } //foreach (GameAnswerDTO gameAnswerDTO in playerDTO.GameAnswers)
+
+            Game g = db.Game.Find(playerDTO.GameId);
+
+            ProbeGame probeGame = new ProbeGame(g);
+
             /*
              * If we've gotten this far, then the required fields and game code security
              * validations have passed
              */
             try
             {
-                GamePlay gp = db.GamePlay.Find(playerDTO.GamePlayId);
                 //business validations
-                if (!ProbeValidate.IsGamePlayActive(gp))
+                if (!probeGame.IsActive())
                 {
-                    throw new GamePlayNotActiveException();
+                    throw new GameNotActiveException();
                 }
 
-                DateTime dateTimeNow = DateTime.Now;
-                Player player = new Player
+                player = new Player
                 {
-                    GamePlayId = playerDTO.GamePlayId,
+                    Id = playerDTO.Id,
+                    GameId = playerDTO.GameId,
                     FirstName = playerDTO.FirstName,
                     LastName = playerDTO.LastName,
                     NickName = playerDTO.NickName,
+                    EmailAddr = playerDTO.EmailAddr,
                     Sex = playerDTO.Sex,
+                    //Active = true, //Do not specify at this point
                     SubmitDate = dateTimeNow.Date,
                     SubmitTime = DateTime.Parse(dateTimeNow.ToShortTimeString())
                 };
 
-                //will throw the following exceptions if there is a problem
-                //GamePlayDuplicatePlayerNameException, GamePlayInvalidFirstNameException, GamePlayInvalidNickNameException
-                ProbeValidate.IsGamePlayPlayerValid(gp.Id, player);
+                if (!probeGame.IsPlayerSubmitted(player))
+                {
+                    //will throw the following exceptions if there is a problem
+                    //GameDuplicatePlayerNameException, GameInvalidFirstNameException, GameInvalidNickNameException
+                    //ONLY NEED TO VALIDATE IF THE PLAYER HAS NOT SUBMITTED FOR A GAME YET
+                    probeGame.ValidateGamePlayer(player);
 
-                db.Person.Add(player);
-                db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
+                    player.Active = true; //Player is always active to begin with
+                    db.Person.Add(player);
+                    db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
+                    playerDTO.Id = player.Id; //after db.SaveChanges. The id is set
+                }
 
-                playerDTO.Id = player.Id; //after db.SaveChanges. The id is set
+                if (!probeGame.IsPlayerActive(player))
+                {
+                    throw new GamePlayerInActiveException();
+                }
 
                 //Making this API backward compatible. Will not attempt to record game answers if its
                 //client version v1.0
                 if (playerDTO.ClientVersion != ProbeConstants.ClientVersionPostPlayerWithoutAnswers)
                 {
 
-                    if (playerDTO.GamePlayAnswers == null)
+                    if (playerDTO.GameAnswers == null)
                     {
                         throw new PlayerDTOMissingAnswersException();
                     }
-
-                    //DON'T NEED TO RETURN GamePlayAnswers
-                    //List<GamePlayAnswerDTO> gamePlayAnswerDTOsOut = new List<GamePlayAnswerDTO>();
-
-                    //create GamePlayAnswerDTO's (Id, PlayerId, ChoiceId)
-                    foreach (GamePlayAnswer gamePlayAnswerDTO in playerDTO.GamePlayAnswers)
+                    else if (!probeGame.IsValidGameAnswer(gameAnswers))
                     {
-                        //we need to create a gamePlayAnswer (to record in the database)
-                        GamePlayAnswer gamePlayAnswer = new GamePlayAnswer
+                        throw new InvalidGameAnswersException();
+                    }
+
+                    //Determine if the GameAnswer submission is not too early. We pass the DTO version because it has the question number
+                    //Note: This audit had to come after the player is submitted check and player added to database
+                    if (!probeGame.IsPlayerGameAnswerNotTooEarly(dateTimeNow, gameAnswers))
+                    {
+                        throw new GameAnswersTooEarlyException();
+                    }
+
+                    //Determine if the GameAnswer submission is ontime. We pass the DTO version because it has the question number
+                    //Note: This audit had to come after the player is submitted check and player added to database
+                    if (!probeGame.IsPlayerGameAnswerOnTime(dateTimeNow, gameAnswers))
+                    {
+                        throw new GameAnswersTooLateException();
+                    }
+
+                    //create GameAnswerDTO's (Id, PlayerId, ChoiceId)
+                    foreach (GameAnswer gameAnswer in gameAnswers)
+                    {
+                        //we need to create a gameAnswer (to record in the database)
+                        GameAnswer GameAnswerforDB = new GameAnswer
                         {
                             PlayerId = playerDTO.Id,
-                            ChoiceId = gamePlayAnswerDTO.ChoiceId
+                            ChoiceId = gameAnswer.ChoiceId
                         };
 
-                        db.GamePlayAnswer.Add(gamePlayAnswer);
+                        db.GameAnswer.Add(GameAnswerforDB);
                         db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
 
-                        //DON'T NEED TO RETURN GamePlayAnswers
-                        //GamePlayAnswerDTO gamePlayAnswerDTOOut = new GamePlayAnswerDTO();
-                        //gamePlayAnswerDTOOut.Id = gamePlayAnswer.Id;
-                        //gamePlayAnswerDTOOut.PlayerId = gamePlayAnswer.PlayerId;
-                        //gamePlayAnswerDTOOut.ChoiceId = gamePlayAnswer.ChoiceId;
-                        //gamePlayAnswerDTOsOut.Add(gamePlayAnswerDTOOut);
+                    } //foreach (GameAnswerDTO gameAnswerDTOIn in gameAnswersDTOsIn)
 
-                    } //foreach (GamePlayAnswerDTO gamePlayAnswerDTOIn in gamePlayAnswersDTOsIn)
+                    //We pass in the playerDO.GameAnswers because it holds the QuestionId of each question. Much
+                    //more assurance that we are correcting the appropriate questions and answers
+                    nbrPlayersAnswersCorrect = probeGame.NbrPlayerAnswersCorrect(playerDTO.GameAnswers);
+
+                    //if the game is LMS - Determine if any of the answers submitted were wrong.
+                    //If so then we are going to make the player inactive
+                    if (probeGame.GameType == ProbeConstants.LMSGameType)
+                    {
+                        if (playerDTO.GameAnswers.Count() > nbrPlayersAnswersCorrect)
+                        {
+                            //We need to make the player inactive.
+                            probeGame.SetPlayerStatus(player, false, Player.PlayerGameReasonType.ANSWER_REASON_INCORRECT);
+                        }
+                    }//if (probeGame.GameType == ProbeConstants.LMSGameType)
 
                 } //if (!playerDTO.ClientVersion.Contains("v1.0"))
+
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.NbrPlayers = probeGame.NbrPlayers;
+                playerDTO.PlayerGameStatus.NbrPlayersRemaining = probeGame.NbrPlayersActive;
+                playerDTO.PlayerGameStatus.NbrAnswersCorrect = nbrPlayersAnswersCorrect;
+                playerDTO.PlayerGameStatus.PlayerActive = probeGame.IsPlayerActive(player);
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_NoError;
 
                 return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO); //EVERYTHING IS GOOD!
 
             } //try
-            catch (GamePlayNotActiveException)
+            catch (GameNotActiveException)
             {
-                var errorObject = new
-                {
-                    errorid = 2,
-                    errormessage = "This game play is not active at this time.",
-                    gameplayid = playerDTO.GamePlayId
-                };
-                return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_GameNotActive;
+                playerDTO.PlayerGameStatus.Message = "This game is not active at this time.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
             }
-            catch (GamePlayDuplicatePlayerNameException)
+            catch (GameDuplicatePlayerNameException)
             {
-                var errorObject = new
-                {
-                    errorid = 3,
-                    errormessage = "The player's name has already been used in this game.",
-                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
-                };
-                return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_PlayerDupInGame;
+                string playername = new ProbePlayer(player).PlayerGameName;
+                playerDTO.PlayerGameStatus.Message = "The player's name (" + playername + ") has already been used in this game.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+
             }
-            catch (GamePlayInvalidFirstNameException)
+            catch (GameInvalidFirstNameException)
             {
-                var errorObject = new
-                {
-                    errorid = 4,
-                    errormessage = "The player's first name is invalid.",
-                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
-                };
-                return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_PlayerFirstNameInvalid;
+                playerDTO.PlayerGameStatus.Message = "The player's first name is invalid.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
             }
-            catch (GamePlayInvalidNickNameException)
+            catch (GameInvalidNickNameException)
             {
-                var errorObject = new
-                {
-                    errorid = 5,
-                    errormessage = "The player's nick name is invalid.",
-                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
-                };
-                return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_PlayerNickNameInvalid;
+                playerDTO.PlayerGameStatus.Message = "The player's nick name is invalid.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
             }
             catch (PlayerDTOMissingAnswersException)
             {
-                var errorObject = new
-                {
-                    errorid = 6,
-                    errormessage = "The client player answer submission is missing question-answers.",
-                    playername = playerDTO.FirstName + '-' + playerDTO.NickName
-                };
-                return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
+                //cleanup first
+                if (!probeGame.IsPlayerHaveAnswers(player)) ProbeGame.DeletePlayer(db, player);
+
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_SubmissionMissingAnswers;
+                playerDTO.PlayerGameStatus.Message = "The client player answer submission is missing question-answers.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+            }
+            catch (InvalidGameAnswersException)
+            {
+                //cleanup first
+                if (!probeGame.IsPlayerHaveAnswers(player)) ProbeGame.DeletePlayer(db, player);
+
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_SubmissionInvalidAnswers;
+                playerDTO.PlayerGameStatus.Message = "The client player answer submission possess the incorrect number of question-answers.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+            }
+            catch (GameInvalidPlayerNameException)
+            {
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_PlayerNameInvalid;
+                playerDTO.PlayerGameStatus.Message = "The player's name is invalid.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+            }
+            catch (GameInvalidLastNameException)
+            {
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_PlayerLastNameInvalid;
+                playerDTO.PlayerGameStatus.Message = "The player's last name is invalid.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+            }
+            catch (GameAnswersTooLateException)
+            {
+                //Everything is not good. The GameAnswer submission did not come in ontime. So the 
+                //player will become inactive. However, we will still send player game stats to the client.
+                //We need to make the player inactive.
+                //Note: we want to keep the player in the datbase (as inactive) also.
+                probeGame.SetPlayerStatus(player, false,Player.PlayerGameReasonType.ANSWER_REASON_DEADLINE);
+
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.NbrPlayers = probeGame.NbrPlayers;
+                playerDTO.PlayerGameStatus.NbrPlayersRemaining = probeGame.NbrPlayersActive;
+                playerDTO.PlayerGameStatus.NbrAnswersCorrect = nbrPlayersAnswersCorrect;
+                playerDTO.PlayerGameStatus.PlayerActive = probeGame.IsPlayerActive(player);
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_SubmissionNotOntime;
+                playerDTO.PlayerGameStatus.Message = "The player submission was beyond the deadline.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+            }
+            catch (GameAnswersTooEarlyException)
+            {
+                //Everything is not good. The GameAnswer submission is too early. 
+                //We will still send player game stats to the client.
+                //We will keep the player status active at this point.
+                //Note: we want to keep the player in the datbase (active) also.
+                //probeGame.SetPlayerStatus(player, false); DONT NEED THIS FOR NOW
+
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.NbrPlayers = probeGame.NbrPlayers;
+                playerDTO.PlayerGameStatus.NbrPlayersRemaining = probeGame.NbrPlayersActive;
+                playerDTO.PlayerGameStatus.NbrAnswersCorrect = nbrPlayersAnswersCorrect;
+                playerDTO.PlayerGameStatus.PlayerActive = probeGame.IsPlayerActive(player);
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_SubmissionTooEarly;
+                playerDTO.PlayerGameStatus.Message = "The player submission was too early.";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
+            }
+            catch (GamePlayerInActiveException)
+            {
+                playerDTO.PlayerGameStatus = new PlayerGameStatus();
+                playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_GamePlayerInActive;
+                string playername = new ProbePlayer(player).PlayerGameName;
+                playerDTO.PlayerGameStatus.Message = "The player (" + playername + ") is inactive for the game";
+
+                return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO);
             }
             catch (Exception ex)
             {
+                //cleanup first - different type of cleanup depends on game type
+                if (probeGame.GameType == ProbeConstants.LMSGameType)
+                {
+                    //if LMS - we only delete the player if there are no answers for that player
+                    if (!probeGame.IsPlayerHaveAnswers(player)) ProbeGame.DeletePlayer(db, player);
+                }
+                else
+                {
+                    //If Match or Test, then we remove any remants of the player and her answers 
+                    ProbeGame.DeletePlayer(db, player);
+                }
                 var errorObject = new
                 {
                     errorid = ex.HResult,
@@ -402,10 +432,8 @@ namespace Probe.Controllers.api
                     errortrace = ex.StackTrace
                 };
                 return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
-
             }
-        }
-
+        }//public IHttpActionResult PostPlayer([...
 
         // DELETE: api/Players/5
         [ResponseType(typeof(Player))]

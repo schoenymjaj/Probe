@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Probe.Models
 {
-    public class GamePlayAnswer : IEntity
+    public class GameAnswer : IEntity
     {
         //[Required]
         public long Id { get; set; }
