@@ -173,13 +173,13 @@ body {
     .questionText and #choiceList .ui-btn classes determine the question and choice text font
  */
 .questionText {
-    padding-top: 6px;
+    padding-top: 10px;
     font-size: 1.1em;
     text-shadow: 0 0 0; 
 }
 
 #choiceList .ui-btn {
-    font-size: 0.8em;
+    font-size: 0.9em;
     color:  black;
     text-shadow: 0 0 0; 
 }
@@ -197,6 +197,11 @@ body {
     float: left;
     width: 27%;
     height: 100%;
+}
+
+.backButtonAbrev,.nextButtonAbrev {
+    margin-top: 5px;
+    margin-bottom: 3px;
 }
 
 .legendDiv {
@@ -299,10 +304,11 @@ body {
     font-size: 1.1em;
     text-shadow: 0 0 0; 
     padding-bottom: 12px;
+    text-align: center;
 }
 
 #questionList .ui-btn {
-    font-size: 0.8em;
+    font-size: 0.9em;
     color:  black;
     text-shadow: 0 0 0; 
 }
