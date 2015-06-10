@@ -13,7 +13,6 @@ Args: id           - identification for the clock countdown (string identificati
                        countdown deadline handler goes into action. Gives the player a little break.
       clockInd     - true or false. True renders the countdown clock. false will not render clock, 
                      but will still fire event when countdown is done
-      size         - font-size in pixels of the clock
       color        - color of the clock
       warningSecs  - how many seconds left before the clock turns to the warningColor
       warningColor - color the clock turns at warning time
@@ -64,7 +63,6 @@ Example call:
             dateBufferSecs: 0,
             bufferTimeSecs: 0,
 		    clockInd: false,
-		    size: '30px', //font size of the clock
 		    color: '#a7abb1',
 		    warningSecs: 60,
 		    warningColor: 'red',
@@ -220,7 +218,7 @@ Example call:
 
 		    //Display deadline date
 		    settingsDateLocal = new Date(settings.date.getFullYear(), settings.date.getMonth(), settings.date.getDate(), settings.date.getHours(), settings.date.getMinutes() + settings.date.getTimezoneOffset(), settings.date.getSeconds());
-		    $('#popupClockDate').html('<span>' + GetInCommmonLocaleDateString(settingsDateLocal) + '</span><br/><span>' + settingsDateLocal.toLocaleTimeString() + '</span>');
+		    $('#popupClockDate').html('<span>' + GetInCommmonLocaleDateString(settingsDateLocal) + '</span><br/><span>' + GetInCommmonLocaleTimeString(settingsDateLocal) + '</span>');
 
 		}//function renderClockFullPopup() {
 
@@ -352,7 +350,7 @@ Example call:
 			            }
 
 			            settingsDateLocal = new Date(settings.date.getFullYear(), settings.date.getMonth(), settings.date.getDate(), settings.date.getHours(), settings.date.getMinutes() + settings.date.getTimezoneOffset(), settings.date.getSeconds());
-			            dateLocalStr = GetInCommmonLocaleDateString(settingsDateLocal) + ' ' + settingsDateLocal.toLocaleTimeString()
+			            dateLocalStr = GetInCommmonLocaleDateString(settingsDateLocal) + ' ' + GetInCommmonLocaleTimeString(settingsDateLocal);
 			            container.find('.tailHtml').html('<span style="background-color:black">' + dateLocalStr + '</span>' + tailHtmlDateNow);
 			            if (settings.auxId1 != null) {
 			                containerAuxillary1.find('.tailHtml').html('<span style="background-color:black">' + dateLocalStr + '</span>' + tailHtmlDateNow);

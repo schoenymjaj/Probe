@@ -368,9 +368,12 @@ $(function () {
 
                     if ($('#gameCode').val() == 'incommon-settings') {
                         app.popUpHelper('Info'
-                            ,'probe version =' + probeVersion +
+                            , 'InCommon version =' + probeVersion + '</br>' +
+                            'InCommon version =' + probeVersionNumber + '</br>' +
+                            'InCommon rootUrl =' + ProbeAPIurl + '</br>' +
                             'screen width = ' + $(window).width() + '</br>' +
                             'screen height = ' + $(window).height() + '</br>' +
+                            'timezone offset = ' + new Date().getTimezoneOffset() + '</br>' +
                             'browser = ' + navigator.userAgent, null);
                     } else if ($('#gameCode').val().indexOf('incommon-ping-') != -1) { //incommon-ping-<interval in seconds>
                         pingInterval = parseInt($('#gameCode').val().substr(14, $('#gameCode').val().length)) * 1000;
@@ -3441,7 +3444,7 @@ $(function () {
             //Changing the Question Choice radiobox background color for correct/incorrect answers 
             //will only happen for LMS
             if (this._result.GameType == GameType.LMS) {
-                $('#questionText').css('padding-top', '20px');
+                $('#questionText').css('padding-top', '10px');
 
                 //if (this.IsClockCountdownEnable('qstart') || this.IsClockCountdownEnable('qdeadline')) { //MNS DEBUG
                 //    alert('clock countdown going!');
@@ -3503,7 +3506,7 @@ $(function () {
 
             //We only do something if the game is LMS
             if (this._result.GameType == GameType.LMS) {
-                $('#questionText').css('padding-top', '20px');
+                $('#questionText').css('padding-top', '10px');
 
                 countDownClockHtml = '<ul id="qCountdown" class="countdownStyle"></ul>';
 
@@ -3541,7 +3544,6 @@ $(function () {
                             dateBufferSecs: CLOCKCOUNTDOWN_BUFFER_SECS,
                             bufferTimeSecs: SUBMIT_BUFFERTIME_SECS,
                             clockInd: true,
-                            size: '17px',
                             color: '#00edf0',
                             warningSecs: 60,
                             warningColor: '#00edf0',
@@ -3608,7 +3610,6 @@ $(function () {
                             dateBufferSecs: CLOCKCOUNTDOWN_BUFFER_SECS,
                             bufferTimeSecs: SUBMIT_BUFFERTIME_SECS,
                             clockInd: true,
-                            size: '17px',
                             color: '#00edf0',
                             warningSecs: 60,
                             warningColor: '#00edf0',
