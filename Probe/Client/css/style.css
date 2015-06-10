@@ -132,13 +132,22 @@ body {
 /*
     GAME PLAYER PROMT PAGE
 */
+
+.sexLabel {
+    font-size: 0.8em;
+    color: red;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+} 
+
 #homePageContent label {
     font-size: 0.8em;
     color: black;
     font-weight: bold;
     text-shadow: 0 0 0; 
 }
-.gpType {
+
+.gpType, .gameCode {
     font-size: 0.8em;
     color: black;
     font-weight: bold;
@@ -150,7 +159,14 @@ body {
     font-weight: bold;
     text-shadow: 0 0 0; 
 }
-#homePageContent input {
+
+#homePageContent  input {
+    font-size: 0.8em;
+    color: black;
+    text-shadow: 0 0 0; 
+}
+
+#gameCode {
     font-size: 0.8em;
     color: black;
     text-shadow: 0 0 0; 
@@ -178,6 +194,11 @@ body {
     text-shadow: 0 0 0; 
 }
 
+.backButtonAbrev,.nextButtonAbrev {
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
 #choiceList .ui-btn {
     font-size: 0.9em;
     color:  black;
@@ -197,11 +218,6 @@ body {
     float: left;
     width: 27%;
     height: 100%;
-}
-
-.backButtonAbrev,.nextButtonAbrev {
-    margin-top: 5px;
-    margin-bottom: 3px;
 }
 
 .legendDiv {

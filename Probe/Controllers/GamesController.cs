@@ -61,10 +61,6 @@ namespace Probe.Controllers
                 return HttpNotFound();
             }
 
-            //convert dates to local time for display
-            game.StartDate = game.StartDate.ToLocalTime();
-            game.EndDate = game.EndDate.ToLocalTime();
-
             return View(game);
         }
 
@@ -77,8 +73,8 @@ namespace Probe.Controllers
             if (User.Identity.GetUserId() != null)
             {
                 game.AspNetUsersId = User.Identity.GetUserId();
-                game.StartDate = DateTime.Now;
-                game.EndDate = DateTime.Now.AddYears(1);
+                game.StartDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 0, game.StartDate.Second));
+                game.EndDate = game.StartDate.AddYears(1);
             }
 
             return View(game);
@@ -281,10 +277,6 @@ namespace Probe.Controllers
             }
             ViewBag.GameTypeId = new SelectList(db.GameType, "Id", "Name", game.GameTypeId);
 
-            //convert dates to local time for display
-            game.StartDate = game.StartDate.ToLocalTime();
-            game.EndDate = game.EndDate.ToLocalTime();
-
             return View(game);
         }
 
@@ -393,16 +385,7 @@ namespace Probe.Controllers
             ViewBag.DctGameHasQuestions = ProbeValidate.GetAllGamesDoesHaveQuestions();
             ViewBag.DctAllGamesActiveStatus = ProbeValidate.GetAllGamesStatus();
 
-            var game = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).Include(g => g.GameType).ToList();
-
-            IList<Game> gameList = game.ToList();
-            for (int i = 0; i < gameList.Count(); i++)
-            {
-                //convert dates to local time for display
-                gameList[i].StartDate = gameList[i].StartDate.ToLocalTime();
-                gameList[i].EndDate = gameList[i].EndDate.ToLocalTime();
-
-            }
+            var gameList = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).Include(g => g.GameType).ToList();
 
             return gameList;
         }//private IList<Game> GetAvailableGames()

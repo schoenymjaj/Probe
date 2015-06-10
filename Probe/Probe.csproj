@@ -209,11 +209,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Authorize\Authorize.cs" />
+    <Compile Include="Helpers\Client\Client.cs" />
     <Compile Include="Helpers\Exceptions\ExceptionHandling.cs" />
     <Compile Include="Helpers\Exceptions\MiscExceptions.cs" />
     <Compile Include="Helpers\Exceptions\GameExceptions.cs" />
     <Compile Include="Helpers\GameHelpers\Game.cs" />
     <Compile Include="Helpers\Logging\EventLogging.cs" />
+    <Compile Include="Helpers\Mics\Conversion.cs" />
     <Compile Include="Helpers\Mics\EnumHelper.cs" />
     <Compile Include="Helpers\Mics\ReadSQLScriptFile.cs" />
     <Compile Include="Helpers\ModelBinders\ModelBinders.cs" />
@@ -1092,7 +1094,7 @@
     <Content Include="Views\GamePlays\Details.cshtml" />
     <Content Include="Views\GamePlays\Edit.cshtml" />
     <Content Include="Views\GamePlays\Index.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Date.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DateTime.cshtml" />
     <Content Include="Views\GameConfigurations\Create.cshtml" />
     <Content Include="Views\GameConfigurations\Delete.cshtml" />
     <Content Include="Views\GameConfigurations\Details.cshtml" />
@@ -1133,6 +1135,7 @@
     <Content Include="Views\Reports\GameLMSSummary.cshtml" />
     <Content Include="Views\Reports\PlayerLMSSummary.cshtml" />
     <Content Include="Views\Reports\PlayerLMSDetail.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

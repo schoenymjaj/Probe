@@ -50,6 +50,8 @@ namespace Probe.Helpers.Mics
         public const string MatchGameType = "Match";
         public const string TestGameType = "Test";
         public const string LMSGameType = "Last Man Standing";
+
+        public const string DateTimeStandardFormat = "M/d/yy h:mm tt";
     }
 
     public enum PlayersFilterType

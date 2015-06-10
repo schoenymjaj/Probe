@@ -301,7 +301,6 @@ $(function () {
             listViewHtml += '</ul>';
 
             $('#homePageContent').html(listViewHtml);
-            $('#homePageContent').css('color', 'black');
             $('#gameList').listview().listview("refresh").trigger("create");
             //$('#home').trigger('create');
 
@@ -348,7 +347,7 @@ $(function () {
 
             //Will fill in code if app started with code query string parm
             promptforCodeHtml =
-                '<div style="margin-top: 10px"><label for="code" style="font-size: 1.2em; font-weight: bolder">Game Code</label>' +
+                '<div style="margin-top: 10px"><label for="code" class="gameCode">Game Code</label>' +
                 '<input name="code" id="gameCode" type="text" ' +
                 'value="' +
                 '" ' +
@@ -3175,9 +3174,9 @@ $(function () {
                         returnJQM = '<fieldset data-role="controlgroup" data-type="horizontal">' +
                         '<legend>Sex</legend>' +
                         '<input name="sex" id="sex-male" type="radio" checked="checked" value="on">' +
-                        '<label for="sex-male">Male</label>' +
+                        '<label for="sex-male" style="font-size:0.8em;color: black;font-weight:bold;text-shadow: 0 0 0">Male</label>' +
                         '<input name="sex" id="sex-female" type="radio">' +
-                        '<label for="sex-female">Female</label>' +
+                        '<label for="sex-female" style="font-size:0.8em;color: black;font-weight:bold;text-shadow: 0 0 0">Female</label>' +
                         '</fieldset>';
                         break;
                 }//switch (this.Widget)
@@ -3281,7 +3280,6 @@ $(function () {
             this.JQMRender = app.JQMRender
             this.JQMSetValue = app.JQMSetValue
             this.JQMGetValue = app.JQMGetValue
-            this.JQMSetCSS = app.JQMSetCSS
             this.JQMSetAttr = app.JQMSetAttr
 
             console.log('END app.JQMWidget');
@@ -4276,10 +4274,6 @@ $(function () {
 
                 this.PlayerPromptActions();
 
-                $('#gpName').css("color", "black"); //needs a little help with the chosen background
-                app.JQMWidgetsAllStyle("black");    //the JQM widgets need a little more black for the chosen background and also sets focus to first prompt
-
-
                 //$('#cancelGame').hide(); //if game is not idle; we don't want to give the user the cancel ability here (too easy)
             }//if (gameState != GameState.Idle)
 
@@ -4289,8 +4283,6 @@ $(function () {
             if (gameState == GameState.ReadOnly) {
                 $('#startGame,#cancelGame,#reportGame').addClass('GameReadOnlyButtons');
             }
-
-            app.JQMWidgetsAllStyle("black");    //the JQM widgets need a little more black for the chosen background and also sets focus to first prompt
 
             console.log('END app.PlayerPromptInteractive');
         }//app.PlayerPromptInteractive
