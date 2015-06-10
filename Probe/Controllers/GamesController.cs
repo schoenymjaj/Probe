@@ -294,16 +294,16 @@ namespace Probe.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            //save these local dates temporarily because we always want to display these dates in local time
+            //remember the local version of the start and end dates for later
             DateTime localStartDate = game.StartDate;
-            DateTime localEndDate = game.StartDate;
+            DateTime localEndDate = game.EndDate;
 
             ValidateGameEdit(game);
             if (ModelState.IsValid)
             {
-                //covert dates to UTC for the database
-                game.StartDate = game.StartDate.ToUniversalTime();
-                game.EndDate = game.EndDate.ToUniversalTime();
+                //convert the dates that are in local time of client to UTC for storage in the database
+                game.StartDate = ClientTimeZoneHelper.ConvertLocalToUTC(game.StartDate);
+                game.EndDate = ClientTimeZoneHelper.ConvertLocalToUTC(game.EndDate);
 
                 db.Entry(game).State = EntityState.Modified;
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);

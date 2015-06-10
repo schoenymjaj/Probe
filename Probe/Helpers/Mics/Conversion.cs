@@ -10,7 +10,6 @@ namespace Probe.Helpers.Mics
         public static string ConvertToLocalTimeAndFormat(DateTime dt, string format)
         {
             var o = HttpContext.Current.Session["tzo"];
-
             var tzo = o == null ? 0 : Convert.ToDouble(o);
 
             dt = dt.AddMinutes(-1 * tzo);
@@ -22,5 +21,16 @@ namespace Probe.Helpers.Mics
 
             return s;
         }
+
+        public static DateTime ConvertLocalToUTC(DateTime dt)
+        {
+            var o = HttpContext.Current.Session["tzo"];
+            var tzo = o == null ? 0 : Convert.ToDouble(o);
+
+            DateTime UTCDateTime = dt.AddMinutes(tzo);
+
+            return UTCDateTime;
+        }
+
     }
 }
