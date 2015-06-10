@@ -732,7 +732,7 @@ $(function () {
             new app.Game().PlayerPromptInteractive();
 
             //Hack for male radio box is showing for Android phone
-            $('#sex-male').parent().css('width', '80px')
+            $('#sex-male').parent().css('width', '70px')
 
             //toggle the sex radio boxes
             $('input[name="sex"]').on('change', function () {
