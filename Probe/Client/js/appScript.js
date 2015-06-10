@@ -731,6 +731,9 @@ $(function () {
             //Setup all interactivity based on game state and game configuration
             new app.Game().PlayerPromptInteractive();
 
+            //Hack for male radio box is showing for Android phone
+            $('#sex-male').parent().css('width', '80px')
+
             //toggle the sex radio boxes
             $('input[name="sex"]').on('change', function () {
                 if ($(this).attr("id") == "sex-male") {
@@ -3174,7 +3177,7 @@ $(function () {
                         returnJQM = '<fieldset data-role="controlgroup" data-type="horizontal">' +
                         '<legend>Sex</legend>' +
                         '<input name="sex" id="sex-male" type="radio" checked="checked" value="on">' +
-                        '<label for="sex-male" style="font-size:0.8em;color: black;font-weight:bold;text-shadow: 0 0 0">Male</label>' +
+                        '<label for="sex-male" style="font-size:0.8em;color: black;font-weight:bold;text-shadow: 0 0 0;text-align:center">Male</label>' +
                         '<input name="sex" id="sex-female" type="radio">' +
                         '<label for="sex-female" style="font-size:0.8em;color: black;font-weight:bold;text-shadow: 0 0 0">Female</label>' +
                         '</fieldset>';
