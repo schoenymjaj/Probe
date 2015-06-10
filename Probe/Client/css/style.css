@@ -173,6 +173,7 @@ body {
 }
 #homePageContent button {
     color: black;
+    font-size: 0.8em;
     text-shadow: 0 0 0; 
 }
 
