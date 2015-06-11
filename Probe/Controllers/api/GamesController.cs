@@ -248,10 +248,17 @@ namespace Probe.Controllers.api
                 try
                 {
                     Game isGame = game.Single();
+
+                    if (isGame.SuspendMode)
+                    {
+                        throw new GameInSuspendModeException();
+                    }
+
                     if (!ProbeValidate.IsGameActive(isGame))
                     {
                         throw new GameNotActiveException();
                     }
+
                 }
                 catch (Exception ex)
                 {
@@ -356,6 +363,18 @@ namespace Probe.Controllers.api
                 return resp;
 
 
+            }
+            catch (GameInSuspendModeException)
+            {
+                var errorObject = new
+                {
+                    errorid = ProbeConstants.MSG_GameInSuspendMode,
+                    errormessage = "A game has been suspended.",
+                    code = code
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
             }
             catch (GameDoesNotExistException)
             {
