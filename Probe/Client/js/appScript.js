@@ -676,7 +676,7 @@ $(function () {
 
                 url = ProbeAPIurl + 'GameConfigurations/GetGameConfiguration/' + gameCode;
                 console.log('START app.GetConfigServer AJAX url:' + url);
-                app.ajaxHelper(url, 'GET', false, null)
+                app.ajaxHelper(url, 'GET', true, null)
                   .done(function (gameConfig) {
                       console.log('return GetConfigServer success');
 
