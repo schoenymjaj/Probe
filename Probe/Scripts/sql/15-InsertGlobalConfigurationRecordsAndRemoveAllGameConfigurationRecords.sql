@@ -51,6 +51,9 @@ INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Val
 VALUES ('ServerClientTimeSyncInSecs','The time range in seconds the server and client(player''s device) clock should be in synchronization before it becomes a problem for the game. Set to value of 0 to make not applicable',1,1,'30')
 
 INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Value)
+VALUES ('CountdownIntervalInSecs','The interval in seconds of the countdown clock',1,1,'1')
+
+INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Value)
 VALUES ('ViewNbrOfQuestionsTotal','The player can view the number of questions for a game',3,1,'true')
 
 INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Value)
