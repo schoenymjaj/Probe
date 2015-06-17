@@ -393,14 +393,15 @@ namespace Probe.Controllers
         private void ValidateGameCreate(Game game)
         {
             //GamePlay Business Rules
-            if (ProbeValidate.IsCodeExistInProbe(game.Code))
+            if (!ProbeValidate.IsCodeValid(game.Code))
+            {
+                ModelState.AddModelError("Code", "The code must be at least 5 characters and can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
+            }
+            else if (ProbeValidate.IsCodeExistInProbe(game.Code))
             {
                 ModelState.AddModelError("Code", "The code already exists for In Common.");
             }
-            else if (!ProbeValidate.IsCodeValid(game.Code))
-            {
-                ModelState.AddModelError("Code", "The code can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
-            }
+
             if (ProbeValidate.IsGameNameExistForLoggedInUser(game.Name))
             {
                 ModelState.AddModelError("Name", "The game name already exists for the logged in user.");
@@ -416,24 +417,19 @@ namespace Probe.Controllers
         private void ValidateGameEdit(Game game)
         {
             //GamePlay Business Rules
-            if (ProbeValidate.IsCodeExistInProbe(game.Id, game.Code))
+            if (!ProbeValidate.IsCodeValid(game.Code))
+            {
+                ModelState.AddModelError("Code", "The code must be at least 5 characters and can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
+            }
+            else if (ProbeValidate.IsCodeExistInProbe(game.Id, game.Code))
             {
                 ModelState.AddModelError("Code", "The code already exists for In Common.");
-            }
-            else if (!ProbeValidate.IsCodeValid(game.Code))
-            {
-                ModelState.AddModelError("Code", "The code can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
             }
 
             if (ProbeValidate.IsGameNameExistForLoggedInUser(game.Id, game.Name))
             {
                 ModelState.AddModelError("Name", "The game name already exists for the logged in user.");
             }
-
-            //if (!ProbeValidate.DoesGameHaveQuestions(game.Id))
-            //{
-            //    ModelState.AddModelError("GameId", "The game for a game play must have at least one question.");
-            //}
 
         }//private void ValidateGameEdit(Game game)
 

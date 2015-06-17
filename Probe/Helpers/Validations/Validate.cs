@@ -52,8 +52,14 @@ namespace Probe.Helpers.Validations
              */
             bool returnStatus = false;
 
+            if (code == null)
+            {
+                return false; //code wasn't entered. 
+            }
+
             if (code.TrimStart().TrimEnd() == code)
             {
+
                 if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+").Count == 1)
                 {
                     if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+")[0].ToString() == code)
