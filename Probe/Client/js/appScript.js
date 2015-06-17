@@ -27,8 +27,8 @@ $(function () {
         /*
         Globals
         */
-        var probeVersion = '1.3.0';
-        var probeVersionNumber = 5;
+        var probeVersion = '1.3.1';
+        var probeVersionNumber = 6;
         var root = GetRootUrl();  //root directory of the web site serving mobile app (i.e. in-common-app.com)
 
         //alert('Probe Version: ' + probeVersion);
@@ -1046,7 +1046,7 @@ $(function () {
             gameObj.SetQuesNavigate(questionNbr); //sets the navigate possibilities
 
             gameObj.SetQuesCountdown(questionNbr, false); //sets countdown clock is necessary
-            gameObj.RunQuesCountdownOnce(); //if neccessary the countdown clock will display static (perform below .SetQuesCountdown)
+            gameObj.RunQuesCountdownOnce(questionNbr); //if neccessary the countdown clock will display static (perform below .SetQuesCountdown)
 
 
             //$('#question').trigger('create');
@@ -1483,6 +1483,9 @@ $(function () {
             //Disarm countdown QUESTION DEADLINE clock (it may or may not  be armed) - only if LMS
             gameObj.SetClockCountdownEnable('qdeadline', false);
 
+            //disable all local notifications if necessary (warning for last question)
+            gameObj.ResetLocalNotifications();
+
             //we check if the GA response warrants a game submit. An active LMS game will be SubmittedActive
             if (gameObj.IsGameSubmit()) {
                 app.SubmitSuccess();
@@ -1508,7 +1511,6 @@ $(function () {
         app.SubmitSuccess = function () {
             console.log('START app.SubmitSuccess');
 
-            //Set result data dirty flag and game state to Read Only
             result = app.GetResultLocalStorage();
             app.PutResultLocalStorage(result);
 
@@ -1612,6 +1614,9 @@ $(function () {
             new app.Game().StopClockCountdown(); //shuts down countdowns if LMS
 
             $('#menu').panel("close"); //if calling from a panel
+
+            new app.Game().ResetLocalNotifications();
+
             localStorage.removeItem("Game");
             localStorage.removeItem("Result");
             app.SetHomePageStyle(true);
@@ -3471,6 +3476,17 @@ $(function () {
             console.log('END app.ProcessMessage');
             return returnMsg;
         }
+        app.GetQuesWarningDate = function (questionNbr) {
+            console.log('START app.GetQuesWarningDate');
+            this.GameRefresh();
+
+            //if for some reason the questionNbr goes beyond the total questions, we make the questionNbr the last
+            if (questionNbr >= this._result.GameQuestions.length) {
+                questionNbr = this._result.GameQuestions.length - 1;
+            }
+            console.log('END app.GetQuesWarningDate');
+            return new Date(this._result["GameQuestions"][questionNbr]["QuestionWarningDT"]);
+        }
         app.GetQuesStartDate = function (questionNbr) {
             console.log('START app.GetQuesStartDate');
             this.GameRefresh();
@@ -3574,6 +3590,9 @@ $(function () {
                 dateCurrentQuestionStartLocal = this.GetQuesStartDate(questionNbr);
                 dateNextQuestionStartLocal = this.GetQuesStartDate(this._result.QuestionNbrSubmitted + 1); //not really next - its the new question not answered
                 dateCurrentQuestionDeadlineLocal = this.GetQuesDeadlineDate(questionNbr);
+                dateNextQuestionDeadlineLocal = this.GetQuesDeadlineDate(this._result.QuestionNbrSubmitted + 1); //not really next - its the new question not answered
+                dateCurrentQuestionWarningLocal = this.GetQuesWarningDate(questionNbr);
+                dateNextQuestionWarningLocal = this.GetQuesWarningDate(this._result.QuestionNbrSubmitted + 1);
                 dateCurrentLocal = new Date();
 
                 if (((this._result.QuestionNbrSubmitted == QUESTION_NOT_SUBMITTED && questionNbr == 0) ||
@@ -3594,6 +3613,15 @@ $(function () {
                     //We won't start another countdown if already enabled. Unless we are doing a one-time only call which really isn't a countdown
                     if (!this.IsClockCountdownEnable('qdeadline') || oneTimeInd) {
                         GASubmitToInCommonInProgress = false; //reset the in progress boolean
+
+                        //If we are here and oneTimeInd is false; then we know that we have to start a QUESTION DEADLINE countdown.
+                        //Since we know that; and this is the first question - nothing has been submitted yet.
+                        //Then we also may want to set a 'warning' local notification for the QUESTION DEADLINE
+                        //enable all local notifications if necessary for the game
+                        if (!oneTimeInd &&
+                            this._result.QuestionNbrSubmitted == QUESTION_NOT_SUBMITTED && questionNbr == 0) {
+                            new app.Game().SetLocalNotifications(dateCurrentLocal, dateCurrentQuestionWarningLocal, dateCurrentQuestionDeadlineLocal);
+                        }
 
                         //Setup for COUNT DOWN TO QUESTION DEADLINE
                         questionDeadlineDTUTC = app.DateLocalToUTC(dateCurrentQuestionDeadlineLocal);
@@ -3663,6 +3691,14 @@ $(function () {
 
                     //We won't start another countdown if already enabled.
                     if (!this.IsClockCountdownEnable('qstart') || oneTimeInd) {
+
+                        //If we are here and oneTimeInd is false; then we know that we have to start a QUESTION START countdown.
+                        //Since we know that; we also may want to set a 'warning' local notification for the QUESTION DEADLINE
+                        //enable all local notifications if necessary for the game
+                        if (!oneTimeInd) {
+                            new app.Game().SetLocalNotifications(dateCurrentLocal, dateNextQuestionWarningLocal, dateNextQuestionDeadlineLocal);
+                        }
+
                         //Setup for COUNT DOWN TO QUESTION START
                         questionStartDTUTC = app.DateLocalToUTC(dateQuestionStartLocal);
                         $('#qCountdown').countdown({
@@ -3698,21 +3734,37 @@ $(function () {
 
             console.log('END app.SetQuesCountdown');
         }//app.SetQuesCountdown
-        app.RunQuesCountdownOnce = function () {
+        app.RunQuesCountdownOnce = function (questionNbr) {
             console.log('START app.RunClockCountdownOnce');
             this.GameRefresh();
+
+            /*
+            questionNbr is an optional argument. If it exists; then we use it to call SetQuestionCountdown. If not; we find the question nbr in other ways
+            */
 
             //We only run the countdown once if the game is LMS
             if (this._result.GameType == GameType.LMS) {
 
                 questionNbrToUse = 0;
 
-                if (this._result.QuestionNbrSubmitted != QUESTION_NOT_SUBMITTED) {
-                    questionNbrToUse = this._result.QuestionNbrSubmitted;
-                }
+                if (questionNbr != undefined) {
+                    questionNbrToUse = questionNbr;
+                } else {
+
+                    if (this._result.QuestionNbrSubmitted != QUESTION_NOT_SUBMITTED) {
+
+                        if (this.IsClockCountdownEnable('qstart')) {
+                            questionNbrToUse = this._result.QuestionNbrSubmitted;
+                        } else {
+                            questionNbrToUse = this._result.QuestionNbrSubmitted + 1;
+
+                        }                    
+                    }
+                }//if (questionNbr != undefined) {
 
                 this.SetQuesCountdown(questionNbrToUse, true);
-            }
+
+            }//if (this._result.GameType == GameType.LMS) {
 
             console.log('END app.RunClockCountdownOnce');
         }//app.RunQuesCountdownOnce
@@ -4319,6 +4371,7 @@ $(function () {
                 //set the newgame and cancel game buttons (enable new game, disable cancel game)
                 $("[data-icon='plus']").removeClass('ui-disabled');
                 $("[data-icon='minus']").addClass('ui-disabled');
+
                 app.PushQueueGames(GameState.Submitted);
             } else {
                 app.PushQueueGames(GameState.SubmittedActive);
@@ -4405,6 +4458,66 @@ $(function () {
 
             console.log('END app.PlayerPromptActions');
         }//app.PlayerPromptActions
+        app.SetLocalNotifications = function (dateNowLocal,dateWarningLocal,dateDeadlineLocal) {
+            console.log('START app.SetLocalNotifications');
+            this.GameRefresh();
+            var isCordovaApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+
+            if (this._result.GameType == GameType.LMS) {
+
+                //Will only do a local notification if (1)//cordova - NEED TO CHECK FOR ANDROID OR IOS (ONLY SUPPORTED)
+                //(2) it makes sense to give a warning within the current date and the deadline date
+                if (isCordovaApp &&
+                    (isMobile.Android() != null || isMobile.iOS() != null) &&
+                    (dateWarningLocal > dateNowLocal) &&
+                    (dateWarningLocal < dateDeadlineLocal)) { 
+
+                    dateStr = GetInCommmonLocaleDateString(dateDeadlineLocal) + ' ' + GetInCommmonLocaleTimeString(dateDeadlineLocal);
+
+                    cordova.plugins.notification.local.schedule(
+                     {
+                         id: 1,
+                         title: 'Your game question is approaching its deadline.',
+                         text: dateStr,
+                         at: dateWarningLocal,
+                         sound: null,
+                         data: null
+                     });
+
+                    //setup notification click handler - to go to the game and question nearing the deadline
+                    cordova.plugins.notification.local.on("click", function (notification) {
+                        console.log("notification clicked on: " + notification.id);
+                        app.PopActiveGameFromQueueIntoCurrent();
+                        app.StartGame(true);
+                    });
+
+                    console.log('scheduled local notification at ' + GetInCommmonLocaleDateString(dateWarningLocal) + ' ' + GetInCommmonLocaleTimeString(dateWarningLocal));
+
+                }
+
+            }
+
+            console.log('END app.SetLocalNotifications');
+        }
+        app.ResetLocalNotifications = function () {
+            console.log('START app.ResetLocalNotifications');
+            this.GameRefresh();
+            var isCordovaApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+
+            if (this._result.GameType == GameType.LMS) {
+
+                if (isCordovaApp &&
+                    (isMobile.Android() != null || isMobile.iOS() != null)) { //cordova - NEED TO CHECK FOR ANDROID OR IOS (ONLY SUPPORTED)
+
+                    cordova.plugins.notification.local.cancelAll(function () {
+                        console.log('cancel all local notifications');
+                    }, this);
+
+                }
+
+            }
+            console.log('END app.ResetLocalNotifications');
+        }
         app.GameRefresh = function () {
             console.log('START app.GameRefresh');
 
@@ -4426,6 +4539,7 @@ $(function () {
             this.SetGameStatePostSubmit = app.SetGameStatePostSubmit;
             this.SetGameState = app.SetGameState;
             this.IsGameInProgress = app.IsGameInProgress;
+            this.GetQuesWarningDate = app.GetQuesWarningDate;
             this.GetQuesStartDate = app.GetQuesStartDate;
             this.GetQuesDeadlineDate = app.GetQuesDeadlineDate;
             this.SetQuesChoiceSensitivity = app.SetQuesChoiceSensitivity;
@@ -4454,6 +4568,8 @@ $(function () {
             this.NavigateAfterGAResponse = app.NavigateAfterGAResponse;
             this.ProcessMessage = app.ProcessMessage;
             this.ProcessMessageForGAResponse = app.ProcessMessageForGAResponse;
+            this.SetLocalNotifications = app.SetLocalNotifications;
+            this.ResetLocalNotifications = app.ResetLocalNotifications;
             this.GameRefresh = app.GameRefresh;
             console.log('END app.Game');
         }//app.Game

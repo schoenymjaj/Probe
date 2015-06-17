@@ -42,7 +42,7 @@ INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Val
 VALUES ('QuestionTimeCompleteInSecs','Number of seconds player has to answer/submit all questions after first question of game',1,1,'60')
 
 INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Value)
-VALUES ('QuestionTimeWarningInSecs','Percentage of question time before a player receives a warning if they haven''t answered/submitted a question',1,1,'75')
+VALUES ('QuestionTimeWarningInSecs','Number of seconds before the question deadline that a player receives a warning notification if they haven''t answered/submitted a question',1,1,'75')
 
 INSERT INTO ConfigurationG (Name, Description, DataTypeG, ConfigurationType, Value)
 VALUES ('QuestionTimeSlopeInSecs','The change in seconds the player has to answer/submit a question. Effective after second question.',1,1,'0')
