@@ -23,10 +23,8 @@ namespace Probe.DAL
         public DbSet<Choice> Choice { get; set; }
         public DbSet<GameQuestion> GameQuestion { get; set; }
 
-        //public DbSet<GamePlay> GamePlay { get; set; }
         public DbSet<Player> Player { get; set; }
         public DbSet<GameAnswer> GameAnswer { get; set; }
-        //public DbSet<GamePlayReport> GamePlayReport { get; set; }
 
 
         static ProbeDataContext()

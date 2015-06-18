@@ -283,10 +283,8 @@
     <Compile Include="Models\GameConfigurationDTO.cs" />
     <Compile Include="Models\GameConfiguration.cs" />
     <Compile Include="Models\GameAnswer.cs" />
-    <Compile Include="Models\GamePlay.cs" />
     <Compile Include="Models\GameAnswerDTO.cs" />
     <Compile Include="Models\ACL.cs" />
-    <Compile Include="Models\GamePlayReport.cs" />
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\ResultMessage.cs" />
     <Compile Include="Models\PlayerGameStatus.cs" />
