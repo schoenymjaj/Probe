@@ -275,6 +275,10 @@
     <Compile Include="Migrations\201506052008583_AddPublishedPropertyToGame.Designer.cs">
       <DependentUpon>201506052008583_AddPublishedPropertyToGame.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201506281616422_UpdateValuePropToConfiguration.cs" />
+    <Compile Include="Migrations\201506281616422_UpdateValuePropToConfiguration.Designer.cs">
+      <DependentUpon>201506281616422_UpdateValuePropToConfiguration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Choice.cs" />
@@ -1183,6 +1187,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506052008583_AddPublishedPropertyToGame.resx">
       <DependentUpon>201506052008583_AddPublishedPropertyToGame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506281616422_UpdateValuePropToConfiguration.resx">
+      <DependentUpon>201506281616422_UpdateValuePropToConfiguration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

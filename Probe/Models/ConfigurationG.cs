@@ -30,7 +30,7 @@ namespace Probe.Models
         public string Name { get; set; }
 
         [DataType(DataType.Text)]
-        [StringLength(maximumLength: 20000, MinimumLength = 5)]
+        [StringLength(maximumLength: 800, MinimumLength = 5)]
         public string Description { get; set; }
 
         [Required]
@@ -41,7 +41,7 @@ namespace Probe.Models
 
         [Required]
         [DataType(DataType.Html)]
-        [StringLength(maximumLength: 200, MinimumLength = 1)]
+        [StringLength(maximumLength: 20000, MinimumLength = 1)]
         public string Value { get; set; }
 
         public DateTime? DateCreated { get; set; }

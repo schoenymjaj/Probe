@@ -20,7 +20,7 @@ namespace Probe.Models
 
         [Required]
         [DataType(DataType.Html)]
-        [StringLength(maximumLength: 200, MinimumLength = 1)]
+        [StringLength(maximumLength: 20000, MinimumLength = 1)]
         public string Value { get; set; }
 
         public DateTime? DateCreated { get; set; }
