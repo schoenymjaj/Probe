@@ -43,9 +43,9 @@
     <Reference Include="Elmah">
       <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
     </Reference>
-    <Reference Include="Kendo.Mvc">
-      <HintPath>..\lib\KENDOUIMVC\2015.2.624.545.Trial\Kendo.Mvc.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Kendo.Mvc, Version=2015.2.624.545, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Shared\Kendo.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
@@ -60,6 +60,10 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ProbeDal, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Shared\ProbeDal.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -294,7 +298,9 @@
     <Compile Include="Migrations\201506281616422_UpdateValuePropToConfiguration.Designer.cs">
       <DependentUpon>201506281616422_UpdateValuePropToConfiguration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508171221248_AddGameTypeConfigurationTable.cs" />
+    <Compile Include="Migrations\201508171221248_AddGameTypeConfigurationTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Migrations\201508171221248_AddGameTypeConfigurationTable.Designer.cs">
       <DependentUpon>201508171221248_AddGameTypeConfigurationTable.cs</DependentUpon>
     </Compile>
@@ -310,11 +316,15 @@
     <Compile Include="Migrations\201508261424423_AddGroupTable.Designer.cs">
       <DependentUpon>201508261424423_AddGroupTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508261436230_AddShortDescToGroupTable.cs" />
+    <Compile Include="Migrations\201508261436230_AddShortDescToGroupTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Migrations\201508261436230_AddShortDescToGroupTable.Designer.cs">
       <DependentUpon>201508261436230_AddShortDescToGroupTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508261553097_SeedGroupTableAndConfigurtationGRefToGroupTable.cs" />
+    <Compile Include="Migrations\201508261553097_SeedGroupTableAndConfigurtationGRefToGroupTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Migrations\201508261553097_SeedGroupTableAndConfigurtationGRefToGroupTable.Designer.cs">
       <DependentUpon>201508261553097_SeedGroupTableAndConfigurtationGRefToGroupTable.cs</DependentUpon>
     </Compile>
@@ -1641,6 +1651,10 @@
     <Content Include="Scripts\tablesorter\js\widgets\widget-scroller.js" />
     <Content Include="Scripts\tablesorter\js\widgets\widget-staticRow.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Shared\Kendo.Mvc.dll" />
+    <Content Include="Shared\Kendo.Mvc.xml" />
+    <Content Include="Shared\ProbeDal.dll" />
+    <Content Include="Shared\ProbeDal.pdb" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1935,12 +1949,6 @@
     <EmbeddedResource Include="Migrations\201508271457563_CleanupDescriptionsDocs.resx">
       <DependentUpon>201508271457563_CleanupDescriptionsDocs.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ProbeDal\ProbeDal\ProbeDAL.csproj">
-      <Project>{65d175f9-a8be-460f-b5fd-8b337411fb18}</Project>
-      <Name>ProbeDAL</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
