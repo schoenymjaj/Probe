@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
 
 namespace Probe.Controllers.api
 {

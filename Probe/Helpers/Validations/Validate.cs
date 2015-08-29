@@ -6,7 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
 using Probe.Helpers.Exceptions;
 using Probe.Helpers.Mics;
 using System.Web.Mvc;
@@ -19,119 +19,6 @@ namespace Probe.Helpers.Validations
 {
     public static class ProbeValidate
     {
-
-        #region GamePlay Validations
-
-        public static bool IsCodeExistInProbe(string code)
-        {
-            bool status = false;
-
-            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-
-            var db = new ProbeDataContext();
-            status = db.Game.Where(g => g.Code == code).Count() > 0;
-
-            return status;
-        }
-
-        public static bool IsCodeExistInProbe(long gameId, string code)
-        {
-            bool status = false;
-
-            var db = new ProbeDataContext();
-            status = db.Game.Where(g => g.Code == code && g.Id != gameId).Count() > 0;
-
-            return status;
-        }
-
-        public static bool IsCodeValid(string code)
-        {
-            /*
-             *  Code should be only letters, numbers, and space. There should
-             *  be no leading or trailing spaces either
-             */
-            bool returnStatus = false;
-
-            if (code == null)
-            {
-                return false; //code wasn't entered. 
-            }
-
-            if (code.TrimStart().TrimEnd() == code)
-            {
-
-                if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+").Count == 1)
-                {
-                    if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+")[0].ToString() == code)
-                    {
-                        returnStatus = true;
-                    }
-                }
-            }
-
-
-            return returnStatus;
-        }
-
-        //player name. is it unique. does it meet requirements (returns exceptions if player name invalid
-        //Validation is a function of first name, nick name, last name, email address
-        public static void IsGamePlayerValid(long gameId, Player player)
-        {
-
-            //determine if there is another player with the same name that has already submitted for a game play
-            var db = new ProbeDataContext();
-            int recordCount = db.Player.Where(p => p.GameId == gameId 
-                                              && p.FirstName == player.FirstName 
-                                              && p.NickName == player.NickName).Count();
-            if (recordCount > 0)
-            {
-                throw new GameDuplicatePlayerNameException();
-            }
-
-            if (player.FirstName.Length == 0 || player.FirstName.Length > 10)
-            {
-                throw new GameInvalidFirstNameException();
-            }
-
-            if (player.FirstName.Length == 0 || player.NickName.Length > 10)
-            {
-                throw new GameInvalidNickNameException();
-            }
-
-        }
-
-        public static bool DoesGameHaveSubmissions(long gameId)
-        {
-            bool status = false;
-            var db = new ProbeDataContext();
-            int recordCount = db.Player.Where(p => p.GameId == gameId).Count();
-            if (recordCount > 0)
-            {
-                status = true;
-            }
-            else
-            {
-                status = false;
-            }
-
-            return status;
-
-        }
-
-        public static void ValidateGameCodeVersusId(long gameId, string code)
-        {
-            var db = new ProbeDataContext();
-
-            var game = db.Game.Where(g => g.Id == gameId && g.Code == code);
-            if (game.Count() != 1)
-            {
-                throw new ApiArgException("The GameId and GameCode do not correlate. GameId: " + gameId + " GameCode: " + code);
-            }
-
-        }
-
-        #endregion
-
         #region GameQuestions Validations
 
         public static bool IsGameQuestionExist(long gameId, long questionId)
@@ -268,6 +155,114 @@ namespace Probe.Helpers.Validations
 
         #region Game Validations
 
+        public static bool IsCodeExistInProbe(string code)
+        {
+            bool status = false;
+
+            string AspNetUsersId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var db = new ProbeDataContext();
+            status = db.Game.Where(g => g.Code == code).Count() > 0;
+
+            return status;
+        }
+
+        public static bool IsCodeExistInProbe(long gameId, string code)
+        {
+            bool status = false;
+
+            var db = new ProbeDataContext();
+            status = db.Game.Where(g => g.Code == code && g.Id != gameId).Count() > 0;
+
+            return status;
+        }
+
+        public static bool IsCodeValid(string code)
+        {
+            /*
+             *  Code should be only letters, numbers, and space. There should
+             *  be no leading or trailing spaces either
+             */
+            bool returnStatus = false;
+
+            if (code == null)
+            {
+                return false; //code wasn't entered. 
+            }
+
+            if (code.TrimStart().TrimEnd() == code)
+            {
+
+                if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+").Count == 1)
+                {
+                    if (Regex.Matches(code, "[a-z,A-Z,0-9, ]+")[0].ToString() == code)
+                    {
+                        returnStatus = true;
+                    }
+                }
+            }
+
+
+            return returnStatus;
+        }
+
+        //player name. is it unique. does it meet requirements (returns exceptions if player name invalid
+        //Validation is a function of first name, nick name, last name, email address
+        public static void IsGamePlayerValid(long gameId, Player player)
+        {
+
+            //determine if there is another player with the same name that has already submitted for a game play
+            var db = new ProbeDataContext();
+            int recordCount = db.Player.Where(p => p.GameId == gameId
+                                              && p.FirstName == player.FirstName
+                                              && p.NickName == player.NickName).Count();
+            if (recordCount > 0)
+            {
+                throw new GameDuplicatePlayerNameException();
+            }
+
+            if (player.FirstName.Length == 0 || player.FirstName.Length > 10)
+            {
+                throw new GameInvalidFirstNameException();
+            }
+
+            if (player.FirstName.Length == 0 || player.NickName.Length > 10)
+            {
+                throw new GameInvalidNickNameException();
+            }
+
+        }
+
+        public static bool DoesGameHaveSubmissions(long gameId)
+        {
+            bool status = false;
+            var db = new ProbeDataContext();
+            int recordCount = db.Player.Where(p => p.GameId == gameId).Count();
+            if (recordCount > 0)
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
+
+            return status;
+
+        }
+
+        public static void ValidateGameCodeVersusId(long gameId, string code)
+        {
+            var db = new ProbeDataContext();
+
+            var game = db.Game.Where(g => g.Id == gameId && g.Code == code);
+            if (game.Count() != 1)
+            {
+                throw new ApiArgException("The GameId and GameCode do not correlate. GameId: " + gameId + " GameCode: " + code);
+            }
+
+        }
+
         public static bool IsGameNameExistForLoggedInUser(string gameName)
         {
             bool status = false;
@@ -339,6 +334,28 @@ namespace Probe.Helpers.Validations
             return status;
         }//public static bool IsGameActive(Game g)
 
+        public static bool IsGameActiveOrPlayersExist(Game g)
+        {
+            bool status = false;
+            if (((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
+                                DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0)
+                                || (g.Players.Count() > 0))
+                                && !g.SuspendMode
+                                && g.Published)
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
+
+            return status;
+        }//public static bool IsGameActiveOrPlayersExist(Game g)
+
+        /*
+         * We assume start date passed in is UTC
+         */
         public static bool IsGameStartPassed(Game g)
         {
             bool status = false;
@@ -353,6 +370,19 @@ namespace Probe.Helpers.Validations
 
             return status;
         }//public static bool IsGameStartPassed(Game g)
+
+        /*
+         * Start Date and end date passed in must be the same zone.
+         */
+        public static bool IsGameEndDateGreaterThanStartDate(Game g)
+        {
+            bool status = false;
+            if ((DateTime.Compare(g.StartDate, g.EndDate) > 0))
+            {
+                status = true;
+            }
+            return status;
+        }
 
         ////DEPRECATED MNS 3/25/15
         //public static bool DoesGameHaveAGamePlay(long gameId)

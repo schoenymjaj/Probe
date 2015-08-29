@@ -1,0 +1,179 @@
+﻿@using Probe.Models
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+
+<style>
+    .quesContainer {
+        float: left;
+        margin-left: 0px;
+        min-width: 400px;
+        min-height: 300px;
+        height: 100%;
+        width: 440px;
+        border: 5px solid #CDCDCD;
+    }
+
+    .k-block:not(.k-state-selected) {
+        background-color: #00edf0;
+    }
+
+    .k-state-selected {
+        background-color: #000000;
+        border-color: #111111;
+    }
+
+    #quesTd {
+        height: 300px;
+    }
+    #gameQuesTd {
+        height: 300px;
+    }
+
+    #addRemButtonsTd {
+        vertical-align: middle;
+    }
+
+    /*
+        margin - affects the vertical spacing of the items in the listviews
+        padding - affects the height of the items in the listviews
+    */
+    .draggable {
+        margin: 5px;
+        padding: 5px;
+        float: left;
+        color: #fff;
+        width: 430px;
+    }
+
+    .move {
+        cursor: move;
+    }
+
+    .lvMove {
+        cursor: move;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    .nopadding {
+        padding: 0px;
+    }
+
+    .gqMargin {
+        margin: 5px 0px 0px 5px;
+    }
+
+    .k-textbox.gameQuesWidth {
+        width: 217px;
+    }
+
+    #questionDetailsViewTd {
+        width: 300px;
+    }
+    #questionDetailsView {
+        width: 300px;
+        min-height: 300px;
+        padding: 10px;
+        border: solid;
+        border-color: black;
+    }
+    #instructionsView {
+        width: 300px;
+        padding: 10px;
+        border: solid;
+        border-color: black;
+        font-size: large;
+        color: black;
+    }
+
+</style>
+
+<div style="padding:0px;">
+    <table>
+        <tr>
+            <td>
+                <h2 class="gqMargin" style="float: left">Selected Question</h2>
+            </td>
+            <td style="text-align: left">
+                <h2 class="gqMargin" style="float: left">Question Library</h2>
+                <span class="k-widget k-autocomplete k-header k-textbox gameQuesWidth gqMargin" style="float: left">
+                    @Html.TextBox("QuestionFilter", "", new { @class = "k-textbox" })
+                </span>
+            </td>
+            <td></td>
+            <td style="text-align: center">
+                <h2 id="gameTitle" class="gqMargin">Game</h2>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="questionDetailsViewTd">
+                <table>
+                    <tr>
+                        <td>
+                            <div id="questionDetailsView"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="instructionsView">Please fill out your game with the questions available to you from the Question Library. Select your questions and use the Move button or Drag them over to your Game area.</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td id="quesTd">
+                <div id="quesListview" class="quesContainer"></div>
+                <div class="k-pager-wrap" id="quesListviewPager"></div>
+            </td>
+            <td id="addRemButtonsTd">
+                <table>
+                    <tr>
+                        <td><button id="gameQuesLtButton" type="button" style="margin-top: 10px"></button></td>
+                    </tr>
+                    <tr>
+                        <td><button id="gameQuesRtButton" type="button" style="margin-top: 10px"></button></td>
+                    </tr>
+                </table>
+            </td>
+            <td id="gameQuesTd">
+                <div id="gameQuesListview" class="quesContainer"></div>
+                <div class="k-pager-wrap" id="gameQuesListviewPager"></div>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td><button id="gameQuesUpButton" type="button"></button></td>
+                    </tr>
+                    <tr>
+                        <td><button id="gameQuesDnButton" type="button" style="margin-top: 10px"></button></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- START DISPLAY TEMPLATES -->
+
+<!-- END DISPLAY TEMPLATES -->
+
+<script>
+    //global game id that is used through out
+    var GAME_ID_PASSED_IN = @ViewBag.GameId;
+    var GAME_NAME_PASSED_IN = '@ViewBag.GameName';
+    var GAME_EDITABLE = '@ViewBag.GameEditable';
+</script>
+
+<script src="@Url.Content("~/Scripts/probe/game-questions.js")"
+        type="text/javascript"></script>
+
+<script src="@Url.Content("~/Scripts/probe/detectBrowser.js")"
+        type="text/javascript"></script>
+
+<script src="@Url.Content("~/Scripts/probe/probe-ui-common.js")"
+        type="text/javascript"></script>
+
+

@@ -50,6 +50,18 @@
     </script>
     <script src="@Url.Content("~/Scripts/probe/stacktrace.js")" type="text/javascript"></script>
 
+
+	<link href="@Url.Content("~/Content/kendo/2015.2.624/kendo.common.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2015.2.624/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2015.2.624/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2015.2.624/kendo.default.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2015.2.624/kendo.dataviz.default.min.css")" rel="stylesheet" type="text/css" />
+	<!--<script src="@Url.Content("~/Scripts/kendo/2015.2.624/jquery.min.js")"></script>-->
+	<script src="@Url.Content("~/Scripts/kendo/2015.2.624/jszip.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo/2015.2.624/kendo.all.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo/2015.2.624/kendo.aspnetmvc.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+
 </head>
 <body class="backimageInCommon backCoverInCommon">
 
@@ -156,7 +168,7 @@
                     </li>
                     @if (IsUserLoggedIn())
                     {
-                        <li>@Html.ActionLink("Player", "Index", "Players")</li>
+                        //<li>@Html.ActionLink("Player", "Index", "Players")</li>
                     }
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                 </ul>

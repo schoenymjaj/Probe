@@ -9,7 +9,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
+using Probe.Models.API;
 using Probe.Helpers.Validations;
 using Probe.Helpers.Exceptions;
 using System.Web.Http.ModelBinding;
@@ -17,6 +18,7 @@ using Probe.Helpers.ModelBinders;
 using Probe.Helpers.Mics;
 using Probe.Helpers.GameHelpers;
 using Probe.Helpers.PlayerHelpers;
+using Probe.Helpers.Authorize;
 
 namespace Probe.Controllers.api
 {
@@ -177,6 +179,7 @@ namespace Probe.Controllers.api
             } //foreach (GameAnswerDTO gameAnswerDTO in playerDTO.GameAnswers)
 
             Game g = db.Game.Find(playerDTO.GameId);
+            string userNameOfGameAuthor = new ProbeIdentity().GetUserNameFromUserId(g.AspNetUsersId);
 
             ProbeGame probeGame = new ProbeGame(g);
 
@@ -284,6 +287,9 @@ namespace Probe.Controllers.api
 
                 } //if (!playerDTO.ClientVersion.Contains("v1.0"))
 
+                //notify clients of game author of game change
+                NotifyProbe.NotifyGameChanged(userNameOfGameAuthor);
+
                 playerDTO.PlayerGameStatus = new PlayerGameStatus();
                 playerDTO.PlayerGameStatus.NbrPlayers = probeGame.NbrPlayers;
                 playerDTO.PlayerGameStatus.NbrPlayersRemaining = probeGame.NbrPlayersActive;
@@ -331,7 +337,12 @@ namespace Probe.Controllers.api
             catch (PlayerDTOMissingAnswersException)
             {
                 //cleanup first
-                if (!probeGame.IsPlayerHaveAnswers(player)) ProbeGame.DeletePlayer(db, player);
+                if (!probeGame.IsPlayerHaveAnswers(player))
+                {
+                    ProbeGame.DeletePlayer(db, player);
+                    //notify clients of game author of game change
+                    NotifyProbe.NotifyGameChanged(userNameOfGameAuthor);
+                }
 
                 playerDTO.PlayerGameStatus = new PlayerGameStatus();
                 playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_SubmissionMissingAnswers;
@@ -342,7 +353,12 @@ namespace Probe.Controllers.api
             catch (InvalidGameAnswersException)
             {
                 //cleanup first
-                if (!probeGame.IsPlayerHaveAnswers(player)) ProbeGame.DeletePlayer(db, player);
+                if (!probeGame.IsPlayerHaveAnswers(player))
+                {
+                    ProbeGame.DeletePlayer(db, player);
+                    //notify clients of game author of game change
+                    NotifyProbe.NotifyGameChanged(userNameOfGameAuthor);
+                }
 
                 playerDTO.PlayerGameStatus = new PlayerGameStatus();
                 playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_SubmissionInvalidAnswers;
@@ -417,7 +433,12 @@ namespace Probe.Controllers.api
                 if (probeGame.GameType == ProbeConstants.LMSGameType)
                 {
                     //if LMS - we only delete the player if there are no answers for that player
-                    if (!probeGame.IsPlayerHaveAnswers(player)) ProbeGame.DeletePlayer(db, player);
+                    if (!probeGame.IsPlayerHaveAnswers(player))
+                    {
+                        ProbeGame.DeletePlayer(db, player);
+                        //notify clients of game author of game change
+                        NotifyProbe.NotifyGameChanged(userNameOfGameAuthor);
+                    }
                 }
                 else
                 {

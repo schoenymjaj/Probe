@@ -7,10 +7,14 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
+using Probe.Models.View;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
@@ -18,237 +22,243 @@ namespace Probe.Controllers
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        [Authorize(Roles = "Admin")]
-        public ActionResult Index(int? SelectedGame)
+        // GET: GameConfigurations
+        public ActionResult Index(long gameid)
         {
-            //limit the games to only what the user possesses
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+            Game game = db.Game.Find(gameid);
 
-            /*
-             * If SelectedGame(passed in) has a value then we get the game name only
-             * If SelectedGame(passed in) does not have a value; then we get the first game we find for the user.
-             * if the user doesn't have any games yet then we let the SelectedGame still set to null
-             */
-            string gameName = string.Empty;
-            if (SelectedGame != null)
-            {
-                gameName = db.Game.Find(SelectedGame).Name;
-            }
-            else
-            {
-                Game game = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).OrderBy(g => g.Name).FirstOrDefault();
-                SelectedGame = (int)game.Id;
-                gameName = game.Name;
-            }
+            ViewBag.GameId = gameid;
+            ViewBag.GameName = game.Name;
+            ViewBag.GameEditable = !ProbeValidate.IsGameActive(game);
 
-
-            Session["CurrentSelectedGame"] = SelectedGame;
-            ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
-            ViewBag.DctGameActive = ProbeValidate.GetAllGamesStatus();
-
-
-            var games = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).OrderBy(g => g.Name).ToList();
-            ViewBag.SelectedGame = new SelectList(games, "Id", "Name", SelectedGame);
-            int gameId = SelectedGame.GetValueOrDefault();
-
-            /*
-                * Outer join with configurationG and gameconfiguration table records
-                */
-            var gameConfigurations = db.ConfigurationG
-                .Where(c => c.ConfigurationType != ConfigurationG.ProbeConfigurationType.GLOBAL)
-                .SelectMany(c => c.GameConfigurations.Where(gc => loggedInUserId != "-1" && gc.Game.Id == gameId).DefaultIfEmpty(),
-                (c, gc) =>
-                    new GameConfigurationDTO
-                    {
-                        Id = (gc.Id != null) ? gc.Id : -1,
-                        ConfigurationGId = c.Id,
-                        GameId = gameId,
-                        GameName = gameName,
-                        Name = c.Name,
-                        Description = c.Description,
-                        DataTypeG = c.DataTypeG,
-                        ConfigurationType = c.ConfigurationType,
-                        Value = (gc.Value != null) ? gc.Value : c.Value
-                    }
-                ).OrderBy(gcX => gcX.Name);
-
-            return View(gameConfigurations.ToList());
-
-        }
-
-        // GET: GameConfigurations/Details/5
-        [Authorize(Roles = "Admin")]
-        public ActionResult Details(int gameId, int configurationGid)
-        {
-            Session["CurrentSelectedGame"] = gameId;
-            ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
-
-            string gcName = db.Game.Find(gameId).Name;
-
-            GameConfigurationDTO gameConfigurationDTO = db.ConfigurationG
-                .Where(c => c.ConfigurationType == ConfigurationG.ProbeConfigurationType.GAME && c.Id == configurationGid)
-                .SelectMany(c => c.GameConfigurations.Where(gc => gc.Game.Id == gameId).DefaultIfEmpty(),
-                (c, gc) =>
-                    new GameConfigurationDTO
-                    {
-                        Id = (gc.Id != null) ? gc.Id : -1,
-                        ConfigurationGId = c.Id,
-                        GameId = gameId,
-                        GameName = gcName,
-                        Name = c.Name,
-                        Description = c.Description,
-                        DataTypeG = c.DataTypeG,
-                        ConfigurationType = c.ConfigurationType,
-                        Value = (gc.Value != null) ? gc.Value : c.Value
-                    }
-                ).First();
-
-
-            if (gameConfigurationDTO == null)
-            {
-                return HttpNotFound();
-            }
-            return View(gameConfigurationDTO);
-        }
-
-        // GET: GameConfigurations/Create
-        [Authorize(Roles = "Admin")]
-        public ActionResult Create(int? SelectedGame)
-        {
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", SelectedGame);
             return View();
         }
 
-        // POST: GameConfigurations/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,GameId,Name,Description,Value")] GameConfiguration gameConfiguration)
+        public JsonResult GetGameConfiguration([DataSourceRequest]DataSourceRequest request, long gameid)
         {
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameConfiguration.GameId);
-
-            if (ModelState.IsValid)
+            try
             {
-                db.GameConfiguration.Add(gameConfiguration);
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
+                //limit the games to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+                /*
+                    * Outer join with configurationG and gameconfiguration table records
+                    */
+                Game game = db.Game.Find(gameid);
+                long gameTypeId = game.GameTypeId;
+                string gameName = game.Name;
+
+                var gameConfigurations = db.ConfigurationG
+                    .Where(c => c.ConfigurationType != ConfigurationG.ProbeConfigurationType.GLOBAL &&
+                        c.GameTypeConfiguration.Any(gtc => gtc.GameTypeId == gameTypeId))
+                    .SelectMany(c => c.GameConfigurations
+                            .Where(gc => loggedInUserId != "-1" && gc.Game.Id == gameid).DefaultIfEmpty(),
+                    (c, gc) =>
+                        new GameConfigurationDTO
+                        {
+                            Id = (gc.Id != null) ? gc.Id : -1,
+                            ConfigurationGId = c.Id,
+                            GameId = gameid,
+                            GameName = gameName,
+                            GroupName = c.Group.Name,
+                            Name = c.Name,
+                            ShortDescription = c.ShortDescription,
+                            Description = c.Description,
+                            DataTypeG = c.DataTypeG,
+                            ConfigurationType = c.ConfigurationType,
+                            Value = (gc.Value != null) ? gc.Value : c.Value
+                        }
+                    ).OrderBy(gcX => gcX.Name);
+
+                return this.Json(gameConfigurations.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
+        }//public JsonResult GetGameConfiguration([DataSourceRequest]DataSourceRequest request)
+
+        public JsonResult GetGameConfigsForAutoComplete(long gameid)
+        {
+            try
+            {
+                //limit the games to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+
+                Game game = db.Game.Find(gameid);
+                long gameTypeId = game.GameTypeId;
+                string gameName = game.Name;
+
+                db.Configuration.LazyLoadingEnabled = false; //Need to do this if we return the entire game. If we just get the name; we probably don't.
+                var gameConfigurations = db.ConfigurationG
+                    .Where(c => c.ConfigurationType != ConfigurationG.ProbeConfigurationType.GLOBAL &&
+                        c.GameTypeConfiguration.Any(gtc => gtc.GameTypeId == gameTypeId))
+                    .SelectMany(c => c.GameConfigurations
+                            .Where(gc => loggedInUserId != "-1" && gc.Game.Id == gameid).DefaultIfEmpty(),
+                    (c, gc) =>
+                        new 
+                        {
+                            Name = c.Name,
+                        }
+                    ).OrderBy(gcX => gcX.Name);
+
+                var gameConfigurationNames = gameConfigurations.Select(x => x.Name);
+
+                return Json(gameConfigurationNames, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
 
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameConfiguration.GameId);
-            return View(gameConfiguration);
-        }
+        }//public JsonResult GetGameConfigurationForAutoComplete()
 
-        // GET: GameConfigurations/Edit/5
-        [Authorize(Roles = "Admin")]
-        public ActionResult Edit(int gameId, int configurationGid)
+        /*
+         * Get all Game Types
+         */
+        public JsonResult GetDataTypeGs()
         {
-
-            Session["CurrentSelectedGame"] = gameId;
-            ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
-
-            string gcName = db.Game.Find(gameId).Name;
-
-            GameConfigurationDTO gameConfigurationDTO = db.ConfigurationG
-                .Where(c => c.ConfigurationType == ConfigurationG.ProbeConfigurationType.GAME && c.Id == configurationGid)
-                .SelectMany(c => c.GameConfigurations.Where(gc => gc.Game.Id == gameId).DefaultIfEmpty(),
-                (c, gc) =>
-                    new GameConfigurationDTO
-                    {
-                        Id = (gc.Id != null) ? gc.Id : -1,
-                        ConfigurationGId = c.Id,
-                        GameId = gameId,
-                        GameName = gcName,
-                        Name = c.Name,
-                        Description = c.Description,
-                        DataTypeG = c.DataTypeG,
-                        ConfigurationType = c.ConfigurationType,
-                        Value = (gc.Value != null) ? gc.Value : c.Value
-                    }
-                ).First();
-
-
-            if (gameConfigurationDTO == null)
+            try
             {
-                return HttpNotFound();
+                var itemsVar = EnumHelper.SelectListFor<ConfigurationG.ProbeDataType>();
+                var items = itemsVar.ToList();
+                items[0].Value = "0";
+                items[1].Value = "1";
+                items[2].Value = "2";
+                items[3].Value = "3";
+
+                return Json(items, JsonRequestBehavior.AllowGet);
             }
-            return View(gameConfigurationDTO);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
+
         }
 
-        // POST: GameConfigurations/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Admin")]
         [ValidateInput(false)]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ConfigurationGId,GameId,Name,Description,Value")] GameConfigurationDTO gameConfigurationDTO)
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, GameConfigurationDTO gameConfigurationDTO)
         {
-            //Create a valid GameConfiguration record
-            GameConfiguration gameConfiguration = new GameConfiguration
-            {
-                ConfigurationGId = gameConfigurationDTO.ConfigurationGId,
-                GameId = (long)gameConfigurationDTO.GameId,
-                Value = gameConfigurationDTO.Value
-            };
 
-            /*
-             * First we will check if there is an existing GameConfiguration record. If not, then we will create that record. If
-             * it exists; then we will update that record.
-             */
-            if (db.GameConfiguration
-                .Where(gc => gc.ConfigurationGId == gameConfigurationDTO.ConfigurationGId && gc.GameId == gameConfigurationDTO.GameId).Count() == 0)
+            try
             {
-                //GameConfiguration record doesn't exist; so we are going to create it.
-                db.GameConfiguration.Add(gameConfiguration);
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", new { SelectedGame = gameConfigurationDTO.GameId });
+                long gameId = (long)gameConfigurationDTO.GameId;
+
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsGameForLoggedInUser((long)gameConfigurationDTO.GameId))
+                {
+                    ModelState.AddModelError("", "Game Configuration Update could not be accomplished");
+                    return Json(ModelState.ToDataSourceResult());
+                }
+
+                if (ModelState.IsValid)
+                {
+
+                    switch (gameConfigurationDTO.DataTypeG)
+                    {
+                        case ConfigurationG.ProbeDataType.TEXT:
+                            {
+                                if (gameConfigurationDTO.Value.Contains("script")) {
+                                    ModelState.AddModelError("Value", "Value entered is invalid");
+                                    return Json(ModelState.ToDataSourceResult());
+                                }
+                                else if (gameConfigurationDTO.Value.Contains("$("))
+                                {
+                                    ModelState.AddModelError("Value", "Value entered is invalid");
+                                    return Json(ModelState.ToDataSourceResult());
+                                }
+                                else if (gameConfigurationDTO.Value.ToLower().Contains("delete"))
+                                {
+                                    ModelState.AddModelError("Value", "Value entered is invalid");
+                                    return Json(ModelState.ToDataSourceResult());
+                                }
+                                break;
+                            }
+                        case ConfigurationG.ProbeDataType.INT:
+                            {
+                                int valueOutput;
+                                if (!Int32.TryParse(gameConfigurationDTO.Value, out valueOutput))
+                                {
+                                    ModelState.AddModelError("Value", "Value entered is not an integer");
+                                    return Json(ModelState.ToDataSourceResult());
+                                }
+                                break;
+                            }
+                        case ConfigurationG.ProbeDataType.FLOAT:
+                            {
+                                double valueOutput;
+                                if (!Double.TryParse(gameConfigurationDTO.Value, out valueOutput))
+                                {
+                                    ModelState.AddModelError("Value", "Value entered is not a real");
+                                    return Json(ModelState.ToDataSourceResult());
+                                }
+                                break;
+                            }
+                        case ConfigurationG.ProbeDataType.BOOLEAN:
+                            {
+                                if (!(gameConfigurationDTO.Value.IsCaseInsensitiveEqual("false") ||
+                                    gameConfigurationDTO.Value.IsCaseInsensitiveEqual("true")))
+                                {
+                                    ModelState.AddModelError("Value", "Value entered must be true or false");
+                                    return Json(ModelState.ToDataSourceResult());
+                                }
+                                else
+                                {
+                                    gameConfigurationDTO.Value = gameConfigurationDTO.Value.ToLower();
+                                }
+                                break;
+                            }
+
+                    };
+
+
+                    //Create a valid GameConfiguration record
+                    GameConfiguration gameConfiguration = new GameConfiguration
+                    {
+                        ConfigurationGId = gameConfigurationDTO.ConfigurationGId,
+                        GameId = (long)gameConfigurationDTO.GameId,
+                        Value = gameConfigurationDTO.Value
+                    };
+
+                    /*
+                     * First we will check if there is an existing GameConfiguration record. If not, then we will create that record. If
+                     * it exists; then we will update that record.
+                     */
+                    if (db.GameConfiguration
+                        .Where(gc => gc.ConfigurationGId == gameConfigurationDTO.ConfigurationGId && gc.GameId == gameConfigurationDTO.GameId).Count() == 0)
+                    {
+                        //GameConfiguration record doesn't exist; so we are going to create it.
+                        db.GameConfiguration.Add(gameConfiguration);
+                        db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                        gameConfigurationDTO.Id = gameConfiguration.Id;
+                    }
+                    else
+                    {
+                        //to edit an existing record; you need to seed the id with the existing PK
+                        gameConfiguration.Id = (int)gameConfigurationDTO.Id;
+
+                        db.Entry(gameConfiguration).State = EntityState.Modified;
+                        db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                    }
+                }//if (ModelState.IsValid)
+
+                //return Json(ModelState.ToDataSourceResult());
+                return Json(new[] { gameConfigurationDTO }.ToDataSourceResult(dsRequest, ModelState));
+
             }
-            else
+            catch (Exception ex)
             {
-                //to edit an existing record; you need to seed the id with the existing PK
-                gameConfiguration.Id = (int)gameConfigurationDTO.Id;
-
-                db.Entry(gameConfiguration).State = EntityState.Modified;
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", new { SelectedGame = gameConfigurationDTO.GameId });
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
-
-        }
-
-        // GET: GameConfigurations/Delete/5
-        [Authorize(Roles = "Admin")]
-        public ActionResult Delete(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            GameConfiguration gameConfiguration = db.GameConfiguration.Find(id);
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameConfiguration.GameId); //persist the selected game
-
-            if (gameConfiguration == null)
-            {
-                return HttpNotFound();
-            }
-            return View(gameConfiguration);
-        }
-
-        // POST: GameConfigurations/Delete/5
-        [Authorize(Roles = "Admin")]
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
-            GameConfiguration gameConfiguration = db.GameConfiguration.Find(id);
-
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameConfiguration.GameId); //persist the selected game
-
-            db.GameConfiguration.Remove(gameConfiguration);
-            db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-            return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
-        }
+        }//public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, GameConfigurationDTO gameConfigurationDTO)
 
         protected override void Dispose(bool disposing)
         {

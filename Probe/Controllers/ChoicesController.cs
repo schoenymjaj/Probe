@@ -7,10 +7,15 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL;
+using ProbeDAL.Models;
+using Probe.Models.View;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
@@ -18,192 +23,330 @@ namespace Probe.Controllers
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        public ActionResult Index(long? SelectedQuestion)
+        // GET: Choices
+        public ActionResult Index(long questionid)
         {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)SelectedQuestion))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            ChoiceQuestion question = db.ChoiceQuestion.Find(questionid);
 
-            //limit the questions to only what the user possesses
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+            ViewBag.QuestionId = questionid;
+            ViewBag.QuestionName = question.Name;
+            ViewBag.QuestionText = question.Text;
 
-            var questions = db.Question.Where(q => q.AspNetUsersId == loggedInUserId && !q.UsedInGame).OrderBy(q => q.Name).ToList();
-            ViewBag.SelectedQuestion = new SelectList(questions, "Id", "Name", SelectedQuestion);
-            long questionId = SelectedQuestion.GetValueOrDefault();
-
-            var choices = db.Choice.Where(c => c.ChoiceQuestionId == questionId).OrderBy(c => c.OrderNbr);
-
-            return View(choices.ToList());
+            return View();
         }
 
-        // GET: Choices/Details/5
-        public ActionResult Details(long? id)
+        public JsonResult GetQuestionChoices([DataSourceRequest]DataSourceRequest request, long questionid)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+                var choices = db.Choice.Where(c => c.ChoiceQuestionId == questionid)
+                    .Select(c => new ChoiceDTO
+                    {
+                        Id = c.Id,
+                        ChoiceQuestionId = c.ChoiceQuestionId,
+                        Name = c.Name,
+                        Text = c.Text,
+                        Correct = c.Correct,
+                        OrderNbr = c.OrderNbr
+                    })
+                    .OrderBy(c => c.OrderNbr);
 
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+
+                return this.Json(choices.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
+        }//public JsonResult Get([DataSourceRequest]DataSourceRequest request)
 
-            Choice choice = db.Choice.Find(id);
-            if (choice == null)
-            {
-                return HttpNotFound();
-            }
-
-            ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-            return View(choice);
-        }
-
-        // GET: Choices/Create
-        public ActionResult Create(long? SelectedQuestion)
+        [AcceptVerbs(HttpVerbs.Post)]
+        public JsonResult Create([DataSourceRequest] DataSourceRequest request, ChoiceDTO choiceDTO)
         {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)SelectedQuestion))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
-            ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", SelectedQuestion);
-            ChoiceQuestion cq = (ChoiceQuestion)db.Question.Find(SelectedQuestion);
-
-            Choice c = new Choice
+            try
             {
-                ChoiceQuestionId = (long)SelectedQuestion,
-                OrderNbr = GetNextOrderNbr((long)SelectedQuestion),
-                ChoiceQuestion = new ChoiceQuestion {
-                    Id = (long)SelectedQuestion,
-                    Name = cq.Name,
-                    Text = cq.Text
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsQuestionForLoggedInUser(choiceDTO.ChoiceQuestionId))
+                {
+                    ModelState.AddModelError("", "Question Create could not be accomplished");
+                    return Json(ModelState.ToDataSourceResult());
                 }
-            };
 
-            return View(c);
-        }
+                if (choiceDTO.Correct) ValidateChoice(choiceDTO.ChoiceQuestionId); //only validate if choice selected uses correct
 
-        // POST: Choices/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
+                //Set choice name - same as question name
+                choiceDTO.Name = db.ChoiceQuestion.Find(choiceDTO.ChoiceQuestionId).Name;
+                if (ModelState.IsValid)
+                {
+
+                    Choice choice = new Choice
+                    {
+                        Id = choiceDTO.Id,
+                        ChoiceQuestionId = choiceDTO.ChoiceQuestionId,
+                        Name = choiceDTO.Name,
+                        Text = choiceDTO.Text,
+                        Correct = choiceDTO.Correct,
+                        OrderNbr = choiceDTO.OrderNbr
+                    };
+                    db.Choice.Add(choice);
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                    choiceDTO.Id = choice.Id;
+                }
+
+                NotifyProbe.NotifyChoiceChanged(User.Identity.Name); //let all clients know where was a game change.
+
+                return Json(new[] { choiceDTO }.ToDataSourceResult(request, ModelState));
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
+            }
+
+        }//public JsonResult Create([DataSourceRequest] DataSourceRequest request, ChoiceDTO choiceDTO)
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, ChoiceDTO choiceDTO)
         {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser(choice.ChoiceQuestionId))
+
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
-            if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
-            if (ModelState.IsValid)
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsChoiceForLoggedInUser(choiceDTO.Id))
+                {
+                    ModelState.AddModelError("", "Question Update could not be accomplished");
+                    return Json(ModelState.ToDataSourceResult());
+                }
+
+                if (choiceDTO.Correct) ValidateChoice(choiceDTO.ChoiceQuestionId, choiceDTO.Id); //only validate if choice selected uses correct
+                if (ModelState.IsValid)
+                {
+                    Choice choice = new Choice
+                    {
+                        Id = choiceDTO.Id,
+                        ChoiceQuestionId =  choiceDTO.ChoiceQuestionId,
+                        Name = choiceDTO.Name,
+                        Text = choiceDTO.Text,
+                        Correct = choiceDTO.Correct,
+                        OrderNbr = choiceDTO.OrderNbr
+                    };
+
+                    db.Entry(choice).State = EntityState.Modified;
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+
+                    NotifyProbe.NotifyChoiceChanged(User.Identity.Name); //let all clients know where was a game change.
+                }
+
+                //return Json(ModelState.ToDataSourceResult());
+                return Json(new[] { choiceDTO }.ToDataSourceResult(dsRequest, ModelState));
+
+
+            }
+            catch (Exception ex)
             {
-                db.Choice.Add(choice);
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
+        }//public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, ChoiceDTO choiceDTO)
 
-            ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-            return View(choice);
-        }
-
-        // GET: Choices/Edit/5
-        public ActionResult Edit(long? id)
+        [AcceptVerbs(HttpVerbs.Post)]
+        public JsonResult Delete([DataSourceRequest] DataSourceRequest request, ChoiceDTO choiceDTO)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                long questionId = choiceDTO.ChoiceQuestionId;
+
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsChoiceForLoggedInUser(choiceDTO.Id))
+                {
+                    ModelState.AddModelError("", "Choice Delete could not be accomplished");
+                    return Json(ModelState.ToDataSourceResult());
+                }
+
+                if (choiceDTO != null && ModelState.IsValid)
+                {
+                    Choice choice = db.Choice.Find(choiceDTO.Id);
+                    db.Choice.Remove(choice);
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                }
+
+                NotifyProbe.NotifyChoiceChanged(User.Identity.Name); //let all clients know where was a game change.
+
+                return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+            catch (Exception ex)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
 
-            Choice choice = db.Choice.Find(id);
-            if (choice == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-            return View(choice);
-        }
+        }//public JsonResult Delete([DataSourceRequest] DataSourceRequest request, ChoiceDTO choiceDTO)
 
-        // POST: Choices/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsChoiceForLoggedInUser(choice.Id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //// GET: Choices/Details/5
+        //public ActionResult Details(long id)
+        //{
+        //    //if (id == null)
+        //    //{
+        //    //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    //}
 
-            if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId,choice.Id); //only validate if choice selected uses correct
-            if (ModelState.IsValid)
-            {
-                db.Entry(choice).State = EntityState.Modified;
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
-            }
-            ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-            return View(choice);
-        }
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-        // GET: Choices/Delete/5
-        public ActionResult Delete(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //    Choice choice = db.Choice.Find(id);
+        //    if (choice == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            Choice choice = db.Choice.Find(id);
-            if (choice == null)
-            {
-                return HttpNotFound();
-            }
-            return View(choice);
-        }
+        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
+        //    return View(choice);
+        //}
 
-        // POST: Choices/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsChoiceForLoggedInUser(id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //// GET: Choices/Create
+        //public ActionResult Create(long? SelectedQuestion)
+        //{
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsQuestionForLoggedInUser((long)SelectedQuestion))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-            Choice choice = db.Choice.Find(id);
-            db.Choice.Remove(choice);
-            db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-            return RedirectToAction("Index", "ChoiceQuestions");
-        }
+        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", SelectedQuestion);
+        //    ChoiceQuestion cq = (ChoiceQuestion)db.Question.Find(SelectedQuestion);
+
+        //    Choice c = new Choice
+        //    {
+        //        ChoiceQuestionId = (long)SelectedQuestion,
+        //        OrderNbr = GetNextOrderNbr((long)SelectedQuestion),
+        //        ChoiceQuestion = new ChoiceQuestion {
+        //            Id = (long)SelectedQuestion,
+        //            Name = cq.Name,
+        //            Text = cq.Text
+        //        }
+        //    };
+
+        //    return View(c);
+        //}
+
+        //// POST: Choices/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
+        //{
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsQuestionForLoggedInUser(choice.ChoiceQuestionId))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Choice.Add(choice);
+        //        db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+        //        return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
+        //    }
+
+        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
+        //    return View(choice);
+        //}
+
+        //// GET: Choices/Edit/5
+        //public ActionResult Edit(long id)
+        //{
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    Choice choice = db.Choice.Find(id);
+        //    if (choice == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
+        //    return View(choice);
+        //}
+
+        //// POST: Choices/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
+        //{
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsChoiceForLoggedInUser(choice.Id))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId,choice.Id); //only validate if choice selected uses correct
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(choice).State = EntityState.Modified;
+        //        db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+        //        return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
+        //    }
+        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
+        //    return View(choice);
+        //}
+
+        //// GET: Choices/Delete/5
+        //public ActionResult Delete(long id)
+        //{
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    Choice choice = db.Choice.Find(id);
+        //    if (choice == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(choice);
+        //}
+
+        //// POST: Choices/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult DeleteConfirmed(long id)
+        //{
+        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+        //    //Somebody is trying to do bad stuff.
+        //    if (!ProbeValidate.IsChoiceForLoggedInUser(id))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    Choice choice = db.Choice.Find(id);
+        //    db.Choice.Remove(choice);
+        //    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+        //    return RedirectToAction("Index", "ChoiceQuestions");
+        //}
 
         private void ValidateChoice(long questionId)
         {

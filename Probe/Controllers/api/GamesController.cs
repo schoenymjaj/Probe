@@ -9,11 +9,13 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Probe.DAL;
+using ProbeDAL.Models;
 using Probe.Models;
 using Probe.Helpers.Exceptions;
 using Probe.Helpers.Validations;
 using Probe.Helpers.Mics;
 using System.Text;
+using Probe.Helpers.GameHelpers;
 
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Linq;
@@ -416,7 +418,6 @@ namespace Probe.Controllers.api
             }
 
         } //public HttpResponseMessage GetGame(string code)
-
 
         // PUT: api/Games/5
         [ResponseType(typeof(void))]

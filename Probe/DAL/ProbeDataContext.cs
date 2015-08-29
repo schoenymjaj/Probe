@@ -1,4 +1,4 @@
-﻿using Probe.Models;
+﻿using ProbeDAL.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
@@ -18,6 +18,8 @@ namespace Probe.DAL
         public DbSet<Game> Game { get; set; }
         public DbSet<ConfigurationG> ConfigurationG { get; set; }
         public DbSet<GameConfiguration> GameConfiguration { get; set; }
+        public DbSet<GameTypeConfiguration> GameTypeConfiguration { get; set; }
+        public DbSet<Group> Group { get; set; }
         public DbSet<Question> Question { get; set; }
         public DbSet<ChoiceQuestion> ChoiceQuestion { get; set; }
         public DbSet<Choice> Choice { get; set; }

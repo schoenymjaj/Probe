@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Probe.Models;
+using ProbeDAL.Models;
 
 namespace Probe.Helpers.PlayerHelpers
 {

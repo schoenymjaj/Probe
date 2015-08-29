@@ -22,6 +22,16 @@ namespace Probe.Helpers.Mics
             return s;
         }
 
+        public static DateTime ConvertToLocalTime(DateTime dt)
+        {
+            var o = HttpContext.Current.Session["tzo"];
+            var tzo = o == null ? 0 : Convert.ToDouble(o);
+
+            dt = dt.AddMinutes(-1 * tzo);
+
+            return dt;
+        }
+
         public static DateTime ConvertLocalToUTC(DateTime dt)
         {
             var o = HttpContext.Current.Session["tzo"];

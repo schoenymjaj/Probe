@@ -14,6 +14,49 @@ namespace Probe
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "GameSchedules",
+                url: "Games/GameSchedules/{gameid}",
+                defaults: new { controller = "Games", action = "GameSchedules" }
+            );
+
+            routes.MapRoute(
+                name: "GameConfigurations",
+                url: "GameConfigurations/{action}/{gameid}",
+                defaults: new { controller = "GameConfigurations", action = "Index" }
+            );
+
+            routes.MapRoute(
+                name: "Choices",
+                url: "Choices/{action}/{questionid}",
+                defaults: new { controller = "Choices", action = "Index" }
+            );
+
+            routes.MapRoute(
+                name: "Players",
+                url: "Players/{action}/{gameid}",
+                defaults: new { controller = "Players", action = "Index" }
+            );
+
+            routes.MapRoute(
+            name: "GameQuestions",
+            url: "GameQuestions/GameQuestions/{gameid}",
+            defaults: new { controller = "GameQuestions", action = "GameQuestions"}
+            );
+
+            routes.MapRoute(
+            name: "GameQuestions.GetGameQuestions",
+            url: "GameQuestions/GetGameQuestions/{gameid}",
+            defaults: new { controller = "GameQuestions", action = "GetGameQuestions" }
+            );
+
+            routes.MapRoute(
+            name: "ChoiceQuestions.GetQuestions",
+            url: "ChoiceQuestions/GetQuestions/{gameid}",
+            defaults: new { controller = "ChoiceQuestions", action = "GetQuestions", gameid = UrlParameter.Optional }
+            );
+
+
+            routes.MapRoute(
                 name: "Publish",
                 url: "Games/Publish/{id}/{publishind}",
                 defaults: new { controller = "Games", action = "Publish" }

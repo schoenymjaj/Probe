@@ -1,0 +1,117 @@
+﻿@model Probe.Models.View.GameConfigurationDTO
+
+<style>
+    .myNameEditor {
+        color: yellow;
+        width: 200px;
+    }
+
+    .k-textbox.small {
+        width: 100px !important;
+    }
+
+    .k-textbox.medium {
+        width: 150px !important;
+    }
+
+    .k-textbox.large {
+        width: 405px !important;
+        max-width: 450px;
+    }
+
+    .wide-full {
+        width: 100%;
+    }
+
+    .k-edit-form-container {
+        width: 600px; /* sets the width of the editable popup*/
+    }
+
+        .k-edit-label, .k-edit-form-container .editor-label {
+            width: 15%; /* set label closer to left side of popup*/
+        }
+
+        .k-edit-field, .k-edit-form-container .editor-field {
+            width: 75%; /*set edit field closer to left side of popup*/
+        }
+
+    .k-widget.k-tooltip-validation { /* color of validation message */
+        color: white;
+        background: rgba(225, 0, 0, 1.0);
+        text-align: left;
+    }
+
+    .k-tooltip { /* error message to the right of the editor field rather than below it*/
+        position: inherit;
+        /*float: right;*/
+        width: 400px;
+        margin-left: 0px;
+        margin-top: 5px;
+    }
+
+    .textareaLarge {
+        width: 400px;
+        height: 70px;
+        max-width: 450px;
+    }
+</style>
+
+<ul class="errors"></ul>
+
+@Html.HiddenFor(model => model.Id)
+
+<div class="k-edit-form-container">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Name, new { @class = "k-textbox large", disabled = "disabled", @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+    </div>
+
+    <div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DataTypeG, "Type")
+        </div>
+        <div class="editor-field">
+
+            @(Html.Kendo().DropDownListFor(model => model.DataTypeG)
+                               .Name("DataTypeG")
+                               .OptionLabel("Select Type...")
+                               .DataTextField("Text")
+                               .DataValueField("Value")
+                               .HtmlAttributes(new { disabled = "disabled", @readonly = "readonly" })
+                               .DataSource(source =>
+                                           { source.Read(read => { read.Action("GetDataTypeGs", "GameConfigurations"); }); }
+                                           )
+            )
+            @Html.ValidationMessageFor(model => model.DataTypeG)
+        </div>
+    </div>
+
+    <div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @Html.TextAreaFor(model => model.Description, new { @class = "textareaLarge", disabled = "disabled", @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+    </div>
+
+    <div id="GCValueText">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Value)
+        </div>
+        <div class="editor-field">
+            @Html.TextAreaFor(model => model.Value, new { @class = "textareaLarge" })
+            @Html.ValidationMessageFor(model => model.Value)
+        </div>
+    </div>
+
+</div>
+
+

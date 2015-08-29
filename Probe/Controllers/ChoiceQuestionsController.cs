@@ -7,12 +7,17 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Probe.DAL;
+using ProbeDAL.Models;
+using Probe.Models.View;
 using Probe.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
 using Probe.Helpers.QuestionHelpers;
 using Probe.Helpers.Mics;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+
 
 namespace Probe.Controllers
 {
@@ -20,198 +25,404 @@ namespace Probe.Controllers
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        // GET: ChoiceQuestions
         public ActionResult Index()
         {
-
-            //limit the questions to only what the user possesses
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            ViewBag.DctQuestionForATest = ProbeValidate.GetAllQuestionPossessCorrectChoice();
-
-            //sort the choices of the questions
-            var question = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame)
-                .OrderBy(cq => cq.Name)
-                .Include(cq => cq.QuestionType);
-
-            if (Session["ResultMessage"] != null)
-            {
-                ViewBag.ResultMessage = (ResultMessage)Session["ResultMessage"];
-                Session["ResultMessage"] = null;
-            }
-
-            return View(question.ToList());
+            return View();
         }
 
-        // GET: ChoiceQuestions/Details/5
-        public ActionResult Details(long? id)
+        /*
+         * This controller action will support JIT data to the client Grid. the data returned to the
+         * client (RAZOR/Kendo MVC Grid wrapper will only see the data that is going to be displayed (one page worths)
+         */
+        public JsonResult Get([DataSourceRequest]DataSourceRequest request)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+                //limit the questions to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
+                //sort the choices of the questions
+                var questions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame)
+                    .Select(cq => new QuestionDTO
+                    {
+                        Id = cq.Id,
+                        QuestionTypeId = cq.QuestionTypeId,
+                        Name = cq.Name,
+                        Text = cq.Text,
+                        TestEnabled = cq.Choices.Any(c => c.Correct),
+                        ChoicesCount = cq.Choices.Count(),
+                        Choices = cq.Choices.Select(c => new ChoiceDTO
+                        {
+                            Id = c.Id,
+                            Text = c.Text,
+                            Correct = c.Correct,
+                            OrderNbr = c.OrderNbr
+                        }).OrderBy(c => c.OrderNbr)
+                    })
+                    .OrderBy(cq => cq.Name);
+
+                return this.Json(questions.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
+        }//public JsonResult Get([DataSourceRequest]DataSourceRequest request)
 
-            ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
-            if (choiceQuestion == null)
-            {
-                return HttpNotFound();
-            }
-            return View(choiceQuestion);
-        }
-
-        // GET: ChoiceQuestions/Create
-        public ActionResult Create()
+        public JsonResult GetQuestionsForAutoComplete()
         {
-            ViewBag.QuestionTypeId = new SelectList(db.QuestionType, "Id", "Name");
-
-            ChoiceQuestion question = new ChoiceQuestion();
-            question.OneChoice = true;
-
-            if (User.Identity.GetUserId() != null)
+            try
             {
-                question.AspNetUsersId = User.Identity.GetUserId();
+                //limit the questions to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+                db.Configuration.LazyLoadingEnabled = false; //Need to do this if we return the entire game. If we just get the name; we probably don't.
+                var questionNames = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame).Select(cq => cq.Name);
+                return Json(questionNames, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
 
-            return View(question);
-        }
+        }//public JsonResult GetQuestionsForAutoComplete()
 
-        // POST: ChoiceQuestions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,QuestionTypeId,Name,Text,OneChoice,AspNetUsersId")] ChoiceQuestion choiceQuestion)
+        /*
+         * Get all questions available for a game (support GameQuestions Kendo)
+         */
+        public JsonResult GetQuestions([DataSourceRequest]DataSourceRequest request, long? gameId)
         {
-            choiceQuestion.OneChoice = true; //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
-            choiceQuestion.UsedInGame = false;
-            ValidateQuestionCreate(choiceQuestion);
-            if (ModelState.IsValid)
+            try
             {
-                choiceQuestion.ACLId = 1; //question will be private for now 2/15/15
-                db.Question.Add(choiceQuestion);
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index");
+                //limit the questions to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+                long gameTypeId = (int)db.Game.Find(gameId).GameTypeId;
+
+                /*
+                 * Get all the question names used for the game being used in the context of getting questions. 
+                 */
+                var questionNamesUsed = db.GameQuestion.Where(gq => gq.GameId == gameId)
+                                            .Select(gq => new
+                                            {
+                                                Name = gq.Question.Name
+                                            });
+
+                //if game type is test or lms then we only get test enabled questions otherwise we get all questions
+                //The visible flag will be false if the game already uses an unused question with the same name.
+                //We also do not pull questions that do not have choices. They can't be used in a game
+                var questionDTOs = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame
+                                                                 && (((gameTypeId == (long)ProbeGameType.Test || gameTypeId == (long)ProbeGameType.LMS) 
+                                                                        && cq.Choices.Any(c => c.Correct)
+                                                                      )
+                                                                        || (gameTypeId != (long)ProbeGameType.Test && gameTypeId != (long)ProbeGameType.LMS)
+                                                                    )
+                                                                 && (cq.Choices.Count() > 0)
+                                                          )
+                    .Select(cq => new QuestionDTO
+                    {
+                        Id = cq.Id,
+                        //GameId = 0,
+                        //QuestionId = cq.Id,
+                        QuestionTypeId = cq.QuestionTypeId,
+                        Name = cq.Name,
+                        Text = cq.Text,
+                        TestEnabled = cq.Choices.Any(c => c.Correct),
+                        ChoicesCount = cq.Choices.Count(),
+                        Visible = (gameId.HasValue) ? !questionNamesUsed.Any(qnu => qnu.Name == cq.Name) : true
+                    });
+
+
+                return this.Json(questionDTOs.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//public JsonResult GetQuestions([DataSourceRequest]DataSourceRequest request)
+
+        ///*
+        // * Get question details for a question specified in the filter (support GameQuestions Kendo)
+        // */
+        //public JsonResult GetQuestionDetails([DataSourceRequest]DataSourceRequest request)
+        //{
+        //    try
+        //    {
+        //        long questionId = Convert.ToInt64(((Kendo.Mvc.FilterDescriptor)(request.Filters[0])).Value.ToString());
+
+        //        //questionId = request.Filters.Where(f => f.Member == "Id").SingleOrDefault().Value;
+
+        //        db.Configuration.LazyLoadingEnabled = true;
+        //        var questionDetails = db.ChoiceQuestion.Where(cq => cq.Id == questionId).Include(cq => cq.Choices)
+        //            .Select(cq => new
+        //            {
+        //                Id = cq.Id,
+        //                QuestionTypeId = cq.QuestionTypeId,
+        //                Name = cq.Name,
+        //                Text = cq.Text,
+        //                Choices = cq.Choices
+        //                .OrderBy(c => c.OrderNbr)
+        //                .Select(c => new
+        //                {
+        //                    c.Id,
+        //                    c.Name,
+        //                    c.Text,
+        //                    c.Correct,
+        //                    c.OrderNbr
+        //                }),
+        //                TestEnabled = cq.Choices.Any(c => c.Correct),
+        //                ChoicesCount = cq.Choices.Count(),
+        //            }).SingleOrDefault();
+
+
+        //        QuestionDetailsDTO questionDetailsDTO = new QuestionDetailsDTO
+        //        {
+        //            Id = questionDetails.Id,
+        //            QuestionTypeId = questionDetails.QuestionTypeId,
+        //            Name = questionDetails.Name,
+        //            Text = questionDetails.Text,
+        //            TestEnabled = questionDetails.TestEnabled,
+        //            ChoicesCount = questionDetails.ChoicesCount
+        //        };
+
+        //        questionDetailsDTO.Choices = new List<ChoiceDTO>();
+        //        foreach (var c in questionDetails.Choices)
+        //        {
+        //            ChoiceDTO choice = new ChoiceDTO
+        //            {
+        //                Id = c.Id,
+        //                Name = c.Name,
+        //                Text = c.Text,
+        //                Correct = c.Correct,
+        //                OrderNbr = c.OrderNbr
+        //            };
+
+        //            questionDetailsDTO.Choices.Add(choice);
+        //        }
+
+
+        //        return this.Json(questionDetailsDTO, JsonRequestBehavior.AllowGet);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}//public JsonResult GetQuestionDetails([DataSourceRequest]DataSourceRequest request)
+
+        /*
+         * Get question details for a question specified in the filter (support GameQuestions Kendo)
+         */
+        public JsonResult GetQuestionDetails([DataSourceRequest]DataSourceRequest request)
+        {
+            try
+            {
+                long questionId = Convert.ToInt64(((Kendo.Mvc.FilterDescriptor)(request.Filters[0])).Value.ToString());
+
+                //questionId = request.Filters.Where(f => f.Member == "Id").SingleOrDefault().Value;
+
+                //sort the choices of the questions
+                var questionDetailsDTO = db.ChoiceQuestion.Where(cq => cq.Id == questionId)
+                    .Select(cq => new QuestionDTO
+                    {
+                        Id = cq.Id,
+                        QuestionTypeId = cq.QuestionTypeId,
+                        Name = cq.Name,
+                        Text = cq.Text,
+                        TestEnabled = cq.Choices.Any(c => c.Correct),
+                        ChoicesCount = cq.Choices.Count(),
+                        Choices = cq.Choices.Select(c => new ChoiceDTO
+                        {
+                            Id = c.Id,
+                            Text = c.Text,
+                            Correct = c.Correct,
+                            OrderNbr = c.OrderNbr
+                        }).OrderBy(c => c.OrderNbr)
+                    })
+                    .OrderBy(cq => cq.Name)
+                    .SingleOrDefault();
+
+                return this.Json(questionDetailsDTO, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//public JsonResult GetQuestionDetails([DataSourceRequest]DataSourceRequest request)
+
+
+        public JsonResult GetQuestionTypes()
+        {
+            try
+            {
+                var itemsVar = new SelectList(db.QuestionType, "Id", "Name");
+                var items = itemsVar.ToList();
+
+                return Json(items, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
 
-            ViewBag.QuestionTypeId = new SelectList(db.QuestionType, "Id", "Name", choiceQuestion.QuestionTypeId);
-            return View(choiceQuestion);
         }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public JsonResult Create([DataSourceRequest] DataSourceRequest request, QuestionDTO questionDTO)
+        {
+
+            try
+            {
+                
+                ValidateQuestionCreate(questionDTO);
+                if (ModelState.IsValid)
+                {
+
+                    ChoiceQuestion choiceQuestion = new ChoiceQuestion
+                    {
+                        Id = 0,
+                        AspNetUsersId = User.Identity.GetUserId(),
+                        OneChoice = true, //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
+                        UsedInGame = false,
+                        ACLId = 1,
+                        QuestionTypeId = questionDTO.QuestionTypeId,
+                        Name = questionDTO.Name,
+                        Text = questionDTO.Text,
+                    };
+
+                    db.Question.Add(choiceQuestion);
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                    questionDTO.Id = choiceQuestion.Id; //pass back the new Id to the client
+                }
+
+                return Json(new[] { questionDTO }.ToDataSourceResult(request, ModelState));
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
+            }
+
+        }//public JsonResult Create([DataSourceRequest] DataSourceRequest request, QuestionDTO questionDTO)
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, QuestionDTO questionDTO)
+        {
+
+            try
+            {
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsQuestionForLoggedInUser((long)questionDTO.Id))
+                {
+                    ModelState.AddModelError("", "Question Update could not be accomplished");
+                    return Json(ModelState.ToDataSourceResult());
+                }
+
+                ValidateQuestionEdit(questionDTO);
+                if (ModelState.IsValid)
+                {
+                    ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(questionDTO.Id);
+
+                    //choiceQuestion.AspNetUsersId - THIS IS NOT CHANGING
+                    choiceQuestion.QuestionTypeId = questionDTO.QuestionTypeId;
+                    choiceQuestion.Name = questionDTO.Name;
+                    choiceQuestion.Text = questionDTO.Text;
+                    //choiceQuestion.OneChoice - THIS IS NOT CHANGING
+                    //choiceQuestion.UsedInGame - THIS IS NOT CHANGING
+                    //choiceQuestion.ACLId - THIS IS NOT CHANGING
+
+                    db.Entry(choiceQuestion).State = EntityState.Modified;
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                }
+
+                //return Json(ModelState.ToDataSourceResult());
+                return Json(new[] { questionDTO }.ToDataSourceResult(dsRequest, ModelState));
+
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
+        }//public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, QuestionDTO questionDTO)
 
         // GET: ChoiceQuestions/Clone
-        public ActionResult Clone(long id)
+        public JsonResult Clone(long id)
         {
-            //limit the questions to only what the user possesses
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            ProbeQuestion.CloneQuestion(this, db, false, id);
-
-            //The message that the calling RAZOR can use
-            ResultMessage resultMessage = new ResultMessage
+            try
             {
-                MessageId = ProbeConstants.MSG_QuestionCloneSuccessful,
-                MessageType = Helpers.Mics.MessageType.Informational,
-                Message = "The question '" + db.Question.Find(id).Name + "' has been cloned successfully"
-            };
-            Session["ResultMessage"] = resultMessage;
+                //limit the questions to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-            return RedirectToAction("Index");
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, false, id);
 
-        } //public ActionResult Clone(long id)
+                //The message that the calling RAZOR can use
+                ResultMessage resultMessage = new ResultMessage
+                {
+                    MessageId = ProbeConstants.MSG_QuestionCloneSuccessful,
+                    MessageType = Helpers.Mics.MessageType.Informational,
+                    Message = @"The question <span style=""font-style:italic;font-weight:bold"">" +
+                    db.ChoiceQuestion.Find(id).Name + @"</span> has been cloned successfully to question <span style=""font-style:italic;font-weight:bold"">" +
+                    db.ChoiceQuestion.Find(clonedQuestionId).Name + @"</span>"
+                };
 
-        // GET: ChoiceQuestions/Edit/5
-        public ActionResult Edit(long? id)
+                NotifyProbe.NotifyQuestionChanged(User.Identity.Name); //let all clients know where was a game change.
+
+                return Json(resultMessage, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+
+                //The message return via an AJAX call
+                ResultMessage resultMessage = new ResultMessage
+                {
+                    MessageId = ProbeConstants.MSG_UnsuccessfulOperation,
+                    MessageType = Helpers.Mics.MessageType.Error,
+                    Message = "The was an error when attempting to clone the question '" +
+                    db.ChoiceQuestion.Find(id).Name + "'. " + ex.Message
+                };
+
+                return Json(resultMessage, JsonRequestBehavior.AllowGet);
+            }
+
+        } //public JsonResult Clone(long id)
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public JsonResult Delete([DataSourceRequest] DataSourceRequest request, GameDTO questionDTO)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsQuestionForLoggedInUser((long)questionDTO.Id))
+                {
+                    ModelState.AddModelError("", "Question Delete could not be accomplished");
+                    return Json(ModelState.ToDataSourceResult());
+                }
+
+                if (questionDTO != null && ModelState.IsValid)
+                {
+                    ProbeQuestion.DeleteQuestion(this, db, questionDTO.Id);
+                }
+
+                return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
+            catch (Exception ex)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
             }
 
-            ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
-            if (choiceQuestion == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.QuestionTypeId = new SelectList(db.QuestionType, "Id", "Name", choiceQuestion.QuestionTypeId);
-            return View(choiceQuestion);
-        }
-
-        // POST: ChoiceQuestions/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,QuestionTypeId,Name,Text,OneChoice,AspNetUsersId")] ChoiceQuestion choiceQuestion)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser(choiceQuestion.Id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            choiceQuestion.OneChoice = true; //for some reason; disabling the OneChoice prompt in RAZOR turns this to false.. This is a hack
-            ValidateQuestionEdit(choiceQuestion);
-            if (ModelState.IsValid)
-            {
-                choiceQuestion.ACLId = 1; //question will be private for now 2/15/15
-                db.Entry(choiceQuestion).State = EntityState.Modified;
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index");
-            }
-            ViewBag.QuestionTypeId = new SelectList(db.QuestionType, "Id", "Name", choiceQuestion.QuestionTypeId);
-            return View(choiceQuestion);
-        }
-
-        // GET: ChoiceQuestions/Delete/5
-        public ActionResult Delete(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            ChoiceQuestion choiceQuestion = db.ChoiceQuestion.Find(id);
-            if (choiceQuestion == null)
-            {
-                return HttpNotFound();
-            }
-            return View(choiceQuestion);
-        }
-
-        // POST: ChoiceQuestions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            ProbeQuestion.DeleteQuestion(this, db, id);
-            return RedirectToAction("Index");
-        }
+        }//public JsonResult Delete([DataSourceRequest] DataSourceRequest request, QuestionDTO questionDTO)
 
         protected override void Dispose(bool disposing)
         {
@@ -222,19 +433,19 @@ namespace Probe.Controllers
             base.Dispose(disposing);
         }
 
-        private void ValidateQuestionCreate(Question question)
+        private void ValidateQuestionCreate(QuestionDTO questionDTO)
         {
             //Question Business Rules
-            if (ProbeValidate.IsQuestionNameExistForLoggedInUser(question.Name))
+            if (ProbeValidate.IsQuestionNameExistForLoggedInUser(questionDTO.Name))
             {
                 ModelState.AddModelError("Name", "The question name already exists for the logged in user.");
             }
 
         }
-        private void ValidateQuestionEdit(Question question)
+        private void ValidateQuestionEdit(QuestionDTO questionDTO)
         {
             //Question Business Rules
-            if (ProbeValidate.IsQuestionNameExistForLoggedInUser(question.Id,question.Name))
+            if (ProbeValidate.IsQuestionNameExistForLoggedInUser(questionDTO.Id, questionDTO.Name))
             {
                 ModelState.AddModelError("Name", "The question name already exists for the logged in user.");
             }

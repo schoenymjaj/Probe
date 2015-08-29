@@ -9,7 +9,7 @@ namespace Probe.Helpers.Mics
 {
     public static class ProbeConstants
     {
-        public const string ServerVersion = "1.3";
+        public const string ServerVersion = "1.4";
         public const long NoPrimaryKeyId = -1;
         public const int ValueIntNone = -1;
         public const string ValueStringNone = "";
@@ -46,6 +46,8 @@ namespace Probe.Helpers.Mics
         public const int MSG_GamePublishSuccessful = 21;
         public const int MSG_GameUnpublishSuccessful = 22;
         public const int MSG_QuestionCloneSuccessful = 23;
+        public const int MSG_UnsuccessfulOperation = 24;
+        public const int MSG_GameDeleteSuccessful = 25;
 
         public const string MatchGameType = "Match";
         public const string TestGameType = "Test";

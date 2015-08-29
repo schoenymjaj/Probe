@@ -7,11 +7,14 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
+using Probe.Models.View;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Validations;
 using Probe.Helpers.QuestionHelpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace Probe.Controllers
 {
@@ -22,265 +25,171 @@ namespace Probe.Controllers
         private int[] weights = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         private const int DEFAULT_WEIGHT = 10;
 
-        // GET: GameQuestions/w Filter
-        public ActionResult Index(int? SelectedGame)
+        // GET: Drag and Drop Questions to a Game 
+        public ActionResult GameQuestions(long gameid)
         {
-            //limit the games to only what the user possesses
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+            Game game = db.Game.Find(gameid);
 
-            var games = db.Game.Where(g => g.AspNetUsersId == loggedInUserId).OrderBy(g => g.Name).ToList();
+            ViewBag.GameId = gameid;
+            ViewBag.GameName = game.Name;
+            ViewBag.GameEditable = !ProbeValidate.DoesGameHaveSubmissions(gameid) &&
+                                   !ProbeValidate.IsGameActive(game);
+            return View();
+        }
 
-            //if no selected game yet, and there are games owned by current year; we are going to pick the
-            //first game that comes up. Doesn't make sense to show ALL games for GameQuestion.
-            if (SelectedGame == null && games.Count() > 0) SelectedGame = (int)games.First().Id;
-            ViewBag.SelectedGame = new SelectList(games, "Id", "Name", SelectedGame);
-            int gameId = SelectedGame.GetValueOrDefault();
-
-            if (SelectedGame != null)
+        /*
+         * Get gamequestions for a specific game (support GameQuestions Kendo)
+         */
+        public JsonResult GetGameQuestions([DataSourceRequest]DataSourceRequest request, long gameid)
+        {
+            try
             {
+                var gameQuestionDTOs = db.GameQuestion.Where(gq => gq.GameId == gameid)
+                    .Select(gq => new GameQuestionDTO
+                    {
+                        Id = gq.Id,
+                        GameId = gq.GameId,
+                        QuestionId = gq.QuestionId,
+                        QuestionTypeId = gq.Question.QuestionTypeId,
+                        OrderNbr = gq.OrderNbr,
+                        Weight = gq.Weight,
+                        Name = gq.Question.Name,
+                        Text = gq.Question.Text,
+                        TestEnabled = db.ChoiceQuestion.Where(cq => cq.Id == gq.QuestionId).FirstOrDefault().Choices.Any(c => c.Correct),
+                        ChoicesCount = db.ChoiceQuestion.Where(cq => cq.Id == gq.QuestionId).FirstOrDefault().Choices.Count()
+                    }).OrderBy(gq => gq.OrderNbr);
+
+
+                return this.Json(gameQuestionDTOs.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//public JsonResult GetGameQuestions([DataSourceRequest]DataSourceRequest request)
+
+        /*
+         * Update gamequestion (support GameQuestions Kendo)
+         */
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, GameQuestionDTO gameQuestionDTO)
+        {
+
+            try
+            {
+                //we are only updating the Game Question order number and weight
+                GameQuestion gameQuestion = db.GameQuestion.Find(gameQuestionDTO.Id);
+                gameQuestion.OrderNbr = gameQuestionDTO.OrderNbr;
+                gameQuestion.Weight = gameQuestionDTO.Weight;
+
+                db.Entry(gameQuestion).State = EntityState.Modified;
+                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+
+                return Json(new[] { gameQuestionDTO }.ToDataSourceResult(dsRequest, ModelState));
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
+        }
+
+        /*
+         * Create gamequestion (support GameQuestions Kendo)
+         */
+        [AcceptVerbs(HttpVerbs.Post)]
+        public JsonResult Create([DataSourceRequest] DataSourceRequest request, GameQuestionDTO gameQuestionDTO)
+        {
+
+            try
+            {
+
                 //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
                 //Somebody is trying to do bad stuff.
-                if (!ProbeValidate.IsGameForLoggedInUser((long)SelectedGame))
+                if (!ProbeValidate.IsGameForLoggedInUser((long)gameQuestionDTO.GameId))
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ModelState.AddModelError("", "The attempt to add a game question was not successful");
+                    return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
                 }
-            }
+                if (!ProbeValidate.IsQuestionForLoggedInUser((long)gameQuestionDTO.QuestionId))
+                {
+                    ModelState.AddModelError("", "The attempt to add a game question was not successful");
+                    return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
+                }
 
-            Session["CurrentSelectedGame"] = SelectedGame;
-            ViewBag.CurrentSelectedGame = Session["CurrentSelectedGame"];
-            ViewBag.DctGameActive = ProbeValidate.GetAllGamesStatus();
+                //transform DTO to business object (GameQuestion)
+                GameQuestion gameQuestion = new GameQuestion
+                {
+                    Id = 0,
+                    GameId = gameQuestionDTO.GameId,
+                    QuestionId = gameQuestionDTO.QuestionId,
+                    OrderNbr = gameQuestionDTO.OrderNbr,
+                    Weight = gameQuestionDTO.Weight
+                };
 
-            IQueryable<GameQuestion> gameQuestions = db.GameQuestion
-                .Where(gq => gq.GameId == gameId)
-                .OrderBy(gq => gq.OrderNbr)
-                .Include(g => g.Game);
-            return View(gameQuestions.ToList());
-        }
-
-        // GET: GameQuestions/Details/5
-        public ActionResult Details(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameQuestionForLoggedInUser((long)id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            GameQuestion gameQuestion = db.GameQuestion.Find(id);
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId); //persist the selected game
-
-            if (gameQuestion == null)
-            {
-                return HttpNotFound();
-            }
-            return View(gameQuestion);
-        }
-
-        // GET: GameQuestions/Create
-        public ActionResult Create(int? SelectedGame)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameForLoggedInUser((long)SelectedGame))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name",SelectedGame);
-
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)SelectedGame,loggedInUserId, null), "Id", "Name");
-            ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
-
-            GameQuestion gq = new GameQuestion
-            {
-                OrderNbr = GetNextOrderNbr((long)SelectedGame)
-            };
-
-            return View(gq);
-        }
-
-        // POST: GameQuestions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        ////[ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameForLoggedInUser((long)gameQuestion.GameId))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)gameQuestion.QuestionId))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-
-            if (ModelState.IsValid)
-            {
-                //We need to clone the question and set the UsedInGame field to true
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db,true, gameQuestion.QuestionId);
+                //We need to clone the question and set the UsedInGame field to true. The cloned questions
+                //is what will be associated with the game
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, true, gameQuestion.QuestionId);
                 gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
+
 
                 db.GameQuestion.Add(gameQuestion);
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
+                gameQuestionDTO.Id = gameQuestion.Id; //pass back the new Id to the client
+
+                return Json(new[] { gameQuestionDTO }.ToDataSourceResult(request, ModelState));
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
 
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions((long)gameQuestion.GameId, loggedInUserId, gameQuestion.Id), "Id", "Name", gameQuestion.QuestionId);
-            return View(gameQuestion);
         }
 
-        // GET: GameQuestions/Edit/5
-        public ActionResult Edit(long? id)
+        /*
+         * Delete gamequestion (support GameQuestions Kendo)
+         */
+        [AcceptVerbs(HttpVerbs.Post)]
+        public JsonResult Delete([DataSourceRequest] DataSourceRequest request, GameQuestionDTO gameQuestionDTO)
         {
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameQuestionForLoggedInUser((long)id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+                //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
+                //Somebody is trying to do bad stuff.
+                if (!ProbeValidate.IsGameQuestionForLoggedInUser(gameQuestionDTO.Id))
+                {
+                    ModelState.AddModelError("", "The attempt to remove a game question was not successful");
+                    return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
+                }
 
-            GameQuestion gameQuestion = db.GameQuestion.Find(id);
-            if (gameQuestion == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            //ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId, id), "Id", "Name", gameQuestion.QuestionId);
-            var gameQuestionNames = db.GameQuestion.Where(gq => gq.GameId == gameQuestion.GameId).Select(gq => gq.Question);
-            ViewBag.QuestionId = new SelectList(gameQuestionNames, "Id", "Name", gameQuestion.QuestionId);
-            ViewBag.Weight = new SelectList(weights, DEFAULT_WEIGHT);
-            Session["GameQuestion-QuestionId"] = gameQuestion.QuestionId;
 
-            return View(gameQuestion);
-        }
+                GameQuestion gameQuestion = db.GameQuestion.Find(gameQuestionDTO.Id);
 
-        // POST: GameQuestions/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        ////[ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,GameId,QuestionId,Weight,OrderNbr")] GameQuestion gameQuestion)
-        {
-            //this question id does not change. For some reason when the dropdown is readonly/disabled it comes back zero. Hence the hack
-            gameQuestion.QuestionId = (long)Session["GameQuestion-QuestionId"]; 
-
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameQuestionForLoggedInUser(gameQuestion.Id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            if (!ProbeValidate.IsQuestionForLoggedInUser((long)gameQuestion.QuestionId))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            if (ModelState.IsValid)
-            {
-                db.Entry(gameQuestion).State = EntityState.Modified;
-
-                /*
-                 * MNS 1/9/15 - No need to give the user the ability to change questions from here. It's easy to delete a question and add another.
-                 */
-
-                //if the questionId has changed. then we have to do delete the old UsedInGame question and create the new UsedInGame question
-                //if (gameQuestion.QuestionId != (long)Session["GameQuestion-QuestionId"])
-                //{
-                //    ProbeQuestion.DeleteQuestion(this, db, (long)Session["GameQuestion-QuestionId"]);
-
-                //    //We need to clone the question and set the UsedInGame field to true
-                //    long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, gameQuestion.GameId, gameQuestion.QuestionId);
-                //    gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
-                //}
-
+                db.GameQuestion.Remove(gameQuestion);
                 db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
 
-                ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-                return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
-            }
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId);
-            ViewBag.QuestionId = new SelectList(GetRemainingQuestions(gameQuestion.GameId, loggedInUserId, gameQuestion.Id), "Id", "Name", gameQuestion.QuestionId);
-            return View(gameQuestion);
-        }
+                //Now that the gamequestion record is gone, get rid of the "UsedInGame" question/choice records
+                ProbeQuestion.DeleteQuestion(this, db, gameQuestion.QuestionId);
 
-        // GET: GameQuestions/Delete/5
-        public ActionResult Delete(long? id)
-        {
-            if (id == null)
+
+                return Json(new[] { gameQuestionDTO }.ToDataSourceResult(request, ModelState));
+            }
+            catch (Exception ex)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameQuestionForLoggedInUser((long)id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                throw ex;
             }
 
-            GameQuestion gameQuestion = db.GameQuestion.Find(id);
-
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId); //persist the selected game
-
-            if (gameQuestion == null)
-            {
-                return HttpNotFound();
-            }
-            return View(gameQuestion);
-        }
-
-        // POST: GameQuestions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        ////[ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
-            //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-            //Somebody is trying to do bad stuff.
-            if (!ProbeValidate.IsGameQuestionForLoggedInUser(id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            GameQuestion gameQuestion = db.GameQuestion.Find(id);
-
-            ViewBag.GameId = new SelectList(db.Game, "Id", "Name", gameQuestion.GameId); //persist the selected game
-
-            db.GameQuestion.Remove(gameQuestion);
-            db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-
-            //Now that the gamequestion record is gone, get rid of the "UsedInGame" question/choice records
-            ProbeQuestion.DeleteQuestion(this, db, gameQuestion.QuestionId);
-
-            return RedirectToAction("Index", new { SelectedGame = ViewBag.GameId.SelectedValue });
-        }
+        }//public JsonResult DeleteGameQuestion([DataSourceRequest] DataSourceRequest request, GameQuestionDTO gameQuestionDTO)
 
         //private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
         //{
 
         //    //find all questions for the user that are available for use in a game and set in allQuestions var
-        //    IQueryable<Probe.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
+        //    IQueryable<ProbeDAL.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
         //    switch (db.Game.Find(SelectedGame).GameType.Name)
         //    {
         //        case "Test":
@@ -315,7 +224,7 @@ namespace Probe.Controllers
         {
 
             //find all questions for the user that are available for use in a game and set in allQuestions var
-            IQueryable<Probe.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
+            IQueryable<ProbeDAL.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
             switch (db.Game.Find(SelectedGame).GameType.Name)
             {
                 case "Test":
@@ -350,7 +259,6 @@ namespace Probe.Controllers
             }
 
         }
-
 
         private int GetNextOrderNbr(long SelectedGame) {
             if (db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Count() > 0)

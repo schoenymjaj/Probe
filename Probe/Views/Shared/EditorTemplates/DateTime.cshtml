@@ -1,12 +1,3 @@
-﻿@model Nullable<DateTime>
+@model DateTime?
 
-@{
-    DateTime dt = DateTime.Now;
-    String DateStr = Probe.Helpers.Mics.ClientTimeZoneHelper.ConvertToLocalTimeAndFormat(dt, "M/d/yy h:mm tt");
-    if (Model != null)
-    {
-        dt = (System.DateTime)Model;
-        DateStr = Probe.Helpers.Mics.ClientTimeZoneHelper.ConvertToLocalTimeAndFormat(dt, "M/d/yy h:mm tt");
-    }
-    @Html.TextBox("", DateStr, new { @class = "form-control" } )
-} 
+@(Html.Kendo().DateTimePickerFor(m => m))

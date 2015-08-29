@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Http.ModelBinding;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using ProbeDAL.Models;
+using Probe.Models.API;
 using Probe.Models;
 using System.Runtime.Serialization.Json;
 using System.IO;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Probe.Models;
+using ProbeDAL.Models;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Data.Entity.ModelConfiguration.Conventions;

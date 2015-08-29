@@ -6,7 +6,9 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
+using Probe.Models.API;
+using Probe.Models.View;
 using Probe.Helpers.Exceptions;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -37,7 +39,7 @@ namespace Probe.Helpers.GameHelpers
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        public Game Game { get; set; }
+        public ProbeDAL.Models.Game Game { get; set; }
         public bool DeviceCanPlayGameOnlyOnce { get; set; }
         public int FindGameTimeCompleteInSecs { get; set; }
         public int FirstQuestionTimeCompleteInSecs { get; set; }
@@ -57,7 +59,7 @@ namespace Probe.Helpers.GameHelpers
         public IList<ProbeGameQuestionDeadline> ProbeGameQuestionDeadlines { get; set; }
 
         //Constructor for a Game
-        public ProbeGame(Game game)
+        public ProbeGame(ProbeDAL.Models.Game game)
         {
             this.Game = game;
 

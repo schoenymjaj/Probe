@@ -6,7 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
 using Probe.Helpers.Exceptions;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -23,7 +23,7 @@ namespace Probe.Helpers.QuestionHelpers
     {
         /*
          * Will clone the question and all artifacts associated with that question. question/choicequestion,
-         * choice records.
+         * choice records. Returns the cloned question Id.
          */
         public static long CloneQuestion(Controller controller, ProbeDataContext db, bool forQuestionInUse, long sourceQuestionId)
         {

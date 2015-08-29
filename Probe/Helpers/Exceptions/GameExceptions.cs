@@ -398,4 +398,27 @@ namespace Probe.Helpers.Exceptions
         }
     }//public class GameInSuspendModeException
 
+    public class GameIsActiveException : Exception
+    {
+        private Exception _ex;
+
+        public GameIsActiveException()
+        {
+
+        }
+
+        public GameIsActiveException(Exception ex)
+        {
+            _ex = ex;
+        }
+
+        public Exception GetEx
+        {
+            get
+            {
+                return _ex;
+            }
+        }
+    }//public class GameIsActiveException
+
 }

@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Probe.DAL;
-using Probe.Models;
+using ProbeDAL.Models;
 using Probe.Helpers.Validations; //MNS
 
 namespace Probe.Controllers
