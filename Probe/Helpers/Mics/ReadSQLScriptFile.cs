@@ -7,7 +7,7 @@ using System.IO;
 namespace Probe.Helpers.Mics
 {
     /*
-     * Read the text from a SQL script placed in the ~/Scripts/sql folder
+     * Read the text from a SQL script placed in the ~/Scripts/sqlscript folder
      */
     public class ReadSQLScriptFile
     {
@@ -16,11 +16,11 @@ namespace Probe.Helpers.Mics
             String path;
             if (HttpContext.Current.Server != null)
             {
-                path = HttpContext.Current.Server.MapPath("/Scripts/sql/" + filePath);
+                path = HttpContext.Current.Server.MapPath("/Scripts/sqlscript/" + filePath);
             }
             else
             {
-                path = Path.Combine(Directory.GetCurrentDirectory(), "/Scripts/sql/" + filePath);
+                path = Path.Combine(Directory.GetCurrentDirectory(), "/Scripts/sqlscript/" + filePath);
             }
 
             var file = File.OpenText(path);

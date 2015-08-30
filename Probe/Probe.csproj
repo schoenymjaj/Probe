@@ -1401,18 +1401,18 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
-    <Content Include="Scripts\sql\03-Copy-All-GamePlay-to-Game-Table.sql" />
-    <Content Include="Scripts\sql\06-Update-GameId-From-Player-Table-Based-On-Copied-GamePlay-Records.sql" />
-    <Content Include="Scripts\sql\08-Update-GameId-From-GameQuestion-Table-Based-On-Copied-GamePlay-Records.sql" />
-    <Content Include="Scripts\sql\081-Update-GameId-From-GameConfiguration-Table-Based-On-Copied-GamePlay-Records.sql" />
-    <Content Include="Scripts\sql\09-Delete-OLD-Games.sql" />
-    <Content Include="Scripts\sql\10-Delete-Corrupt-Player-Without-GameAnswer-Records.sql" />
-    <Content Include="Scripts\sql\v1.4-InsertGameTypeConfigurationRecords.sql" />
-    <Content Include="Scripts\sql\15-InsertGlobalConfigurationRecordsAndRemoveAllGameConfigurationRecords.sql" />
-    <Content Include="Scripts\sql\20-InsertLMSGameType.sql" />
-    <Content Include="Scripts\sql\AboutContent.html" />
-    <Content Include="Scripts\sql\v1.4-CleanupDescriptionsDocs.sql" />
-    <Content Include="Scripts\sql\v1.4-InsertGroup&amp;SetGroupInConfigurationTable.sql" />
+    <Content Include="Scripts\sqlscript\03-Copy-All-GamePlay-to-Game-Table.sql" />
+    <Content Include="Scripts\sqlscript\06-Update-GameId-From-Player-Table-Based-On-Copied-GamePlay-Records.sql" />
+    <Content Include="Scripts\sqlscript\08-Update-GameId-From-GameQuestion-Table-Based-On-Copied-GamePlay-Records.sql" />
+    <Content Include="Scripts\sqlscript\081-Update-GameId-From-GameConfiguration-Table-Based-On-Copied-GamePlay-Records.sql" />
+    <Content Include="Scripts\sqlscript\09-Delete-OLD-Games.sql" />
+    <Content Include="Scripts\sqlscript\10-Delete-Corrupt-Player-Without-GameAnswer-Records.sql" />
+    <Content Include="Scripts\sqlscript\15-InsertGlobalConfigurationRecordsAndRemoveAllGameConfigurationRecords.sql" />
+    <Content Include="Scripts\sqlscript\20-InsertLMSGameType.sql" />
+    <Content Include="Scripts\sqlscript\AboutContent.html" />
+    <Content Include="Scripts\sqlscript\v1.4-CleanupDescriptionsDocs.sql" />
+    <Content Include="Scripts\sqlscript\v1.4-InsertGameTypeConfigurationRecords.sql" />
+    <Content Include="Scripts\sqlscript\v1.4-InsertGroup&amp;SetGroupInConfigurationTable.sql" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\first.png" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\last.png" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\loading.gif" />
@@ -1663,6 +1663,7 @@
     <Content Include="Shared\Kendo.Mvc.xml" />
     <Content Include="Shared\ProbeDal.dll" />
     <Content Include="Shared\ProbeDal.pdb" />
+    <Content Include="Views\Games\GameSchedules.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1879,7 +1880,6 @@
     <Content Include="Views\GameConfigurations\Index.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\GameConfiguration.cshtml" />
     <Content Include="Views\Choices\Index.cshtml" />
-    <Content Include="Views\Games\GameSchedules.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

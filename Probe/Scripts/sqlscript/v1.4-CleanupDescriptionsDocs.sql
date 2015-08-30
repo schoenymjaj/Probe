@@ -1,0 +1,3 @@
+UPDATE configurationG SET Value = 30 WHERE id = 14 
+UPDATE ConfigurationG SET Description = 'Number of seconds (from game start date) a player has to find the game using a game code from their device. NOTE: This property plus the FirstQuestionTimeCompleteInSecs property defines the total time a player has to answer the first question of a game after game start.' WHERE id = 11
+UPDATE ConfigurationG SET Description = 'Number of seconds a player has to answer the first question of game after finding the game on her device. NOTE: This property plus the FindGameTimeCompleteInSecs property defines the total time a player has to answer the first question of a game after game start.' WHERE id = 12
