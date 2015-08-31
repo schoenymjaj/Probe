@@ -196,11 +196,19 @@ namespace Probe.Controllers
                             //" The warning date defines when a warning message is displayed to a player that a question deadline is approaching.",
                             GameId = gameid,
                             QuestionId = pgqd.QuestionId,
+
+                            //StartDate = pgqd.QuestionStartDT,
+                            //InterimDate = pgqd.QuestionWarningDT,
+                            //EndDate = pgqd.QuestionDeadlineDT,
+                            //TimeSpanString = ConvertTimeSpanToString(pgqd.QuestionDeadlineDT.Subtract(pgqd.QuestionStartDT))
+
+                            /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL */
                             StartDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionStartDT),
                             InterimDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionWarningDT),
                             EndDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionDeadlineDT),
                             TimeSpanString = ConvertTimeSpanToString(
                             ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionDeadlineDT).Subtract(ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionStartDT)))
+                        
                         };
                         gameQuestionScheduleDTOs.Add(gameQuestionScheduleDTO);
 
@@ -641,8 +649,6 @@ namespace Probe.Controllers
                 StartDate = g.StartDate,
                 EndDate = g.EndDate,
                 Published = g.Published,
-                SuspendMode = g.SuspendMode,
-                TestMode = g.TestMode,
                 ClientReportAccess = g.ClientReportAccess,
                 PlayerCount = g.Players.Count(),
                 PlayerActiveCount = g.Players.Where(p => p.Active).Count(),
@@ -654,6 +660,7 @@ namespace Probe.Controllers
                                 && g.Published)
             }).ToList();
 
+            /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL*/
             foreach (GameDTO gameDTO in gameDTOList)
             {
                 gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.StartDate);

@@ -24,13 +24,38 @@ namespace Probe.Helpers.Mics
 
         public static DateTime ConvertToLocalTime(DateTime dt)
         {
-            var o = HttpContext.Current.Session["tzo"];
-            var tzo = o == null ? 0 : Convert.ToDouble(o);
 
-            dt = dt.AddMinutes(-1 * tzo);
+
+            double serverTimeOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
+
+            //In the case where the server is on UTC time (Azure) - we don't need to readjust the date-times
+            //that are read from the database.
+            if (serverTimeOffset != 0)
+            {
+                var o = HttpContext.Current.Session["tzo"];
+                var tzo = o == null ? 0 : Convert.ToDouble(o);
+
+                dt = dt.AddMinutes(-1 * tzo);
+            }
 
             return dt;
         }
+
+
+        //public static DateTime ConvertToLocalTime(DateTime dt)
+        //{
+
+        //    double serverTimeOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
+
+        //    var o = HttpContext.Current.Session["tzo"];
+        //    var clientTimeOffset = o == null ? 0 : Convert.ToDouble(o); //Client Offset from UTC
+
+        //    double totalTimeOffset = serverTimeOffset - (-1 * clientTimeOffset);
+
+        //    dt = dt.AddMinutes(-1 * totalTimeOffset);
+
+        //    return dt;
+        //}
 
         public static DateTime ConvertLocalToUTC(DateTime dt)
         {

@@ -61,8 +61,8 @@ namespace Probe.Controllers
                         SubmitTime = p.SubmitTime
                     }).ToList();
 
-
-                //We want covert to local time and then we combine submit date and time into one DateTime prop
+                /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL*/
+                ////We want covert to local time and then we combine submit date and time into one DateTime prop
                 foreach (PlayerDTO playerDTO in playerDTOList)
                 {
                     playerDTO.SubmitDate = ClientTimeZoneHelper.ConvertToLocalTime(playerDTO.SubmitDate);
