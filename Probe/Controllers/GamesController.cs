@@ -131,7 +131,7 @@ namespace Probe.Controllers
                         if (game.Published && !game.SuspendMode)
                         {
                             specificStartScheduleDesc = "At this time game is active. Players can use their game code to play game and submit their answers up to the game end date (" +
-                                gameLocalEndDate.ToString() + "). Game configuration cannot be changed, questions cannot be added or removed, and players cannot be edited or removed." +
+                                gameLocalEndDateforServer.ToString() + "). Game configuration cannot be changed, questions cannot be added or removed, and players cannot be edited or removed." +
                                 " There are " + nbrQuestions + " question(s) to be answered for this game." +
                                 " There are " + nbrPlayers + " players(s) that have or are playing this game.";
                         }

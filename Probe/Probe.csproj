@@ -1412,6 +1412,7 @@
     <Content Include="Scripts\sqlscript\AboutContent.html" />
     <Content Include="Scripts\sqlscript\v1.4-CleanupDescriptionsDocs.sql" />
     <Content Include="Scripts\sqlscript\v1.4-InsertGameTypeConfigurationRecords.sql" />
+    <Content Include="Scripts\sqlscript\v1.4-UpdateViewNbrofQuestionDescInConfigurationTable.sql" />
     <Content Include="Scripts\sqlscript\v1.4-InsertGroup&amp;SetGroupInConfigurationTable.sql" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\first.png" />
     <Content Include="Scripts\tablesorter\addons\pager\icons\last.png" />
