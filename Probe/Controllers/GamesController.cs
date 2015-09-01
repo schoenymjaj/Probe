@@ -275,6 +275,10 @@ namespace Probe.Controllers
                     db.Game.Add(game);
                     db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
 
+                    //We will send back the game dates that are coverted to UTC
+                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate);
+                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate);
+
                     gameDTO.IsActive = ProbeValidate.IsGameActiveOrPlayersExist(game); //updates the IsActive field
                     gameDTO.PlayerCount = 0;
                     gameDTO.PlayerActiveCount = 0;
@@ -336,8 +340,12 @@ namespace Probe.Controllers
 
                     gameDTO.IsActive = ProbeValidate.IsGameActiveOrPlayersExist(game); //updates the IsActive field
 
-                }
+                    //We will send back the game dates that are coverted to UTC
+                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate);
+                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate);
 
+                }
+                
 
                 //return Json(ModelState.ToDataSourceResult());
                 return Json(new[] { gameDTO }.ToDataSourceResult(dsRequest, ModelState));
