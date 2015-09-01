@@ -65,8 +65,8 @@ namespace Probe.Controllers
                 ////We want covert to local time and then we combine submit date and time into one DateTime prop
                 foreach (PlayerDTO playerDTO in playerDTOList)
                 {
-                    playerDTO.SubmitDate = ClientTimeZoneHelper.ConvertToLocalTime(playerDTO.SubmitDate);
-                    playerDTO.SubmitTime = ClientTimeZoneHelper.ConvertToLocalTime(playerDTO.SubmitTime);
+                    playerDTO.SubmitDate = ClientTimeZoneHelper.ConvertToLocalTime(playerDTO.SubmitDate, false);
+                    playerDTO.SubmitTime = ClientTimeZoneHelper.ConvertToLocalTime(playerDTO.SubmitTime, false);
 
                     playerDTO.SubmitDateTime = playerDTO.SubmitDate.Date + playerDTO.SubmitTime.TimeOfDay;
                 }

@@ -22,15 +22,15 @@ namespace Probe.Helpers.Mics
             return s;
         }
 
-        public static DateTime ConvertToLocalTime(DateTime dt)
+        public static DateTime ConvertToLocalTime(DateTime dt, bool serverOveride)
         {
 
 
             double serverTimeOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
 
-            //In the case where the server is on UTC time (Azure) - we don't need to readjust the date-times
-            //that are read from the database.
-            if (serverTimeOffset != 0)
+            //In the case where the server is on UTC datetime (Azure) - we don't need to readjust the date-times
+            //that are read from the database. A UTC datetime from Azure will be serialized to a local datetime when converted to JSON format.
+            if (serverTimeOffset != 0 || serverOveride)
             {
                 var o = HttpContext.Current.Session["tzo"];
                 var tzo = o == null ? 0 : Convert.ToDouble(o);
@@ -41,21 +41,6 @@ namespace Probe.Helpers.Mics
             return dt;
         }
 
-
-        //public static DateTime ConvertToLocalTime(DateTime dt)
-        //{
-
-        //    double serverTimeOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
-
-        //    var o = HttpContext.Current.Session["tzo"];
-        //    var clientTimeOffset = o == null ? 0 : Convert.ToDouble(o); //Client Offset from UTC
-
-        //    double totalTimeOffset = serverTimeOffset - (-1 * clientTimeOffset);
-
-        //    dt = dt.AddMinutes(-1 * totalTimeOffset);
-
-        //    return dt;
-        //}
 
         public static DateTime ConvertLocalToUTC(DateTime dt)
         {

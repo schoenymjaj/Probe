@@ -387,7 +387,7 @@ function openPreview(e) {
     ShowPreviewDialog(gameCode, 'TestName', 'TestName');
 
 }//function openPreview(e)
-function openReports(e) {
+function openResults(e) {
 
     e.preventDefault();
     var grid = this;
@@ -516,10 +516,10 @@ function ShowReportDialog(code, gameId, gameType, playerCount) {
             $('select[name="Rplayers"]').append('<option data-playerid="' + value.Id + '">' + value.PlayerGameName + '</option>');
         });
 
-        wndReport.setOptions({
+        wndResult.setOptions({
             width: 245,
         });
-        wndReport.center().open();
+        wndResult.center().open();
         $('#RplayersDiv').hide(); //hide the players selection initially because a first selection doesnt need player selection
 
         $("#reportYes").click(function () {
@@ -550,11 +550,11 @@ function ShowReportDialog(code, gameId, gameType, playerCount) {
 
             window.location = reportURL;
 
-            wndReport.close();
+            wndResult.close();
         });
 
         $("#reportNo").click(function () {
-            wndReport.close();
+            wndResult.close();
         });
 
     });//post
@@ -628,7 +628,7 @@ function restoreGridOptions(grid) {
              , { "name": "Publish", "buttonType": "ImageAndText", "text": "Publish", "click": PublishNow }
              , { "name": "Players", "buttonType": "ImageAndText", "text": "Players", "click": openPlayers }
              , { "name": "Preview", "buttonType": "ImageAndText", "text": "Preview", "click": openPreview }
-             , { "name": "Reports", "buttonType": "ImageAndText", "text": "Reports", "click": openReports }
+             , { "name": "Results", "buttonType": "ImageAndText", "text": "Results", "click": openResults }
              , { "name": "Delete", "buttonType": "ImageAndText", "text": "Delete", "click": openDeleteConfirm }]
         };
 
@@ -742,7 +742,7 @@ function StyleGridCommandRow(uid) {
         publishButton = $(currentRow).find(".k-grid-Publish");
         playersButton = $(currentRow).find(".k-grid-Players");
         previewButton = $(currentRow).find(".k-grid-Preview");
-        reportsButton = $(currentRow).find(".k-grid-Reports");
+        resultsButton = $(currentRow).find(".k-grid-Results");
         scheduleButton = $(currentRow).find(".k-grid-Schedule");
 
 
@@ -751,7 +751,7 @@ function StyleGridCommandRow(uid) {
 
         if (currentDataItem.PlayerCount == 0) {
             playersButton.hide();
-            reportsButton.hide();
+            resultsButton.hide();
         }
         if (currentDataItem.IsActive || currentDataItem.PlayerCount != 0) {
             deleteButton.hide();
@@ -883,8 +883,8 @@ $(document).ready(function () {
     /*
     Supporting the Report Dialog
     */
-    wndReport = $("#dialog-report").kendoWindow({
-        title: "Game Reports",
+    wndResult = $("#dialog-report").kendoWindow({
+        title: "Game Results",
         modal: true,
         visible: false,
         resizable: false,

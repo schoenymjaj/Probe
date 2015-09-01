@@ -116,8 +116,11 @@ namespace Probe.Controllers
 
                 IList<GameQuestionScheduleDTO> gameQuestionScheduleDTOs = new List<GameQuestionScheduleDTO>();
 
-                DateTime gameLocalStartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate);
-                DateTime gameLocalEndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate);
+                DateTime gameLocalStartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate, false);
+                DateTime gameLocalEndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate, false);
+
+                //override set to true, because this date will be serialized/stringified on the server side
+                DateTime gameLocalEndDateforServer = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate, true);
 
 
                 string specificStartScheduleDesc = string.Empty;
@@ -148,7 +151,7 @@ namespace Probe.Controllers
                         if (game.Published && !game.SuspendMode)
                         {
                             specificStartScheduleDesc = "At this time, game is active. At this time, players can use their game code to play game or submit an answer to the next LMS question up to the game end date (" +
-                                gameLocalEndDate.ToString() + "). Game configuration cannot be changed, questions cannot be added or removed, and players cannot be edited or removed." +
+                                gameLocalEndDateforServer.ToString() + "). Game configuration cannot be changed, questions cannot be added or removed, and players cannot be edited or removed." +
                                 " There are " + nbrQuestions + "question(s) to be answered for this game." +
                                 " There are " + nbrQuestions + "players(s) that have or are playing this game.";
                         }
@@ -203,11 +206,11 @@ namespace Probe.Controllers
                             //TimeSpanString = ConvertTimeSpanToString(pgqd.QuestionDeadlineDT.Subtract(pgqd.QuestionStartDT))
 
                             /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL */
-                            StartDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionStartDT),
-                            InterimDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionWarningDT),
-                            EndDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionDeadlineDT),
+                            StartDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionStartDT, false),
+                            InterimDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionWarningDT, false),
+                            EndDate = ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionDeadlineDT, false),
                             TimeSpanString = ConvertTimeSpanToString(
-                            ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionDeadlineDT).Subtract(ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionStartDT)))
+                            ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionDeadlineDT, false).Subtract(ClientTimeZoneHelper.ConvertToLocalTime(pgqd.QuestionStartDT, false)))
                         
                         };
                         gameQuestionScheduleDTOs.Add(gameQuestionScheduleDTO);
@@ -276,8 +279,8 @@ namespace Probe.Controllers
                     db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
 
                     //We will send back the game dates that are coverted to UTC
-                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate);
-                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate);
+                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate, false);
+                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate, false);
 
                     gameDTO.IsActive = ProbeValidate.IsGameActiveOrPlayersExist(game); //updates the IsActive field
                     gameDTO.PlayerCount = 0;
@@ -341,8 +344,8 @@ namespace Probe.Controllers
                     gameDTO.IsActive = ProbeValidate.IsGameActiveOrPlayersExist(game); //updates the IsActive field
 
                     //We will send back the game dates that are coverted to UTC
-                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate);
-                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate);
+                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(game.StartDate, false);
+                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(game.EndDate, false);
 
                 }
                 
@@ -671,8 +674,8 @@ namespace Probe.Controllers
             /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL*/
             foreach (GameDTO gameDTO in gameDTOList)
             {
-                gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.StartDate);
-                gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.EndDate);
+                gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.StartDate, false);
+                gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.EndDate, false);
             }
 
 
