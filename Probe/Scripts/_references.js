@@ -217,3 +217,4 @@
 /// <reference path="probe/probe-ui-common.js" />
 /// <reference path="probe/gameschedules.js" />
 /// <reference path="probe/detectbrowser.js" />
+/// <reference path="probe/gameadmin.js" />

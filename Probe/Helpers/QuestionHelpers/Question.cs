@@ -25,7 +25,8 @@ namespace Probe.Helpers.QuestionHelpers
          * Will clone the question and all artifacts associated with that question. question/choicequestion,
          * choice records. Returns the cloned question Id.
          */
-        public static long CloneQuestion(Controller controller, ProbeDataContext db, bool forQuestionInUse, long sourceQuestionId)
+        public static long CloneQuestion(Controller controller, ProbeDataContext db, bool forQuestionInUse, long sourceQuestionId,
+            ref Dictionary<long,long> choiceXreference )
         {
 
             //clone question
@@ -49,7 +50,6 @@ namespace Probe.Helpers.QuestionHelpers
             };
 
 
-
             db.Question.Add(cqNew);
             db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new ChoiceQuestionId
 
@@ -69,6 +69,9 @@ namespace Probe.Helpers.QuestionHelpers
 
                 db.Choice.Add(newC);
                 db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null);
+
+                //Here we populate the choice X reference table. Associate the old choice with the new choice. Somebody might need this down the road.
+                choiceXreference.Add(c.Id, newC.Id);
             }
 
             return clonedQuestionId;

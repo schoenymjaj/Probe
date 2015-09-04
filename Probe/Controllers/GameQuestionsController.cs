@@ -131,7 +131,8 @@ namespace Probe.Controllers
 
                 //We need to clone the question and set the UsedInGame field to true. The cloned questions
                 //is what will be associated with the game
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, true, gameQuestion.QuestionId);
+                Dictionary<long,long> choiceXreference = new Dictionary<long,long>();
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, true, gameQuestion.QuestionId, ref choiceXreference);
                 gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
 
 

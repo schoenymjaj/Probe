@@ -275,6 +275,17 @@ namespace Probe.Helpers.Validations
             return status;
         }
 
+        public static bool IsGameNameExistForUser(string gameName, string AspNetUsersId)
+        {
+            bool status = false;
+
+            var db = new ProbeDataContext();
+            status = db.Game.Where(g => g.Name == gameName && g.AspNetUsersId == AspNetUsersId).Count() > 0;
+
+            return status;
+        }
+
+
         public static bool IsGameNameExistForLoggedInUser(long gameId, string gameName)
         {
             bool status = false;

@@ -30,7 +30,27 @@ namespace Probe.Helpers.Authorize
             return au.UserName;
         }
 
+        public bool DoesUserPossessRole(string userId, string role)
+        {
+            bool status = false;
 
+            var um = new UserManager<ApplicationUser>(
+            new UserStore<ApplicationUser>(dbIdentity));
+
+            status = um.IsInRole(userId, role);
+
+            return status;
+        }
+
+        public List<ApplicationUser> GetAllUsers()
+        {
+            var um = new UserManager<ApplicationUser>(
+            new UserStore<ApplicationUser>(dbIdentity));
+
+            var users = um.Users;
+
+            return users.ToList();
+        }
 
 
     }

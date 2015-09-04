@@ -18,6 +18,7 @@ using Probe.Helpers.Exceptions;
 using Probe.Helpers.Mics;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using Probe.Helpers.Authorize;
 
 namespace Probe.Controllers
 {
@@ -28,7 +29,76 @@ namespace Probe.Controllers
         // GET: Games
         public ActionResult Index()
         {
+
+
+            //Currently this logic and the setting of ViewBag does nothing. I am keeping
+            //it here because eventually we will use this to establish a My Games
+            //page that will behave differently for an Admin versus a regular user
+            if (new ProbeIdentity().DoesUserPossessRole(User.Identity.GetUserId(), "Admin"))
+            {
+                ViewBag.Supplementary = "RememberFreddy";
+            }
+            else
+            {
+                ViewBag.Supplementary = "NoFreddy";
+            }
+
             return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult Admin()
+        {
+            return View();
+        }
+
+        /*
+         * Get all Users
+         */
+        public JsonResult GetAllUsers()
+        {
+            try
+            {
+
+                List<Probe.Models.ApplicationUser> userList = new ProbeIdentity().GetAllUsers();
+
+                var users = userList.OrderBy(u => u.UserName).Select(u => new { u.Id, u.UserName });
+                var itemsVar = new SelectList(users, "Id", "UserName");
+                var items = itemsVar.ToList();
+
+
+                return Json(items, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
+        }
+
+        /*
+          * Get all Groups
+          */
+        public JsonResult GetGames()
+        {
+            try
+            {
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+                var games = db.Game.Where(g => g.AspNetUsersId == loggedInUserId)
+                    .OrderBy(g => g.Name)
+                    .Select(g => new { g.Id, g.Name });
+
+                var itemsVar = new SelectList(games, "Id", "Name");
+                var items = itemsVar.ToList();
+
+                return Json(items, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
         }
 
         // GET: Players
@@ -464,8 +534,12 @@ namespace Probe.Controllers
 
             try
             {
-                //db.Configuration.LazyLoadingEnabled = false; We want lazy loading
-                Game clonedGame = ProbeGame.CloneGame(this, db, id);
+                //Note: set to NOT clone the game play records (player, gameanswer). 
+                //This will clone the game, gameconfiguration, gamequestion/question/choicequestion/choice. 
+                //Will also set the cloned game as NOT published and NOT suspended
+                bool gamePlayInd = false;
+                bool cloneCrossUsers = false;
+                Game clonedGame = ProbeGame.CloneGame(this, db, id, User.Identity.GetUserId(), cloneCrossUsers, gamePlayInd);
 
                 NotifyProbe.NotifyGameChanged(User.Identity.Name); //let all clients know where was a game change.
 
@@ -498,6 +572,48 @@ namespace Probe.Controllers
 
 
         } //public JsonResult Clone(long id)
+
+        public JsonResult CloneToUser (long id, string userid)
+        {
+
+            try
+            {
+                //Note: set to clone the game play records (player and gameanwer). This 
+                //will clone the entire game (all props), gameconfiguration, gamequestion/question/choicequestion/choice; player,gameanswer
+                //It will be a ready for play in the destination user account
+                Game clonedGame = ProbeGame.CloneGameFromAnotherUser(this, db, id, userid);
+
+                NotifyProbe.NotifyGameChanged(User.Identity.Name); //let all clients know where was a game change.
+
+                //The message return via an AJAX call
+                ResultMessage resultMessage = new ResultMessage
+                {
+                    MessageId = ProbeConstants.MSG_GameCloneSuccessful,
+                    MessageType = Helpers.Mics.MessageType.Informational,
+                    Message = @"The game <span style=""font-style:italic;font-weight:bold"">" +
+                    db.Game.Find(id).Name + @"</span> has been cloned successfully to game <span style=""font-style:italic;font-weight:bold"">" +
+                    clonedGame.Name + @"</span>" + @" in the user account <span style=""font-style:italic;font-weight:bold"">" + new ProbeIdentity().GetUserNameFromUserId(userid) + @"</span>"
+                };
+
+                return Json(resultMessage, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+
+                //The message return via an AJAX call
+                ResultMessage resultMessage = new ResultMessage
+                {
+                    MessageId = ProbeConstants.MSG_UnsuccessfulOperation,
+                    MessageType = Helpers.Mics.MessageType.Error,
+                    Message = "The was an error when attempting to clone the game '" +
+                    db.Game.Find(id).Name + "'. " + ex.Message
+                };
+
+                return Json(resultMessage, JsonRequestBehavior.AllowGet);
+            }
+
+
+        } //public JsonResult CloneToUser(long id)
 
         public JsonResult Publish(long id, int publishInd)
         {

@@ -63,6 +63,13 @@ namespace Probe
             );
 
             routes.MapRoute(
+                name: "CloneToUser",
+                url: "Games/CloneToUser/{id}/{userid}",
+                defaults: new { controller = "Games", action = "CloneToUser" }
+            );
+
+
+            routes.MapRoute(
                 name: "About",
                 url: "Home/About/{mobileind}",
                 defaults: new { controller = "Home", action = "About", mobileind = UrlParameter.Optional }

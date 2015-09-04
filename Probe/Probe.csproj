@@ -1388,6 +1388,7 @@
     <Content Include="Scripts\probe\gameconfigs.js" />
     <Content Include="Scripts\probe\choices.js" />
     <Content Include="Scripts\probe\gameschedules.js" />
+    <Content Include="Scripts\probe\gameadmin.js" />
     <Content Include="Scripts\probe\players.js" />
     <Content Include="Scripts\probe\probe-ui-common.js" />
     <Content Include="Scripts\probe\questions.js" />
@@ -1881,6 +1882,7 @@
     <Content Include="Views\GameConfigurations\Index.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\GameConfiguration.cshtml" />
     <Content Include="Views\Choices\Index.cshtml" />
+    <Content Include="Views\Games\Admin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

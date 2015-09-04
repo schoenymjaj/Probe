@@ -121,54 +121,45 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Game<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1" href="#">Game Configuration</a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        @if (IsUserInRole("Admin"))
-                                        {
-                                            @Html.ActionLink("Game Type Setup", "Index", "GameTypes")
-                                            //@Html.ActionLink("Game Configuration Setup", "Index", "GameConfigurations")
-                                        }
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1" href="#">Games</a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        @if (IsUserLoggedIn())
-                                        {
-                                            @Html.ActionLink("My Games", "Index", "Games")
-                                            //@Html.ActionLink("My Games - Manage Their Questions", "Index", "GameQuestions")                                            
-                                        }
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Question<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                @if (IsUserInRole("Admin"))
-                                {
-                                    @Html.ActionLink("Question Type Setup", "Index", "QuestionTypes")
-                                }
-                                @if (IsUserLoggedIn())
-                                {
-                                    @Html.ActionLink("My Question Library", "Index", "ChoiceQuestions")
-                                    //@Html.ActionLink("My Question Choices", "Index", "Choices")
-                                }
-                            </li>
-                        </ul>
-                    </li>
-                    @if (IsUserLoggedIn())
+                    @if (IsUserInRole("Admin"))
                     {
-                        //<li>@Html.ActionLink("Player", "Index", "Players")</li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Game<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-submenu">
+                                    <a tabindex="-1" href="#">Game Configuration</a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            @Html.ActionLink("Game Type Setup", "Index", "GameTypes")
+                                            @Html.ActionLink("Game Admin", "Admin", "Games")
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    @Html.ActionLink("My Games", "Index", "Games")
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else if (IsUserLoggedIn())
+                    {
+                        <li>@Html.ActionLink("My Games", "Index", "Games")</li>
+                    }
+                    @if (IsUserInRole("Admin"))
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Question<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    @Html.ActionLink("Question Type Setup", "Index", "QuestionTypes")
+                                    @Html.ActionLink("My Question Library", "Index", "ChoiceQuestions")
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else if (IsUserLoggedIn())
+                    {
+                        <li>@Html.ActionLink("My Question Library", "Index", "ChoiceQuestions")</li>
                     }
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                 </ul>

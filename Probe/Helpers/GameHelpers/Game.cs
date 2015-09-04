@@ -463,28 +463,49 @@ namespace Probe.Helpers.GameHelpers
                 }).ToDictionary(p => p.Id, p => p.Answered);
         }//public Dictionary<long, bool> GetAllActivePlayersHasAnsweredQuestion(long questionId)
 
+
+        public static Game CloneGameFromAnotherUser(Controller controller, ProbeDataContext db, long sourceGameId, string destAspNetUsersId)
+        {
+            try
+            {
+
+                //Clone the game to be owned to the destination user. This function will clone
+                //game, gameconfiguration, gamequestion, question, choicequestion, and choice
+                bool gamePlayInd = true;
+                bool cloneCrossUsers = true;
+                Game game = CloneGame(controller, db, sourceGameId, destAspNetUsersId, cloneCrossUsers, gamePlayInd);
+
+                return game;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         /*
          * Will clone the game and all artifacts associated with that game. gameconfiguration, gamequestion, question/choicequestion,
-         * choice and game records.
+         * choice and game records. The game to clone is defined by the sourceGameId. Where the game is clone to (what user) is 
+         * determined by the destAspNetUsersId
          */
-        public static Game CloneGame(Controller controller, ProbeDataContext db, long sourceGameId)
+        public static Game CloneGame(Controller controller, ProbeDataContext db, long sourceGameId
+                                    , string destAspNetUsersId, bool cloneCrossUsers, bool gamePlayInd)
         {
 
             //clone game - always in suspend mode so its not playable yet and it's editable
             Game gSource = db.Game.Find(sourceGameId);
-            string newName = GetClonedGameName(gSource.Name);
+            string newName = GetClonedGameName(gSource.Name, destAspNetUsersId);
             string newCode = GetClonedCode(gSource.Code);
 
             Game gNew = new Game
             {
-                AspNetUsersId = gSource.AspNetUsersId,
+                AspNetUsersId = destAspNetUsersId,
                 GameTypeId = gSource.GameTypeId,
                 Name = newName,
                 Description = gSource.Description,
                 Code = newCode,
                 TestMode = gSource.TestMode,
-                Published = false,
-                SuspendMode = false,
+                Published = (cloneCrossUsers) ? gSource.Published : false,
+                SuspendMode = (cloneCrossUsers) ? gSource.SuspendMode : false,
                 ClientReportAccess = gSource.ClientReportAccess,
                 StartDate = gSource.StartDate,
                 EndDate = gSource.EndDate,
@@ -526,12 +547,14 @@ namespace Probe.Helpers.GameHelpers
             //clone gamequestions and question/choices for each gamequestion
             IList<GameQuestion> gameQuestions = db.GameQuestion.Where(gq => gq.GameId == sourceGameId).ToList();
 
+            Dictionary<long, Dictionary<long, long>> questionXreference = new Dictionary<long, Dictionary<long, long>>();
             foreach (GameQuestion gameQuestion in gameQuestions)
             {
 
                 //attach questions to game
                 long sourceQuestionId = gameQuestion.QuestionId;
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(controller, db, true, sourceQuestionId);
+                Dictionary<long, long> choiceXreference = new Dictionary<long, long>();
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(controller, db, true, sourceQuestionId, ref choiceXreference);
 
                 GameQuestion clonedGameQuestion = new GameQuestion
                 {
@@ -544,12 +567,61 @@ namespace Probe.Helpers.GameHelpers
                 db.GameQuestion.Add(clonedGameQuestion);
                 db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new GameQuestion Id
 
+                //We are building a question - choice cross reference table for down the road (if needed). old question id -> (old choice id -> new choice id)
+                questionXreference.Add(gameQuestion.QuestionId, choiceXreference);
+
             }//foreach (GameQuestion gameQuestion in gameQuestions)
+
+            //if directed, then the game that is played will be cloned. Players, GameAnswers
+            if (gamePlayInd)
+            {
+                //Get all the players for the game played
+                IList<Player> players = db.Player.Where(p => p.GameId == sourceGameId).ToList();
+                foreach (Player player in players)
+                {
+                    Player clonedPlayer = new Player
+                    {
+                        LastName = player.LastName,
+                        FirstName = player.FirstName,
+                        MiddleName = player.MiddleName,
+                        NickName = player.NickName,
+                        EmailAddr = player.EmailAddr,
+                        MobileNbr = player.MobileNbr,
+                        Sex = player.Sex,
+                        SubmitDate = player.SubmitDate,
+                        SubmitTime = player.SubmitTime,
+                        GameId = gNew.Id,
+                        Active = player.Active,
+                        PlayerGameReason = player.PlayerGameReason
+                    };
+                    db.Player.Add(clonedPlayer);
+                    db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new Player Id
+
+                    //Get all the OLD answers for the player in this iteration
+                    IList<GameAnswer> gameanswers = db.GameAnswer.Where(ga => ga.PlayerId == player.Id).ToList();
+                    foreach (GameAnswer gameAnswer in gameanswers)
+                    {
+
+                        GameAnswer clonedGameAnswer = new GameAnswer
+                        {
+                            PlayerId = clonedPlayer.Id,
+                            //gameAnswer.Choice.ChoiceQuestionId = old questionId
+                            ChoiceId = questionXreference[gameAnswer.Choice.ChoiceQuestionId][gameAnswer.ChoiceId]
+                        };
+
+                        db.GameAnswer.Add(clonedGameAnswer);
+                        db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new GameAnswer Id
+
+                    }//foreach (GameAnswer gameAnswer in gameanswers)
+
+                }//foreach (Player player in players)
+
+            }//if (gamePlayInd)
 
             return gNew;
         }//CloneGame
 
-        private static string GetClonedGameName(string name)
+        private static string GetClonedGameName(string name, string AspNetUsersId)
         {
             string newName = "";
             string newNameLastBeforeToLong = "";
@@ -560,8 +632,8 @@ namespace Probe.Helpers.GameHelpers
              * Let's just try and add the string "COPY" to the end of the current name to start with
              */
             newNameLastBeforeToLong = name.Trim();
-            newName = name.Trim() + copyString;
-            while (ProbeValidate.IsGameNameExistForLoggedInUser(newName) && (newName.Length < ProbeConstants.QuestionNameMaxChars))
+            newName = name.Trim(); // +copyString; (don't think we need this)
+            while (ProbeValidate.IsGameNameExistForUser(newName, AspNetUsersId) && (newName.Length < ProbeConstants.QuestionNameMaxChars))
             {
                 newNameLastBeforeToLong = newName;
                 newName = newName + copyString;
@@ -571,7 +643,7 @@ namespace Probe.Helpers.GameHelpers
              * If we get here and the new name doesn't exist and it's less than equal to the max characters,
              * THEN we have our new question name. Otherwise, we go to approach II
              */
-            if (ProbeValidate.IsGameNameExistForLoggedInUser(newName) || (newName.Length > ProbeConstants.QuestionNameMaxChars))
+            if (ProbeValidate.IsGameNameExistForUser(newName, AspNetUsersId) || (newName.Length > ProbeConstants.QuestionNameMaxChars))
             {
                 newName = newNameLastBeforeToLong;
                 do
@@ -585,7 +657,7 @@ namespace Probe.Helpers.GameHelpers
                     newName = newName.Substring(0, ProbeConstants.GameNameMaxChars - 5) + copyNewString;
 
 
-                } while (ProbeValidate.IsGameNameExistForLoggedInUser(newName));
+                } while (ProbeValidate.IsGameNameExistForUser(newName, AspNetUsersId));
 
 
             }

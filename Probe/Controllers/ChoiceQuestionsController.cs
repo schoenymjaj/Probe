@@ -363,7 +363,8 @@ namespace Probe.Controllers
                 //limit the questions to only what the user possesses
                 string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, false, id);
+                Dictionary<long, long> choiceXreference = new Dictionary<long, long>();
+                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, false, id, ref choiceXreference);
 
                 //The message that the calling RAZOR can use
                 ResultMessage resultMessage = new ResultMessage
