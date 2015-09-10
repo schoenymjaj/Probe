@@ -776,6 +776,7 @@ namespace Probe.Controllers
                 StartDate = g.StartDate,
                 EndDate = g.EndDate,
                 Published = g.Published,
+                SuspendMode = g.SuspendMode,
                 ClientReportAccess = g.ClientReportAccess,
                 PlayerCount = g.Players.Count(),
                 PlayerActiveCount = g.Players.Where(p => p.Active).Count(),

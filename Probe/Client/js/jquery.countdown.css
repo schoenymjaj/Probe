@@ -22,7 +22,7 @@ ul.countdownStyle li span {
 }
 
 ul.countdownStyle li p {
-  color: #a7abb1;
+/*  color: #a7abb1; */
 }
 
 #listviewCountdown.countdownStyle {
@@ -52,7 +52,7 @@ ul.countdownStyle li p {
 }
 
 #listviewCountdown.countdownStyle li p {
-  color: #a7abb1;
+/*  color: #a7abb1; */
 }
 
 /*
@@ -124,3 +124,15 @@ text-align: center;
     padding: 5px 0px 0px 0px;
 }
 
+/*
+    Styles the amount of black background for the clock countdown
+*/
+
+.days, .hours, .minutes, .seconds {
+    padding:1px 2px 1px 2px; /* top,right,bottom,left */
+}
+
+/*
+    END OF Styles the amount of black background for the clock countdown
+
+*/

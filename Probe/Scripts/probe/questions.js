@@ -183,6 +183,20 @@ function OnViewDrpDownChange(e) {
     grid.refresh();
 }
 
+function OnQuestionSearchFilterChange(value) {
+
+    existingContainsFilterValue = 'NoContainsFilterBluePrint';
+
+    if (existingContainsFilterValue != value) {
+        grid = $("#MyQuestionsGrid").data("kendoGrid");
+
+        grid.dataSource.read();
+        grid.dataSource.page(1);;
+
+    }//if (existingFilterValue != value) {
+
+}//function OnQuestionSearchFilterChange(value) {
+
 /*
 SUPPORT COMMAND EVENT HANDLERS FOR GRID
 */
@@ -286,6 +300,7 @@ function ShowGeneralDialog(aWnd, aTitle, message1, message2, okInd, okText, clos
 function saveGridOptions(grid) {
     localStorage["QuestionsGridOptions"] = kendo.stringify(grid.getOptions());
     localStorage["QuestionAutoComplete"] = $("#QuestionAutoComplete").data("kendoAutoComplete").value();
+    localStorage["QuestionSearchFilter"] = $("#QuestionSearchFilter").val();
 
     viewTypeDDL = $('#ViewDropdownList').data('kendoDropDownList');
     localStorage["QuestionsGridView"] = viewTypeDDL.value();
@@ -329,6 +344,16 @@ function restoreGridOptions(grid) {
             $("#QuestionAutoComplete").data("kendoAutoComplete").value(localStorage["QuestionAutoComplete"]);
         }
     }
+
+    //restore the question search control
+    if (localStorage["QuestionSearchFilter"] != undefined) {
+        if (localStorage["QuestionSearchFilter"] != "") {
+            questionSearchFilterValue = localStorage["QuestionSearchFilter"];
+            $("#QuestionSearchFilter").val(questionSearchFilterValue);
+            OnQuestionSearchFilterChange(questionSearchFilterValue);
+        }
+    }
+
 
     //restore the question grid view
     viewTypeDDL = $('#ViewDropdownList').data('kendoDropDownList');
@@ -471,6 +496,12 @@ function OpenProgressBarWindow() {
     , 500);
 }
 
+function ReturnQuestionSearchHandler() {
+    return {
+        questionSearch: $('#QuestionSearchFilter').val()
+    };
+}
+
 /*
 MNS DEBUG
 */
@@ -525,6 +556,13 @@ var wndGen;
 $(document).ready(function () {
 
     grid = $("#MyQuestionsGrid").data("kendoGrid");
+
+    $('#QuestionSearchFilter').keyup(function () {
+
+        OnQuestionSearchFilterChange(this.value);
+
+    });//$('#QuestionFilter').keyup(function () {
+
 
     /*
     Supporting the Delete Confirmation
@@ -590,6 +628,15 @@ $(document).ready(function () {
     //    SyncServerData();
 
     //});//$('#infoGet').click(function () {
+
+    /*
+     Add bells and whistles to Questions Search textbox (including the search magnifying glass)
+    */
+    $('#QuestionSearchFilter').parent().addClass("k-space-right").append('<span class="k-icon k-i-search"></span>');
+    $('#QuestionSearchFilter').parent().css('width', '300px'); //this will increase the Autocomplete Textbox size
+    $('#QuestionSearchFilter').css('height', '28px');
+    $('#QuestionSearchFilter').attr('placeholder', 'Enter search words for questions ...');
+
 
     /*
      Add bells and whistles to Questions autocomplete textbox (including the search magnifying glass)

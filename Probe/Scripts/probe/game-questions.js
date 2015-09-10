@@ -271,7 +271,7 @@ $(document).ready(function () {
 
         }//if (existingFilterValue != this.value) {
 
-    });
+    });//$('#QuestionFilter').keyup(function () {
 
     /*
     GAME QUESTION SORT UP/DOWN ARROW SUPPORT

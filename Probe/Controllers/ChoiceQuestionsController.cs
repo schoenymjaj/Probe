@@ -21,6 +21,24 @@ using Kendo.Mvc.UI;
 
 namespace Probe.Controllers
 {
+
+    public class GetQuestionforSearch
+    {
+        public long Id { get; set; }
+        public long QuestionTypeId { get; set; }
+        public string Name { get; set; }
+        public string Text { get; set; }
+        public string Tags { get; set; }
+        public bool OneChoice { get; set; }
+        public bool TestEnabled { get; set; }
+        public int ChoicesCount { get; set; }
+        public long cId { get; set; }
+        public string cName { get; set; }
+        public string cText { get; set; }
+        public bool Correct { get; set; }
+        public long OrderNbr { get; set; }
+    }
+
     public class ChoiceQuestionsController : Controller
     {
         private ProbeDataContext db = new ProbeDataContext();
@@ -34,34 +52,46 @@ namespace Probe.Controllers
          * This controller action will support JIT data to the client Grid. the data returned to the
          * client (RAZOR/Kendo MVC Grid wrapper will only see the data that is going to be displayed (one page worths)
          */
-        public JsonResult Get([DataSourceRequest]DataSourceRequest request)
+        public JsonResult Get([DataSourceRequest]DataSourceRequest request, string questionSearch)
         {
             try
             {
                 //limit the questions to only what the user possesses
                 string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-                //sort the choices of the questions
-                var questions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame)
-                    .Select(cq => new QuestionDTO
-                    {
-                        Id = cq.Id,
-                        QuestionTypeId = cq.QuestionTypeId,
-                        Name = cq.Name,
-                        Text = cq.Text,
-                        TestEnabled = cq.Choices.Any(c => c.Correct),
-                        ChoicesCount = cq.Choices.Count(),
-                        Choices = cq.Choices.Select(c => new ChoiceDTO
-                        {
-                            Id = c.Id,
-                            Text = c.Text,
-                            Correct = c.Correct,
-                            OrderNbr = c.OrderNbr
-                        }).OrderBy(c => c.OrderNbr)
-                    })
-                    .OrderBy(cq => cq.Name);
+                //Go to the Database and get the Game - Questions - Choices All at Once Time
+                var result = db.Database.SqlQuery<GetQuestionforSearch>
+                                     ("exec GetQuestionforSearch '" + loggedInUserId + "','"
+                                      + questionSearch + "'").ToList();
 
-                return this.Json(questions.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+                var questionDTOs = result
+                    .GroupBy(q => new { q.Id, q.QuestionTypeId, q.Name, q.Text, q.Tags, q.OneChoice, q.TestEnabled, q.ChoicesCount })
+                    .Select(q => new QuestionDTO
+                    {
+                        Id = q.Key.Id,
+                        QuestionTypeId = q.Key.QuestionTypeId,
+                        Name = q.Key.Name,
+                        Text = q.Key.Text,
+                        Tags = q.Key.Tags,
+                        OneChoice = q.Key.OneChoice,
+                        TestEnabled = q.Key.TestEnabled,
+                        ChoicesCount = q.Key.ChoicesCount,
+
+                        Choices = result.Where(c => c.Id == q.Key.Id)
+                                     .Select(c => new ChoiceDTO
+                                         {
+                                             Id = c.cId,
+                                             Name = c.cName,
+                                             Text = c.cText,
+                                             Correct = c.Correct,
+                                             OrderNbr = c.OrderNbr
+                                         }
+                                     ).OrderBy(c => c.OrderNbr)
+                    }).OrderBy(q => q.Name);
+
+
+                return this.Json(questionDTOs.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
 
             }
             catch (Exception ex)
@@ -70,6 +100,7 @@ namespace Probe.Controllers
                 return Json(ModelState.ToDataSourceResult());
             }
         }//public JsonResult Get([DataSourceRequest]DataSourceRequest request)
+
 
         public JsonResult GetQuestionsForAutoComplete()
         {
@@ -294,6 +325,7 @@ namespace Probe.Controllers
                         QuestionTypeId = questionDTO.QuestionTypeId,
                         Name = questionDTO.Name,
                         Text = questionDTO.Text,
+                        Tags = questionDTO.Tags
                     };
 
                     db.Question.Add(choiceQuestion);
@@ -335,6 +367,7 @@ namespace Probe.Controllers
                     choiceQuestion.QuestionTypeId = questionDTO.QuestionTypeId;
                     choiceQuestion.Name = questionDTO.Name;
                     choiceQuestion.Text = questionDTO.Text;
+                    choiceQuestion.Tags = questionDTO.Tags;
                     //choiceQuestion.OneChoice - THIS IS NOT CHANGING
                     //choiceQuestion.UsedInGame - THIS IS NOT CHANGING
                     //choiceQuestion.ACLId - THIS IS NOT CHANGING

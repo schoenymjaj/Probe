@@ -27,6 +27,7 @@
         padding-left: 3px;
         padding-right: 3px;
         width: 167px;
+        min-width: 167px;
     }
 
         .questionsGridCommandColumn .k-button { /*style all command buttons*/
@@ -82,10 +83,14 @@
 <h2>My Question Library</h2>
 <div style="vertical-align:text-bottom;padding-bottom:5px;margin:0px;overflow: auto">
     <div style="float:left;margin-right:10px">
+        <span class="k-widget k-autocomplete k-header k-state-default k-textbox" style="float: left;margin-right:20px">
+            @Html.TextBox("QuestionSearchFilter", "", new { @class = "k-textbox" })
+        </span>
+
     @(Html.Kendo().AutoComplete()
     .Name("QuestionAutoComplete") //The name of the autocomplete is mandatory. It specifies the "id" attribute of the widget.
     .IgnoreCase(true)
-    .Placeholder("Enter search value for question ...")
+    .Placeholder("Enter search value for one question ...")
     .Filter("contains")
     .DataSource(source =>
         {
@@ -100,13 +105,17 @@
         )
         )
     </div>
-    <div>
+
+    <div style="margin-bottom: 0px;float:right">
         @Html.Kendo().DropDownList().Name("ViewDropdownList").BindTo(@drpViewTypeList).Events(events => events.Change("OnViewDrpDownChange"))
-     
-    </div>
+
+    </div>     
+
 </div>
 
-
+@*MyQuestionsGrid - displays all games for a user.
+    It is setup for SERVER-SIDE filtering, sorting, paging
+*@
 @(@Html.Kendo().Grid<Probe.Models.View.QuestionDTO>().Name("MyQuestionsGrid").Columns(c =>
         {
             c.Bound(g => g.Name).Title("Name").Width(150);
@@ -127,7 +136,7 @@
             .Ajax()
             .Model(model => model.Id(question => question.Id))
             .Sort(sort => sort.Add("Name").Ascending())
-            .Read(r => r.Action("Get", "ChoiceQuestions"))
+            .Read(r => r.Action("Get", "ChoiceQuestions").Data("ReturnQuestionSearchHandler"))
             .Update(up => up.Action("Update", "ChoiceQuestions"))
             .Create(cr => cr.Action("Create", "ChoiceQuestions"))
             .Destroy(ds => ds.Action("Delete", "ChoiceQuestions"))

@@ -27,6 +27,7 @@
         padding-left: 3px;
         padding-right: 3px;
         width: 167px;
+        min-width: 167px;
     }
 
         .gamesGridCommandColumn .k-button { /*style all command buttons*/
@@ -96,12 +97,15 @@
     )
 </div>
 
+@*MyGamesGrid - displays all games for a user. 
+    It is setup for SERVER-SIDE filtering, sorting, paging
+*@
 @(@Html.Kendo().Grid<Probe.Models.View.GameDTO>().Name("MyGamesGrid").Columns(c =>
         {
             c.Bound(g => g.Name).Title("Name").Width(150);
-            c.Bound(g => g.GameTypeId).Title("Type").ClientTemplate("#= DisplayGameType(data) #").ClientGroupHeaderTemplate("Type: #= GameTypeText(value) #").Width(70);
-            c.Bound(g => g.Description).Title("Descripion").Width(200);
-            c.Bound(g => g.Published).Title("Published").ClientTemplate("#= DisplayPublished(data) #").ClientGroupHeaderTemplate("Published: #= PublishedText(value) #");
+            c.Bound(g => g.GameTypeId).Title("Type").ClientTemplate("#= DisplayGameType(data) #").ClientGroupHeaderTemplate("Type: #= GameTypeText(value) #").Width(50);
+            c.Bound(g => g.Description).Title("Descripion").Width(150);
+            c.Bound(g => g.Published).Title("Pub lished").ClientTemplate("#= DisplayPublished(data) #").ClientGroupHeaderTemplate("Published: #= PublishedText(value) #").Width(40);
             c.Bound(g => g.StartDate).Format("{0:M/d/yy h:mm:ss tt}").Title("Start Date");
             c.Bound(g => g.EndDate).Format("{0:M/d/yy h:mm:ss tt}").Title("End Date");
             c.Bound(g => g.PlayerCount).Title("Player Count").ClientTemplate("#= DisplayPlayerCount(data) #");

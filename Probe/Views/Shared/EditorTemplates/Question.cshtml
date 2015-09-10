@@ -43,6 +43,12 @@
         margin-top: 5px;
     }
 
+    .textareaSmall {
+        width: 400px;
+        height: 40px;
+        max-width: 450px
+    }
+
     .textareaLarge {
         width: 400px;
         height: 70px;
@@ -94,6 +100,16 @@
         <div class="editor-field">
             @Html.TextAreaFor(model => model.Text, new { @class = "textareaLarge" })
             @Html.ValidationMessageFor(model => model.Text)
+        </div>
+    </div>
+
+    <div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Tags, "Search Tags for Question")
+        </div>
+        <div class="editor-field">
+            @Html.TextAreaFor(model => model.Tags, new { @class = "textareaSmall" })
+            @Html.ValidationMessageFor(model => model.Tags)
         </div>
     </div>
 

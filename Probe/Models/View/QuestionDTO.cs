@@ -21,9 +21,13 @@ namespace Probe.Models.View
 
         public string Text { get; set; }
 
+        public string Tags { get; set; }
+
         public bool TestEnabled { get; set; }
 
         public int ChoicesCount { get; set; }
+
+        public bool OneChoice { get; set; }
 
         public bool Visible { get; set; }
 

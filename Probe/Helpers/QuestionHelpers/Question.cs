@@ -44,6 +44,7 @@ namespace Probe.Helpers.QuestionHelpers
                 QuestionTypeId = cqSource.QuestionTypeId,
                 Name = newName,
                 Text = cqSource.Text,
+                Tags = cqSource.Tags,
                 OneChoice = cqSource.OneChoice,
                 ACLId = cqSource.ACLId,
                 UsedInGame = forQuestionInUse,
