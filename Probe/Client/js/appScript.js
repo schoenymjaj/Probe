@@ -3781,6 +3781,7 @@ $(function () {
                             color: '#00edf0',
                             warningSecs: 60,
                             warningColor: '#00edf0',
+                            tailHtmlColor: 'black',
                             dateViewSecs: 10,
                             auxId1: 'listviewCountdown',
                             auxId2: 'popupCountdown'
@@ -3857,6 +3858,7 @@ $(function () {
                             color: '#00edf0',
                             warningSecs: 60,
                             warningColor: '#00edf0',
+                            tailHtmlColor: 'black',
                             dateViewSecs: 10,
                             auxId1: 'listviewCountdown',
                             auxId2: 'popupCountdown'
