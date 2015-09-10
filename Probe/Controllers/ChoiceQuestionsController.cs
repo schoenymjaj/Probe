@@ -29,13 +29,13 @@ namespace Probe.Controllers
         public string Name { get; set; }
         public string Text { get; set; }
         public string Tags { get; set; }
-        public bool OneChoice { get; set; }
-        public bool TestEnabled { get; set; }
+        //public bool OneChoice { get; set; }
+        //public bool TestEnabled { get; set; }
         public int ChoicesCount { get; set; }
         public long cId { get; set; }
         public string cName { get; set; }
         public string cText { get; set; }
-        public bool Correct { get; set; }
+        //public bool Correct { get; set; }
         public long OrderNbr { get; set; }
     }
 
