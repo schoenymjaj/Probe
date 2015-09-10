@@ -29,13 +29,13 @@ namespace Probe.Controllers
         public string Name { get; set; }
         public string Text { get; set; }
         public string Tags { get; set; }
-        //public bool OneChoice { get; set; }
-        //public bool TestEnabled { get; set; }
+        public bool OneChoice { get; set; }
+        public bool TestEnabled { get; set; }
         public int ChoicesCount { get; set; }
         public long cId { get; set; }
         public string cName { get; set; }
         public string cText { get; set; }
-        //public bool Correct { get; set; }
+        public bool Correct { get; set; }
         public long OrderNbr { get; set; }
     }
 
@@ -65,35 +65,33 @@ namespace Probe.Controllers
                                       + questionSearch + "'").ToList();
 
 
-                //var questionDTOs = result
-                //    .GroupBy(q => new { q.Id, q.QuestionTypeId, q.Name, q.Text, q.Tags, q.OneChoice, q.TestEnabled, q.ChoicesCount })
-                //    .Select(q => new QuestionDTO
-                //    {
-                //        Id = q.Key.Id,
-                //        QuestionTypeId = q.Key.QuestionTypeId,
-                //        Name = q.Key.Name,
-                //        Text = q.Key.Text,
-                //        Tags = q.Key.Tags,
-                //        OneChoice = q.Key.OneChoice,
-                //        TestEnabled = q.Key.TestEnabled,
-                //        ChoicesCount = q.Key.ChoicesCount,
+                var questionDTOs = result
+                    .GroupBy(q => new { q.Id, q.QuestionTypeId, q.Name, q.Text, q.Tags, q.OneChoice, q.TestEnabled, q.ChoicesCount })
+                    .Select(q => new QuestionDTO
+                    {
+                        Id = q.Key.Id,
+                        QuestionTypeId = q.Key.QuestionTypeId,
+                        Name = q.Key.Name,
+                        Text = q.Key.Text,
+                        Tags = q.Key.Tags,
+                        OneChoice = q.Key.OneChoice,
+                        TestEnabled = q.Key.TestEnabled,
+                        ChoicesCount = q.Key.ChoicesCount,
 
-                //        Choices = result.Where(c => c.Id == q.Key.Id)
-                //                     .Select(c => new ChoiceDTO
-                //                         {
-                //                             Id = c.cId,
-                //                             Name = c.cName,
-                //                             Text = c.cText,
-                //                             Correct = c.Correct,
-                //                             OrderNbr = c.OrderNbr
-                //                         }
-                //                     ).OrderBy(c => c.OrderNbr)
-                //    }).OrderBy(q => q.Name);
+                        Choices = result.Where(c => c.Id == q.Key.Id)
+                                     .Select(c => new ChoiceDTO
+                                         {
+                                             Id = c.cId,
+                                             Name = c.cName,
+                                             Text = c.cText,
+                                             Correct = c.Correct,
+                                             OrderNbr = c.OrderNbr
+                                         }
+                                     ).OrderBy(c => c.OrderNbr)
+                    }).OrderBy(q => q.Name);
 
 
-                //return this.Json(questionDTOs.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
-                return this.Json(result.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
-
+                return this.Json(questionDTOs.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
