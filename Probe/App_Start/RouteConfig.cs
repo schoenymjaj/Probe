@@ -55,6 +55,11 @@ namespace Probe
             defaults: new { controller = "ChoiceQuestions", action = "GetQuestions", gameid = UrlParameter.Optional }
             );
 
+            routes.MapRoute(
+            name: "ChoiceQuestions.GetGameQuestions",
+            url: "ChoiceQuestions/GetGameQuestions/{gameid}/{questionsearch}",
+            defaults: new { controller = "ChoiceQuestions", action = "GetGameQuestions", questionsearch = UrlParameter.Optional }
+            );
 
             routes.MapRoute(
                 name: "Publish",

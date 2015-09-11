@@ -141,7 +141,16 @@ $(document).ready(function () {
     quesDatasource = new kendo.data.DataSource({
 
         "type": (function () { if (kendo.data.transports['aspnetmvc-ajax']) { return 'aspnetmvc-ajax'; } else { throw new Error('The kendo.aspnetmvc.min.js script is not included.'); } })()
-                            , "transport": { "read": { "url": "/ChoiceQuestions/GetQuestions/" + GAME_ID_PASSED_IN }, "prefix": "" }
+                            , "transport": {
+                                "read": {
+                                    "url": "/ChoiceQuestions/GetGameQuestions/" 
+                                    ,"data": {
+                                                gameid: GAME_ID_PASSED_IN
+                                                ,questionsearch: $('#QuestionSearchFilter').val() 
+                                    }//data
+                                }//read
+                                , "prefix": ""
+                            }
                             , "pageSize": 10
                             , "page": 1
                             , "total": 0
@@ -169,7 +178,7 @@ $(document).ready(function () {
     });
 
     
-    /* 8/29/15 - IE doesn't support multiple select */
+    /* 8/29/15 - IE doesn't support multiple select. Attention: paging does NOT trigger an automatic round-trip for this control */
     $("#quesListview").kendoListView({
         dataSource: quesDatasource
         , template: kendo.template("#= DisplayListViewItem(data) #")
@@ -246,32 +255,11 @@ $(document).ready(function () {
     Question Library Filter TextBox Support
     */
 
-    $('#QuestionFilter').keyup(function () {
+    $('#QuestionSearchFilter').keyup(function () {
 
-        existingContainsFilterValue = 'NoContainsFilterBluePrint';
-        if (quesDatasource.filter().filters.length > 1) {
-            existingContainsFilterValue = quesDatasource.filter().filters[1].value;
-        } 
+        OnQuestionSearchFilterChange(this.value);
 
-        if (existingContainsFilterValue != this.value) {
-
-            newFilter = {
-                logic: "and",
-                filters: [
-                  { field: "Visible", operator: "equals", value: true },
-                  { field: "Name", operator: "contains", value: this.value }
-                ]
-            };
-
-            quesDatasource.filter(newFilter);
-            qListView = $("#quesListview").data("kendoListView");
-            qListView.refresh();
-
-            console.log('filter:' + this.value);
-
-        }//if (existingFilterValue != this.value) {
-
-    });//$('#QuestionFilter').keyup(function () {
+    });//$('#QuestionSearchFilter').keyup(function () {
 
     /*
     GAME QUESTION SORT UP/DOWN ARROW SUPPORT
@@ -445,7 +433,8 @@ $(document).ready(function () {
     });
 
     //Add bells and whistles to question search textbox (including the search magnifying glass)
-    $('#QuestionFilter').closest(".k-widget").addClass("k-textbox k-space-right").append('<span class="k-icon k-i-search"></span>');
+    $('#QuestionSearchFilter').closest(".k-widget").addClass("k-textbox k-space-right").append('<span class="k-icon k-i-search"></span>');
+    $('#QuestionSearchFilter').attr('placeholder', 'Enter search words ...');
 
     $('#gameTitle').html((GAME_NAME_PASSED_IN.length <= 35) ? GAME_NAME_PASSED_IN : GAME_NAME_PASSED_IN.substr(0,35) + '...');
 
@@ -510,6 +499,29 @@ function DisplayQuestionDetails(data) {
     }
     return html;
 }//function DisplayQuestionDetails(data)
+
+function OnQuestionSearchFilterChange(value) {
+    console.log('func OnQuestionSearchFilterChange start');
+
+    existingContainsFilterValue = 'NoContainsFilterBluePrint';
+
+    if (existingContainsFilterValue != value) {
+
+        gListView = $("#quesListview").data("kendoListView");
+
+        //We check if the page index of the listview is greater than 1. if
+        //so then we want to page back. We want to avoid this because when dynamic paging
+        //it does a round trip
+        if (gListView.pager.page() > 1) {
+            gListView.pager.page(1);
+        }
+        dataToPass = { gameid: GAME_ID_PASSED_IN, questionsearch: $('#QuestionSearchFilter').val() };
+        quesDatasource.read(dataToPass);
+
+    }//if (existingFilterValue != value) {
+
+}//function OnQuestionSearchFilterChange(value) {
+
 
 /*
 Remove the Question from GameQuestion Listview and then

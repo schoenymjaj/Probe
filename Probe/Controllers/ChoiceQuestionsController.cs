@@ -49,10 +49,9 @@ namespace Probe.Controllers
         }
 
         /*
-         * This controller action will support JIT data to the client Grid. the data returned to the
-         * client (RAZOR/Kendo MVC Grid wrapper will only see the data that is going to be displayed (one page worths)
+         * Supports Question Library page - Read
          */
-        public JsonResult Get([DataSourceRequest]DataSourceRequest request, string questionSearch)
+        public JsonResult Get([DataSourceRequest]DataSourceRequest request, string questionsearch)
         {
             try
             {
@@ -62,7 +61,7 @@ namespace Probe.Controllers
                 //Go to the Database and get the Game - Questions - Choices All at Once Time
                 var result = db.Database.SqlQuery<GetQuestionforSearch>
                                      ("exec GetQuestionforSearch '" + loggedInUserId + "','"
-                                      + questionSearch + "'").ToList();
+                                      + questionsearch + "'").ToList();
 
 
                 var questionDTOs = result
@@ -121,7 +120,7 @@ namespace Probe.Controllers
         }//public JsonResult GetQuestionsForAutoComplete()
 
         /*
-         * Get all questions available for a game (support GameQuestions Kendo)
+         * Supports GameQuestion dialog page (get questions for a specific game)
          */
         public JsonResult GetQuestions([DataSourceRequest]DataSourceRequest request, long? gameId)
         {
@@ -155,8 +154,6 @@ namespace Probe.Controllers
                     .Select(cq => new QuestionDTO
                     {
                         Id = cq.Id,
-                        //GameId = 0,
-                        //QuestionId = cq.Id,
                         QuestionTypeId = cq.QuestionTypeId,
                         Name = cq.Name,
                         Text = cq.Text,
@@ -174,6 +171,57 @@ namespace Probe.Controllers
                 throw ex;
             }
         }//public JsonResult GetQuestions([DataSourceRequest]DataSourceRequest request)
+
+        /*
+         * Supports GameQuestion dialog page (get questions for a specific game) NEW NEW NEW NEW
+         */
+        public JsonResult GetGameQuestions([DataSourceRequest]DataSourceRequest request, long gameId, string questionsearch)
+        {
+            try
+            {
+                //limit the questions to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
+
+                long gameTypeId = (int)db.Game.Find(gameId).GameTypeId;
+
+                /*
+                 * Get all the question names used for the game being used in the context of getting questions. 
+                 */
+                var questionNamesUsed = db.GameQuestion.Where(gq => gq.GameId == gameId)
+                                            .Select(gq => new
+                                            {
+                                                Name = gq.Question.Name
+                                            });
+
+                //Go to the Database and get the Game - Questions - Choices All at Once Time
+                var result = db.Database.SqlQuery<GetQuestionforSearch>
+                                     ("exec GetGameQuestionsforSearch '" + loggedInUserId + "','"
+                                      + questionsearch + "','" + gameTypeId + "'").ToList();
+
+
+                var questionDTOs = result
+                    .Select(q => new QuestionDTO
+                    {
+                        Id = q.Id,
+                        QuestionTypeId = q.QuestionTypeId,
+                        Name = q.Name,
+                        Text = q.Text,
+                        OneChoice = q.OneChoice,
+                        TestEnabled = q.TestEnabled,
+                        ChoicesCount = q.ChoicesCount,
+                        Visible = !questionNamesUsed.Any(qnu => qnu.Name == q.Name)
+                    }).OrderBy(q => q.Name);
+
+                return this.Json(questionDTOs.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//public JsonResult GetQuestions([DataSourceRequest]DataSourceRequest request)
+
+
 
         ///*
         // * Get question details for a question specified in the filter (support GameQuestions Kendo)
