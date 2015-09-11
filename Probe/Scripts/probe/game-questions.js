@@ -6,6 +6,8 @@ var showInstructions = true;
 var isReadyToAddGQItem = true;
 var MAX_LISTVIEW_ITEM_LENGTH = 60;
 var LISTVIEW_ITEM_HEIGHT = 38;
+var existingContainsFilterValue = 'NoContainsFilterBluePrint';
+
 
 $(document).ready(function () {
  
@@ -503,8 +505,6 @@ function DisplayQuestionDetails(data) {
 function OnQuestionSearchFilterChange(value) {
     console.log('func OnQuestionSearchFilterChange start');
 
-    existingContainsFilterValue = 'NoContainsFilterBluePrint';
-
     if (existingContainsFilterValue != value) {
 
         gListView = $("#quesListview").data("kendoListView");
@@ -519,6 +519,8 @@ function OnQuestionSearchFilterChange(value) {
         quesDatasource.read(dataToPass);
 
     }//if (existingFilterValue != value) {
+
+    existingContainsFilterValue = $('#QuestionSearchFilter').val();
 
 }//function OnQuestionSearchFilterChange(value) {
 
