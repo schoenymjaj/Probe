@@ -303,7 +303,10 @@ textarea {
 
 /*placeholder for binding an event*/
 .playersDialogLink {
-
+    color:#428bca;
+    text-decoration:none;
+    background:transparent;
+    box-sizing:border-box;
 }
 
 

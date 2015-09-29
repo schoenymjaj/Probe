@@ -6,32 +6,34 @@ using System.Web.Mvc;
 using ProbeDAL.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
     [RequireHttps]
     public class HomeController : Controller
     {
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();
         }
 
         [AllowAnonymous]
-        public ActionResult About(int? mobileind)
+        public ActionResult About(int? id)
         {
-
-            if (mobileind == null || mobileind == 0)
+            //no id passed means the about section offset to be expanded will be zero
+            if (id == null)
             {
-                ViewBag.MobileInd = false;
-                return View("About");
+                id = 0;
             }
-            else
+            else if (id > ProbeConstants.MaxAboutSections - 1)
             {
-                ViewBag.MobileInd = true;
-                return View("About", "_MobileLayout");
+                id = 0;
             }
 
+            ViewBag.AboutSectionOffset = id;
+            return View("About");
         }
 
         public ActionResult Contact()

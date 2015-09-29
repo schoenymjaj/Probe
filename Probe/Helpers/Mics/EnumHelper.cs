@@ -54,6 +54,10 @@ namespace Probe.Helpers.Mics
         public const string LMSGameType = "Last Man Standing";
 
         public const string DateTimeStandardFormat = "M/d/yy h:mm tt";
+
+        public const string ProbeAuthorizedStartUrl = "~/Games/Index";
+
+        public const int MaxAboutSections = 10;
     }
 
     public enum PlayersFilterType

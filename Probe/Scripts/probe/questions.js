@@ -240,7 +240,8 @@ function CloneNow(e) {
     questionGrid = $('#MyQuestionsGrid').data('kendoGrid');
     questionId = questionGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
-    $.getJSON('ChoiceQuestions/Clone/' + questionId, {},
+    url = PrepareURL(root + 'ChoiceQuestions/Clone/' + questionId);
+    $.getJSON(url, {},
     function (data) {
 
         if (data.MessageId == 23) SyncServerData(); //successful clone - we need to sync question data
@@ -262,10 +263,7 @@ function openChoices(e) {
     rowUID = row.attr('data-uid'); 
     questionGrid = $('#MyQuestionsGrid').data('kendoGrid');
     questionId = questionGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
-    url = root + 'Choices/Index/' + questionId;
-    if (url.indexOf('https') == -1) { //this url needs an https prefix for some reason
-        url = 'https://' + url;
-    }
+    url = PrepareURL(root + 'Choices/Index/' + questionId);
 
     window.location = url;
 }

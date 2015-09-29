@@ -81,6 +81,10 @@
                  SETUP REPORT HEADER
                  */
                  $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>');
+                 $('.reportReturnLink').html('<a href="#">Back to My Games</a>');
+                 $('.reportReturnLink').click(function (event) {
+                     window.history.go(-1);
+                 });
 
                  /*
                  SETUP GOOGLE CHART DATA
@@ -195,7 +199,7 @@
 <body>
     <div id='spinner'></div>
     <div id="title" class="reportTitle">Game Match Summary</div>
-    <div class="reportReturnLink">@Html.ActionLink("Back to Game", "Index", "Games")</div>
+    <div class="reportReturnLink"></div>
     <div class="reportResetSytle"></div>
     <div id="header" class="reportHeader"></div>
     <div id="parent_chart_div">

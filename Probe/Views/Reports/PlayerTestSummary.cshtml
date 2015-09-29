@@ -51,15 +51,11 @@
                     Back button will not exist if report loads within an iFrame (then its in mobile mode)
                      */
                      $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>');
-                     if (DoStyleMobile()) {
-                         $('#appHome').click(function (event) {
-                             GoBack();
-                         });
-                         $('.reportReturnLink').hide();
-                     } else {
-                         $('.reportReturnLink').html('@Html.ActionLink("Back to Game", "Index", "Games")');
-                     }
-
+                     $('.reportReturnLink').html('<a href="#">Back to Game</a>');
+                     $('.reportReturnLink').click(function (event) {
+                         window.history.go(-1);
+                     });
+ 
                      /*
                      SETUP GOOGLE CHART DATA
                      */

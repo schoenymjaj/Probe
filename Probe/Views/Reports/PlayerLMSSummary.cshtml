@@ -164,8 +164,10 @@
                      </div>';
                 $('#header').html(htmlHeader);
 
-                $('.reportReturnLink').html('@Html.ActionLink("Back to Game LMS Summary", "GameLMSSummary", "Reports")');
-
+                $('.reportReturnLink').html('<a href="#">Back to Game LMS Summary</a>');
+                $('.reportReturnLink').click(function (event) {
+                    window.history.go(-1);
+                });
 
                 var tdata = google.visualization.arrayToDataTable(dSeries);
 

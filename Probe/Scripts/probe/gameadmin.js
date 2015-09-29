@@ -23,7 +23,8 @@ function OnCloneToUserButtonClick(e) {
             gameId = gameDropDownList.value();
             userId = userDropDownList.value();
 
-            $.getJSON('CloneToUser/' + gameId + '/' + userId, {},
+            url = PrepareURL('CloneToUser/' + gameId + '/' + userId);
+            $.getJSON(url, {},
             function (data) {
 
                 $("#yesGen").unbind("click");

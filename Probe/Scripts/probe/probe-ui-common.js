@@ -16,3 +16,12 @@
     }//if (nbrOfGroupings > 0) {
 
 } //function RepairGridHeader() {
+
+
+function PrepareURL(url) {
+    if (url.indexOf('https') == -1) {
+        return 'https://' + url;
+    } else {
+        return url;
+    }
+}

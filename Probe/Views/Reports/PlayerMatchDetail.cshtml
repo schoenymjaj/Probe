@@ -71,21 +71,11 @@
                     Back button will not exist if mobile indicator
                     */
                     if (data.length >= 1) {
-                        if (DoStyleMobile()) {
-                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: <span class="reportLabelText">' + data[0].PlayerName + '</span><br/><span class="reportLabel reportLabelMargin">Matchup:</span> <span class="reportLabelText">' + data[0].MatchedPlayerName + '</span>');
-                            $('#appHome').click(function (event) {
-                                //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
-                                if (ClientIsCordovaApp()) {
-                                    window.history.go(-2);
-                                } else {
-                                    window.location = '@Request.Url.Scheme' + '://' + '@Request.Url.Authority' + '@VirtualPathUtility.ToAbsolute("~/")' + 'client/'
-                                }
-                            });
-                            $('.reportReturnLink').hide();
-                        } else {
-                            $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: <span class="reportLabelText">' + data[0].PlayerName + '</span> <span class="reportLabel reportLabelMargin">Matchup:</span> <span class="reportLabelText">' + data[0].MatchedPlayerName + '</span>');
-                            $('.reportReturnLink').html('@Html.ActionLink("Back to Player Match Totals", "PlayerMatchSummary", "Reports")');
-                        }
+                        $('#header').html('<span class="reportLabel" style="margin-right: 17px">Player</span>: <span class="reportLabelText">' + data[0].PlayerName + '</span> <span class="reportLabel reportLabelMargin">Matchup:</span> <span class="reportLabelText">' + data[0].MatchedPlayerName + '</span>');
+                        $('.reportReturnLink').html('<a href="#">Back to Player Match Totals</a>');
+                        $('.reportReturnLink').click(function (event) {
+                            window.history.go(-1);
+                        });
                     }
 
                     /*

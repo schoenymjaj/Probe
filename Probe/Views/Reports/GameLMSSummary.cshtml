@@ -172,7 +172,11 @@
                                  </div>\
                      </div>';
                  $('#header').html(htmlHeader);
-                 $('.reportReturnLink').html('@Html.ActionLink("Back to Game", "Index", "Games")');
+                 $('.reportReturnLink').html('<a href="#">Back to Game</a>');
+                 $('.reportReturnLink').click(function (event) {
+                     window.history.go(-1);
+                 });
+
 
                  //Check if there is any data
                  if (data.NbrPlayers == 0) {

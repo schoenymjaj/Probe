@@ -12,6 +12,7 @@ using Microsoft.Owin.Security;
 using Owin;
 using ProbeDAL.Models;
 using Probe.Models;
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
@@ -45,6 +46,7 @@ namespace Probe.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            returnUrl = ProbeConstants.ProbeAuthorizedStartUrl;
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -56,6 +58,8 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            returnUrl = ProbeConstants.ProbeAuthorizedStartUrl;
+
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindAsync(model.Email, model.Password);

@@ -81,7 +81,7 @@ function template for Grid - player count
 */
 function DisplayPlayerCount(game) {
     html = '<a class=\"playersDialogLink\" data-gameid=\"' + game.Id + '\" data-code=\"' +
-            game.Code + '\" data-gametype=\"' + game.GameTypeId + '\" href=\"\\#\">' + game.PlayerCount + '</a>';
+            game.Code + '\" data-gametype=\"' + game.GameTypeId + '\" href=\"\#\">' + game.PlayerCount + '</a>';
 
     if (game.GameTypeId == 3 && game.PlayerCount > 0) { //We will display this a little bit differently if it's LMS 
         html = html + '<br/>(' + game.PlayerActiveCount + ' standing)';
@@ -124,11 +124,26 @@ OnGridDataBound event for MyGames Grid
 */
 function OnGridDataBound(e) {
 
-    //BIND PLAYERS COUNT COLUMN CLICK WITH THE PLAYERS DIALOG
+    grid = $("#MyGamesGrid").data("kendoGrid");
+    gridView = grid.dataSource.view();
+
+    StyleGridView(gridView);
+
+    //Repair the grid header, if it needs it. Hack for a grouping bug
+    RepairGridHeader("MyGamesGrid");
+
+    saveGridOptions(grid);
+
+    //BIND PLAYERS COUNT COLUMN CLICK WITH THE PLAYERS DIALOG.
+    //THIS EVENT HANDLER IS WITHIN OnGridDataBound because we need to account
+    //for all the game records within the MyGames grid
     $('.playersDialogLink').click(function () {
 
         gameCode = $(this).attr('data-code');
-        $.getJSON('/api/Players/GetPlayerByGameCode/' + gameCode, {},
+
+        url = PrepareURL(root + '/api/Players/GetPlayerByGameCode/' + gameCode);
+
+        $.getJSON(url, {},
         function (data) {
 
             $('select[name="Pplayers"]').empty();
@@ -144,16 +159,6 @@ function OnGridDataBound(e) {
 
         });//post
     });//$('#playersDialogLink').click
-
-    grid = $("#MyGamesGrid").data("kendoGrid");
-    gridView = grid.dataSource.view();
-
-    StyleGridView(gridView);
-
-    //Repair the grid header, if it needs it. Hack for a grouping bug
-    RepairGridHeader("MyGamesGrid");
-
-    saveGridOptions(grid);
 
 }//function OnGridDataBound() {
 
@@ -277,7 +282,8 @@ function openConfig(e) {
     gameGrid = $('#MyGamesGrid').data('kendoGrid');
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
-    window.location = 'GameConfigurations/Index/' + gameId;
+    url = PrepareURL(root + 'GameConfigurations/Index/' + gameId);
+    window.location = url;
 }//function openConfig(e)
 function openSchedules(e) {
 
@@ -290,7 +296,8 @@ function openSchedules(e) {
     gameGrid = $('#MyGamesGrid').data('kendoGrid');
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
-    window.location = 'Games/GameSchedules/' + gameId;
+    url = PrepareURL(root + 'Games/GameSchedules/' + gameId);
+    window.location = url;
 }//function openConfig(e)
 function openQuestions(e) {
 
@@ -304,9 +311,7 @@ function openQuestions(e) {
 
     url = root + 'GameQuestions/GameQuestions/' + gameId;
     //The GameQuestions page requires the https:// for some reason
-    if (url.indexOf('https') == -1) {
-        url = 'https://' + url;
-    }
+    url = PrepareURL(url);
 
     iframeHtml = '<iframe id="modalIframeId" width="100%" height="99%" marginWidth="0" marginHeight="0" ' +
                  'frameBorder="0" scrolling="yes"/>';
@@ -344,11 +349,12 @@ function PublishNow(e) {
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
     publishedInd = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Published;
 
-    url = 'Games/Publish/' + gameId + '/1';
+    url = root + 'Games/Publish/' + gameId + '/1';
     if (publishedInd) {
-        url = 'Games/Publish/' + gameId + '/0';
+        url = root + 'Games/Publish/' + gameId + '/0';
     }
 
+    url = PrepareURL(url);
     $.getJSON(url, {},
     function (data) {
 
@@ -372,7 +378,9 @@ function openPlayers(e) {
     gameGrid = $('#MyGamesGrid').data('kendoGrid');
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
-    window.location = 'Players/Index/' + gameId;
+    url = PrepareURL(root + 'Players/Index/' + gameId);
+
+    window.location = url;
 
 }//function openPlayers(e)
 function openPreview(e) {
@@ -412,7 +420,9 @@ function CloneNow(e) {
     gameGrid = $('#MyGamesGrid').data('kendoGrid');
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
-    $.getJSON('Games/Clone/' + gameId, {},
+    url = PrepareURL(root + 'Games/Clone/' + gameId);
+
+    $.getJSON(url, {},
     function (data) {
 
         //prepare and open informational dialog for clone action
@@ -454,7 +464,8 @@ function ShowGeneralDialog(aWnd, aTitle, message1, message2, okInd, okText, clos
 
 function ShowReportDialog(code, gameId, gameType, playerCount) {
 
-    $.getJSON('api/Players/GetPlayerByGameCode/' + code, {},
+    url = PrepareURL(root + '/api/Players/GetPlayerByGameCode/' + code);
+    $.getJSON(url, {},
     function (data) {
 
         if (gameType == 'Match') {
@@ -548,7 +559,7 @@ function ShowReportDialog(code, gameId, gameType, playerCount) {
                 }
             }
 
-            window.location = reportURL;
+            window.location = PrepareURL(root + reportURL);
 
             wndResult.close();
         });
@@ -565,6 +576,7 @@ function ShowPreviewDialog(code, firstName, nickName) {
         + '?code=' + code + '&firstname=' + firstName + '&nickname=' + nickName //the client doesn't pick up the firstname or lastname which is fine.
         + '&root=' + root; //i.e root = localhost/Probe/ OR localhost:4430/ OR .. (root is a global var)
 
+    url = PrepareURL(root + url);
 
     iframeHtml = '<iframe id="modalIframeId" width="100%" height="99%" marginWidth="0" marginHeight="0" ' +
                  'frameBorder="0" scrolling="no"/>';

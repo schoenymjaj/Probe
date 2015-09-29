@@ -53,5 +53,7 @@ namespace Probe.Models.View
 
         public int PlayerGameReason { get; set; }
 
+        public string PlayerGameName { get; set; }
+
     }
 }

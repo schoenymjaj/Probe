@@ -76,25 +76,14 @@
                     Back button will not exist if report loads within an iFrame (then its in mobile mode)
                  */
                  if (data.length >= 1) {
-                     if (DoStyleMobile()) {
-                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>'
-                             + '<br/><span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
-                             + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
-                         $('#appHome').click(function (event) {
-                             //if client is cordova app then we use back function, if not then we know the client is a browser so we use a url and relocate
-                             if (ClientIsCordovaApp()) {
-                                 window.history.go(-1);
-                             } else {
-                                 window.location = '@Request.Url.Scheme' + '://' + '@Request.Url.Authority' + '@VirtualPathUtility.ToAbsolute("~/")' + 'client/'
-                             }
-                         });
-                         $('.reportReturnLink').hide();
-                     } else {
-                         $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>'
-                             + ' <span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
-                             + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
-                         $('.reportReturnLink').html('@Html.ActionLink("Back to Player Test Scores", "PlayerTestSummary", "Reports")');
-                     }
+                    $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>'
+                        + ' <span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
+                        + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
+                     $('.reportReturnLink').html('<a href="#">Back to Player Test Scores</a>');
+                     $('.reportReturnLink').click(function (event) {
+                         window.history.go(-1);
+                     });
+
                  }
 
                  /*

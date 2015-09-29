@@ -14,6 +14,13 @@ namespace Probe
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Default",
+                url: "{controller}/{action}/",
+                defaults: new { controller = "Home", action = "Index" }
+            );
+
+
+            routes.MapRoute(
                 name: "GameSchedules",
                 url: "Games/GameSchedules/{gameid}",
                 defaults: new { controller = "Games", action = "GameSchedules" }
@@ -62,10 +69,24 @@ namespace Probe
             );
 
             routes.MapRoute(
+            name: "ChoiceQuestions.Clone",
+            url: "ChoiceQuestions/Clone/{id}",
+            defaults: new { controller = "ChoiceQuestions", action = "Clone" }
+            );
+
+
+            routes.MapRoute(
                 name: "Publish",
                 url: "Games/Publish/{id}/{publishind}",
                 defaults: new { controller = "Games", action = "Publish" }
             );
+
+            routes.MapRoute(
+                name: "Clone",
+                url: "Games/Clone/{id}",
+                defaults: new { controller = "Games", action = "Clone" }
+            );
+
 
             routes.MapRoute(
                 name: "CloneToUser",
@@ -76,8 +97,8 @@ namespace Probe
 
             routes.MapRoute(
                 name: "About",
-                url: "Home/About/{mobileind}",
-                defaults: new { controller = "Home", action = "About", mobileind = UrlParameter.Optional }
+                url: "Home/About/{id}",
+                defaults: new { controller = "Home", action = "About", id = UrlParameter.Optional }
             );
 
 
@@ -165,11 +186,12 @@ namespace Probe
                 defaults: new { controller = "Reports", action = "PlayerLMSDetail", playerstatusfilter = UrlParameter.Optional, mobileind = UrlParameter.Optional }
             );
 
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Games", action = "Index", id = UrlParameter.Optional }
-            );
+
+            //routes.MapRoute(
+            //    name: "Default",
+            //    url: "{controller}/{action}/{id}",
+            //    defaults: new { controller = "Games", action = "Index", id = UrlParameter.Optional }
+            //);
 
         }
     }

@@ -134,7 +134,10 @@
                                  </div>\
                      </div>';
                      $('#header').html(htmlHeader);
-                     $('.reportReturnLink').html('@Html.ActionLink("Back to Player LMS Summary", "PlayerLMSSummary", "Reports", new { gameId = @ViewBag.GameId, code = @ViewBag.GameCode, playerstatusfilter = 0 }, null)');
+                     $('.reportReturnLink').html('<a href="#">Back to Player LMS Summary</a>');
+                     $('.reportReturnLink').click(function (event) {
+                         window.history.go(-1);
+                     });
 
                  }
 

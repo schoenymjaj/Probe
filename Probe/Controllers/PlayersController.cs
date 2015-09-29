@@ -81,6 +81,44 @@ namespace Probe.Controllers
             }
         }//public JsonResult Get([DataSourceRequest]DataSourceRequest request)
 
+        public JsonResult GetGamePlayersByGameCode(string code)
+        {
+
+            try
+            {
+                //without this command there would be a serializer error when returning the db.Players
+                db.Configuration.LazyLoadingEnabled = false;
+                var players = db.Player.Where(p => p.Game.Code == code).OrderBy(p => p.FirstName + "-" + p.NickName);
+
+                List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
+
+                foreach (Player player in players)
+                {
+                    PlayerDTO playerDTO = new PlayerDTO
+                    {
+                        Id = player.Id,
+                        FirstName = player.FirstName,
+                        LastName = player.LastName,
+                        NickName = player.NickName,
+                        EmailAddr = player.EmailAddr,
+                        Sex = player.Sex,
+                        PlayerGameName = new ProbePlayer(player).PlayerGameName
+                    };
+                    playerDTOs.Add(playerDTO);
+                }
+
+                return Json(playerDTOs, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return Json(ModelState.ToDataSourceResult());
+            }
+
+        }//public JsonResult GetGamePlayersByGameCode(string code)
+
+
         public JsonResult GetPlayersForAutoComplete(long gameid)
         {
             try
