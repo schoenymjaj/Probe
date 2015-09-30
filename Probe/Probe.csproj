@@ -1542,6 +1542,7 @@
     <Content Include="Scripts\probe\choices.js" />
     <Content Include="Scripts\probe\gameschedules.js" />
     <Content Include="Scripts\probe\gameadmin.js" />
+    <Content Include="Scripts\probe\landing-page.js" />
     <Content Include="Scripts\probe\players.js" />
     <Content Include="Scripts\probe\probe-ui-common.js" />
     <Content Include="Scripts\probe\questions.js" />

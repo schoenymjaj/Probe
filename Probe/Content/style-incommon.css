@@ -3976,3 +3976,8 @@ div.show-grid [class*="col-md-"] span.show-grid-block {
     color:white;
     background-color: black;
 }
+
+.incommon-debug {
+    border: solid;
+    border-color: red;
+}

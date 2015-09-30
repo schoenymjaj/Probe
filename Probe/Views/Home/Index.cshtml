@@ -69,7 +69,8 @@
                                 <a id="leftHeaderLogo" class="loginLink">
                                     <img src="@Url.Content("~/Content/images/white-placeholder-10x1.png")"
                                          alt="Site Logo">
-                                ></a>
+                                    >
+                                </a>
                             </h1>
                         </div>
                         <div class="col-md-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-0 col-lg-offset-0 hidden-sm hidden-xs" style="color:black;font-weight: bold;position:relative">
@@ -86,7 +87,7 @@
                             }
                         </div>
                         <div class="col-md-3 col-xs-offset-0 col-sm-offset-0 col-md-offset-0 col-lg-offset-0 hidden-md hidden-sm hidden-xs">
-                            <h1 class="logo"> <a class="loginLink"> <img src="~/Content/images/InCommon-JustLogo-Transparent-279x110.png" alt="Site Logo"> </a></h1>
+                            <h1 class="logo"> <a id="RightHeaderLogo" class="loginLink"> <img src="@Url.Content("~/Content/images/white-placeholder-10x1.png")" alt="Site Logo"> </a></h1>
                         </div>
                     </div>
                 </div>
@@ -354,6 +355,10 @@
     </div>
     <!-- End Body Container -->
 
+    <script>
+        //global variable
+        var root = '@Request.Url.Authority' + '@Url.Content("~")';
+    </script>
     <script src="@Url.Content("~/Scripts/jquery-2.1.4.min.js")"
             type="text/javascript"></script>
 
@@ -389,78 +394,12 @@
     <script src="@Url.Content("~/Scripts/landing-page/revolution-slider-init.js")"
             type="text/javascript"></script>
 
+    <script src="@Url.Content("~/Scripts/probe/landing-page.js")"
+            type="text/javascript"></script>
 
-    <script>
+    <script src="@Url.Content("~/Scripts/probe/probe-ui-common.js")"
+            type="text/javascript"></script>
 
-        //add link (interactivity) to tags that have the following classes
-        if (self.location.hostname != 'localhost') {
-            $('.aboutLink').attr('href', 'Home/About');
-            $('.registerLink').attr('href', 'Account/Register');
-            $('.loginLink').attr('href', 'Account/Login');
-            $('.blogLink').attr('href', 'http://productivityedge.com/?page_id=28');
-            $('.homeLink').attr('href', 'Home/Index');
-        } else {
-            $('.aboutLink').attr('href', 'Home/About');
-            $('.registerLink').attr('href', 'Account/Register');
-            $('.loginLink').attr('href', 'Account/Login');
-            $('.blogLink').attr('href', 'http://productivityedge.com/?page_id=28');
-            $('.homeLink').attr('href', 'Home/Index');
-        }
-
-        function SetLeftHeaderLogoSize() {
-
-            width = $(window).width();
-            height = $(window).height();
-
-            if (width > 975) { //975 - was used by testing in google chrome browser. Not sure why this number isn't at the md breakpoint
-                $('#leftHeaderLogo img').attr('src', '@Url.Content("~/Content/images/InCommon-JustLogo-Transparent-279x110.png")')
-            } else {
-                $('#leftHeaderLogo img').attr('src', '@Url.Content("~/Content/images/InCommon-Header-Transparent-240x40.png")')
-            }
-        };//function SetLeftHeaderLogoSize
-
-        function CredentialsSubmitValidation(e) {
-
-            //if nothing has been entered for credentials then we just go to the login page. We don't try to authenticate
-            if (e.Email.value == "" & e.Password.value == "") {
-                self.location = 'Account/Login';
-                return false;
-            } else {
-                return true;
-            }
-
-
-        };//function CredentialsSubmitValidation()
-
-
-        $(document).on("ready", function (event) {
-
-            $('.loginLink').click(function (e) {
-                if (self.location.hostname != 'localhost') {
-                    self.location = 'Account/Login';
-                } else {
-                    self.location = 'Account/Login';
-                }
-            });
-
-            $('.registerLink').click(function (e) {
-                if (self.location.hostname != 'localhost') {
-                    self.location = 'Account/Register';
-                } else {
-                    self.location = 'Account/Register';
-                }
-            });
-
-            $(window).resize(function () {
-                console.log('window resize');
-                SetLeftHeaderLogoSize();
-            });//$(window).resize(function () {
-
-            SetLeftHeaderLogoSize(); //set the initial size of the left header logo
-
-        });//$(document).on("ready", function (event) {
-
-    </script>
     <!-- End Js -->
 </body>
 </html>

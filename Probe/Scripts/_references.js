@@ -230,3 +230,4 @@
 /// <reference path="landing-page/helper-plugins.js" />
 /// <reference path="landing-page/init.js" />
 /// <reference path="landing-page/revolution-slider-init.js" />
+/// <reference path="probe/landing-page.js" />
