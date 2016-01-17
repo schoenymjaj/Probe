@@ -19,78 +19,7 @@ namespace Probe.Controllers.api
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        // GET: api/GameAnswers
-        public IQueryable<GameAnswer> GetGameAnswer()
-        {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
-            return db.GameAnswer;
-        }
-
-        // GET: api/GameAnswers/5
-        [ResponseType(typeof(GameAnswer))]
-        public IHttpActionResult GetGameAnswer(long id)
-        {
-            GameAnswer GameAnswer = db.GameAnswer.Find(id);
-            if (GameAnswer == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(GameAnswer);
-        }
-
-        // PUT: api/GameAnswers/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutGameAnswer(long id, GameAnswer GameAnswer)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != GameAnswer.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(GameAnswer).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GameAnswerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/GameAnswers
-        [ResponseType(typeof(GameAnswer))]
-        public IHttpActionResult PostGameAnswer(GameAnswer GameAnswer)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.GameAnswer.Add(GameAnswer);
-            db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-
-            return CreatedAtRoute("DefaultApi", new { id = GameAnswer.Id }, GameAnswer);
-        }
-
-        // POST: api/GameAnswers NOTE: Currently used by client 11/2/14
+        // POST: api/GameAnswers NOTE: 10/6/15 Now Deprecated - WAS used by client 11/2/14
         [ResponseType(typeof(GameAnswerDTO))]
         public IHttpActionResult PostGameAnswers(IList<GameAnswerDTO> GameAnswersDTOsIn)
         {
@@ -146,22 +75,6 @@ namespace Probe.Controllers.api
             //returning all the GameAnswerDTOs in the list
             return CreatedAtRoute("DefaultApi", new { id = GameAnswerDTOsOut[0].Id }, GameAnswerDTOsOut);
         } //public IHttpActionResult PostGameAnswers
-
-        // DELETE: api/GameAnswers/5
-        [ResponseType(typeof(GameAnswer))]
-        public IHttpActionResult DeleteGameAnswer(long id)
-        {
-            GameAnswer GameAnswer = db.GameAnswer.Find(id);
-            if (GameAnswer == null)
-            {
-                return NotFound();
-            }
-
-            db.GameAnswer.Remove(GameAnswer);
-            db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-
-            return Ok(GameAnswer);
-        }
 
         protected override void Dispose(bool disposing)
         {

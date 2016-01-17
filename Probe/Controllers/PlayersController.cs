@@ -27,13 +27,23 @@ namespace Probe.Controllers
         // GET: Players
         public ActionResult Index(long gameid)
         {
-            Game game = db.Game.Find(gameid);
+            try
+            {
+                Game game = db.Game.Find(gameid);
 
-            ViewBag.GameId = gameid;
-            ViewBag.GameName = game.Name;
-            ViewBag.GameEditable = !ProbeValidate.IsGameActive(game);
+                ViewBag.GameId = gameid;
+                ViewBag.GameName = game.Name;
+                ViewBag.GameEditable = !ProbeValidate.IsGameActive(game);
 
-            return View();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View();
+            }
+
         }
 
         public JsonResult GetGamePlayers([DataSourceRequest]DataSourceRequest request, long? gameid)
@@ -76,7 +86,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }//public JsonResult Get([DataSourceRequest]DataSourceRequest request)
@@ -112,7 +123,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
@@ -138,7 +150,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
@@ -161,7 +174,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
@@ -199,7 +213,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }//public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, PlayerDTO playerDTO)
@@ -228,7 +243,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 

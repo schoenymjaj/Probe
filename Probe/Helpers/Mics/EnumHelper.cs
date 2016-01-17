@@ -47,6 +47,7 @@ namespace Probe.Helpers.Mics
         public const int MSG_GameUnpublishSuccessful = 22;
         public const int MSG_QuestionCloneSuccessful = 23;
         public const int MSG_UnsuccessfulOperation = 24;
+        public const string MSG_UnsuccessfulOperation_STR = "The operation was unsuccessful. Sorry for the inconvenience. Please try again. If the problem persists, contact In Common support.";
         public const int MSG_GameDeleteSuccessful = 25;
 
         public const string MatchGameType = "Match";
@@ -58,6 +59,7 @@ namespace Probe.Helpers.Mics
         public const string ProbeAuthorizedStartUrl = "~/Games/Index";
 
         public const int MaxAboutSections = 10;
+
     }
 
     public enum PlayersFilterType
@@ -83,6 +85,12 @@ namespace Probe.Helpers.Mics
         Informational = 0,
         Warning = 1,
         Error = 2,
+    }
+
+    public enum ProbeACLType
+    {
+        QUESTION = 0,
+        GAME = 1
     }
 
 

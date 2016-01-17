@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Probe.DAL;
 using ProbeDAL.Models;
 using Probe.Helpers.Validations; //MNS
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
@@ -27,16 +28,24 @@ namespace Probe.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Details(long? id)
         {
-            if (id == null)
+            try {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                GameType gameType = db.GameType.Find(id);
+                if (gameType == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(gameType);
+            } 
+            catch (Exception ex)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View();
             }
-            GameType gameType = db.GameType.Find(id);
-            if (gameType == null)
-            {
-                return HttpNotFound();
-            }
-            return View(gameType);
         }
 
         // GET: GameTypes/Create
@@ -54,30 +63,48 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Description")] GameType gameType)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.GameType.Add(gameType);
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index");
-            }
+                if (ModelState.IsValid)
+                {
+                    db.GameType.Add(gameType);
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                    return RedirectToAction("Index");
+                }
 
-            return View(gameType);
+                return View(gameType);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View();
+            }
         }
 
         // GET: GameTypes/Edit/5
         [Authorize(Roles = "Admin")]
         public ActionResult Edit(long? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                GameType gameType = db.GameType.Find(id);
+                if (gameType == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(gameType);
             }
-            GameType gameType = db.GameType.Find(id);
-            if (gameType == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View();
             }
-            return View(gameType);
         }
 
         // POST: GameTypes/Edit/5
@@ -88,29 +115,46 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Description")] GameType gameType)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Entry(gameType).State = EntityState.Modified;
-                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(gameType).State = EntityState.Modified;
+                    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                    return RedirectToAction("Index");
+                }
+                return View(gameType);
+
+            }  catch (Exception ex) {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View(gameType);
             }
-            return View(gameType);
         }
 
         // GET: GameTypes/Delete/5
         [Authorize(Roles = "Admin")]
         public ActionResult Delete(long? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                GameType gameType = db.GameType.Find(id);
+                if (gameType == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(gameType);
             }
-            GameType gameType = db.GameType.Find(id);
-            if (gameType == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View();
             }
-            return View(gameType);
         }
 
         // POST: GameTypes/Delete/5
@@ -119,10 +163,18 @@ namespace Probe.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
-            GameType gameType = db.GameType.Find(id);
-            db.GameType.Remove(gameType);
-            db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-            return RedirectToAction("Index");
+            try
+            {
+                GameType gameType = db.GameType.Find(id);
+                db.GameType.Remove(gameType);
+                db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex) {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError(ProbeConstants.MSG_UnsuccessfulOperation.ToString(), ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return View();
+            }
         }
 
         protected override void Dispose(bool disposing)

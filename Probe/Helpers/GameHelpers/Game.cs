@@ -514,8 +514,6 @@ namespace Probe.Helpers.GameHelpers
             };
 
             db.Game.Add(gNew);
-            db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new Game Id
-            long clonedGameId = gNew.Id;
 
             //clone all gameconfigurations. should only pull the gameconfiguration records that exist. Any configuration that is still
             //using the default ConfigurationG record will not be pulled here. No need to clone this record.
@@ -534,40 +532,46 @@ namespace Probe.Helpers.GameHelpers
             {
                 GameConfiguration clonedGameConfiguration = new GameConfiguration
                 {
-                    GameId = clonedGameId,
+                    Game = gNew,
                     ConfigurationGId = gameConfiguration.ConfigurationGId,
                     Value = gameConfiguration.Value
                 };
 
                 db.GameConfiguration.Add(clonedGameConfiguration);
-                db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new GameQuestion Id
-
             }//foreach (GameConfiguration gameConfiguration in gameConfigurations)
 
             //clone gamequestions and question/choices for each gamequestion
             IList<GameQuestion> gameQuestions = db.GameQuestion.Where(gq => gq.GameId == sourceGameId).ToList();
 
-            Dictionary<long, Dictionary<long, long>> questionXreference = new Dictionary<long, Dictionary<long, long>>();
+            Dictionary<long, Dictionary<long, Choice>> questionXreference = new Dictionary<long, Dictionary<long, Choice>>();
             foreach (GameQuestion gameQuestion in gameQuestions)
             {
-
                 //attach questions to game
                 long sourceQuestionId = gameQuestion.QuestionId;
-                Dictionary<long, long> choiceXreference = new Dictionary<long, long>();
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(controller, db, true, sourceQuestionId, ref choiceXreference);
+                ChoiceQuestion clonedQuestion = ProbeQuestion.CloneQuestion(controller, ref db, true, sourceQuestionId);
 
                 GameQuestion clonedGameQuestion = new GameQuestion
                 {
-                    GameId = clonedGameId,
-                    QuestionId = clonedQuestionId,
+                    Game = gNew,
+                    Question = clonedQuestion,
                     OrderNbr = gameQuestion.OrderNbr,
                     Weight = gameQuestion.Weight
                 };
 
                 db.GameQuestion.Add(clonedGameQuestion);
-                db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new GameQuestion Id
 
-                //We are building a question - choice cross reference table for down the road (if needed). old question id -> (old choice id -> new choice id)
+                //We are building a question - choice cross reference table for down the road. old question id -> (old choice id -> new choice)
+                ChoiceQuestion cqOrg = db.ChoiceQuestion.Find(sourceQuestionId);
+                Dictionary<long, Choice> choiceXreference = new Dictionary<long, Choice>();
+                //Here we populate the choice X reference table. Associate the old choice with the new choice. Somebody might need this down the road.
+                for (int i = 0; i < cqOrg.Choices.Count(); i++)
+                {
+                    //NEED A DATASTRUCTURE THAT ASSOCIATES ONE CHOICE WITH ANOTHER CHOICE
+                    choiceXreference.Add(cqOrg.Choices.ElementAt(i).Id, clonedQuestion.Choices.ElementAt(i));
+                }
+
+                //DATASTRUCTURE that does hold old question id -> (old choice id -> new choice). This is to record the choices for the
+                //new questions of the game associated with the new gamequestions
                 questionXreference.Add(gameQuestion.QuestionId, choiceXreference);
 
             }//foreach (GameQuestion gameQuestion in gameQuestions)
@@ -595,7 +599,6 @@ namespace Probe.Helpers.GameHelpers
                         PlayerGameReason = player.PlayerGameReason
                     };
                     db.Player.Add(clonedPlayer);
-                    db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new Player Id
 
                     //Get all the OLD answers for the player in this iteration
                     IList<GameAnswer> gameanswers = db.GameAnswer.Where(ga => ga.PlayerId == player.Id).ToList();
@@ -604,19 +607,19 @@ namespace Probe.Helpers.GameHelpers
 
                         GameAnswer clonedGameAnswer = new GameAnswer
                         {
-                            PlayerId = clonedPlayer.Id,
-                            //gameAnswer.Choice.ChoiceQuestionId = old questionId
-                            ChoiceId = questionXreference[gameAnswer.Choice.ChoiceQuestionId][gameAnswer.ChoiceId]
+                            Player = clonedPlayer,
+                            Choice = questionXreference[gameAnswer.Choice.ChoiceQuestionId][gameAnswer.ChoiceId]
                         };
 
                         db.GameAnswer.Add(clonedGameAnswer);
-                        db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new GameAnswer Id
-
                     }//foreach (GameAnswer gameAnswer in gameanswers)
 
                 }//foreach (Player player in players)
 
             }//if (gamePlayInd)
+
+            //THIS WILL RECORD NEW Game, GameConfiguration, GameQuestions, ChoiceQuestion/Question, Choice
+            db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //record all gameanswers for the new player
 
             return gNew;
         }//CloneGame

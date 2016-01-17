@@ -10,6 +10,7 @@ namespace Probe.DAL
 {
     public class ProbeDataContext : DbContext
     {
+        public DbSet<ACL> ACL { get; set; }
         public DbSet<GameType> GameType { get; set; }
         public DbSet<QuestionType> QuestionType { get; set; }
         public DbSet<ReportType> ReportType { get; set; }

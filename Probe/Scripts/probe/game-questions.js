@@ -7,11 +7,24 @@ var isReadyToAddGQItem = true;
 var MAX_LISTVIEW_ITEM_LENGTH = 60;
 var LISTVIEW_ITEM_HEIGHT = 38;
 var existingContainsFilterValue = 'NoContainsFilterBluePrint';
+var draggablePadding = 10;
 
+var wndGen; //make the general dialog handler global
 
 $(document).ready(function () {
  
     var browserObj = $.detectBrowser.detect(); //detect properties of the browser in use.
+
+    /*
+    Supporting the General Dialog
+    */
+    wndGen = $("#dialog-general").kendoWindow({
+        title: "A title",
+        modal: true,
+        visible: false,
+        resizable: false,
+        width: 300
+    }).data("kendoWindow");
 
     /*
     QUESTIONS FOR GAME LISTVIEW
@@ -53,6 +66,9 @@ $(document).ready(function () {
                                 isReadyToAddGQItem = true;
                             }
     });//new kendo.data.DataSource({
+
+    gameQuesDatasource.bind("error", GameQuesDataSourceErrorHandler);
+
 
     /* 8/29/15 - IE doesn't support multiple select */
     $("#gameQuesListview").kendoListView({
@@ -117,6 +133,13 @@ $(document).ready(function () {
             hint: function (element) {
 
                 var hint = $("#gameQuesListview").clone();
+
+                //need to set the width of the hint (draggable area) so when there are 
+                //multiple items selected; they will be stacked on top of each other
+                gameQuesListviewWidth = $("#gameQuesListview").css('width');
+                hint.css('width', gameQuesListviewWidth);
+                hint.css('max-width', gameQuesListviewWidth);
+
                 hint.children().not(".k-state-selected").remove();
                 hint.css('min-height', '0'); //we set this to zero; so the hint is ONLY as high as it needs to be to hold the selections.
                 hint.css('height', hint.children().length * LISTVIEW_ITEM_HEIGHT + 'px');
@@ -148,7 +171,8 @@ $(document).ready(function () {
                                     "url": "/ChoiceQuestions/GetGameQuestions/" 
                                     ,"data": {
                                                 gameid: GAME_ID_PASSED_IN
-                                                ,questionsearch: $('#QuestionSearchFilter').val() 
+                                                , aclid: ($('#ACLDropdownList').val() == "") ? 0 : parseInt($('#ACLDropdownList').val())
+                                                , questionsearch: $('#QuestionSearchFilter').val()
                                     }//data
                                 }//read
                                 , "prefix": ""
@@ -179,7 +203,8 @@ $(document).ready(function () {
 
     });
 
-    
+    quesDatasource.bind("error", QuesDataSourceErrorHandler);
+
     /* 8/29/15 - IE doesn't support multiple select. Attention: paging does NOT trigger an automatic round-trip for this control */
     $("#quesListview").kendoListView({
         dataSource: quesDatasource
@@ -194,9 +219,7 @@ $(document).ready(function () {
             console.log('ques databound event');
 
             //if from some event the ques and game ques list views are at a different height, then we make their heights the same
-            quesTdHeight = $('#quesTd').css('height');
-            gameQuesTdHeight = $('#gameQuesTd').css('height');
-            $('#gameQuesTd').css('height', quesTdHeight);
+            AdjustListViewsHeight();
 
             //always select the first quest item (if it's visible)
             gqListView = $("#quesListview").data("kendoListView");
@@ -208,7 +231,17 @@ $(document).ready(function () {
             }
 
             UpdateQuestionDetailsView(e);
-        }
+            AdjustDraggable();
+
+            //When the question autocomplete is not displayed because of window size then clear this prompt
+            if ($('#QuestionAutoCompleteDiv').css('display') == 'none') {
+                qListViewDataSource = $("#quesListview").data("kendoListView").dataSource;
+                if (qListViewDataSource.filter().filters.length > 1) {
+                    ClearQuestionAutocomplete();
+                }
+            }
+
+        } //dataBound
         , dataBinding: function () {
             //console.log('ques databinding event');
         }
@@ -245,6 +278,13 @@ $(document).ready(function () {
             hint: function (element) {
 
                 var hint = $("#quesListview").clone();
+
+                //need to set the width of the hint (draggable area) so when there are 
+                //multiple items selected; they will be stacked on top of each other
+                quesListviewWidth = $("#quesListview").css('width');
+                hint.css('width', quesListviewWidth);
+                hint.css('max-width', quesListviewWidth);
+
                 hint.children().not(".k-state-selected").remove();
                 hint.css('min-height', '0'); //we set this to zero; so the hint is ONLY as high as it needs to be to hold the selections.
                 hint.css('height', hint.children().length * LISTVIEW_ITEM_HEIGHT + 'px');
@@ -431,6 +471,7 @@ $(document).ready(function () {
         var template = kendo.template("#= DisplayQuestionDetails(data) #"); //create a template
         var result = template(e.items[0]); //Pass the data to the compiled template
         $("#questionDetailsView").html(result);
+        AdjustListViewsHeight(); //when question details height changes we check
         //$('#questionDetailsView input').css('margin-right', '5px'); //this works only dynamically. Not via style in markup
     });
 
@@ -438,10 +479,37 @@ $(document).ready(function () {
     $('#QuestionSearchFilter').closest(".k-widget").addClass("k-textbox k-space-right").append('<span class="k-icon k-i-search"></span>');
     $('#QuestionSearchFilter').attr('placeholder', 'Enter search words ...');
 
+    /*
+     Add bells and whistles to Questions autocomplete textbox (including the search magnifying glass)
+    */
+    $('#QuestionAutoComplete').closest(".k-widget").addClass("k-textbox k-space-right").append('<span class="k-icon k-i-search"></span>');
+    $('#QuestionAutoComplete').parent().css('width', '270px'); //this will increase the Autocomplete Textbox size
+
     $('#gameTitle').html((GAME_NAME_PASSED_IN.length <= 35) ? GAME_NAME_PASSED_IN : GAME_NAME_PASSED_IN.substr(0,35) + '...');
 
-    //Can only do this once - add instructions
+    //Can only do this once - add instructionsC:\Devo\VS13 Solutions\Probe\Probe\Content/bootstrap.min.css
     AddInstructions();
+
+    //sets the padding when window is resized. Not going to happen on a phone.
+    $(window).resize(function () {
+        console.log('resize triggered');
+
+        AdjustDraggable();
+
+        //When the question autocomplete is not displayed because of window size then clear this prompt
+        if ($('#QuestionAutoCompleteDiv').css('display') == 'none') {
+
+            //We need to clear the filters to the base (just Visible). Only if the filters are Visible and Name (2 filters)
+            qListViewDataSource = $("#quesListview").data("kendoListView").dataSource;
+            if (qListViewDataSource.filter().filters.length > 1) {
+                console.log('Reset filter to Base (just Visible)');
+
+                ClearQuestionAutocomplete();
+                qListViewDataSource.filter(GetQuesFilter('Base'));
+                qListViewDataSource.read();
+            }//if (qListViewDataSource.filter().filters.length > 1) {
+        }
+    });
 
 });//$(document).ready(function () {
 
@@ -451,29 +519,34 @@ SUPPLEMENTARY FUNCTIONS TO SUPPORT GAMEQUESTION
 
 function DisplayListViewItem(data) {
     itemStr = '';
-    maxlistviewItemLenght = MAX_LISTVIEW_ITEM_LENGTH
+    maxlistviewItemLength = MAX_LISTVIEW_ITEM_LENGTH
 
+    //data.Visible tells us if its the ques or gameQues Listview we are working on
     if (data.Visible == undefined) {
         currentQuesView = gameQuesDatasource.view();
         itemStr = (((gameQuesDatasource.page() - 1) * gameQuesDatasource.pageSize()) +
                     GetViewItemPositionByUID(currentQuesView, data.uid) + 1) + '. ';
-        maxlistviewItemLenght = maxlistviewItemLenght - 4;
+        maxlistviewItemLength = maxlistviewItemLength - 4;
+
+        draggableWidth = convertPxStrToFloat($('#gameQuesListview').css('width')) - draggablePadding;
+    } else {
+        draggableWidth = convertPxStrToFloat($('#quesListview').css('width')) - draggablePadding;
     }
 
-    if (data.Name.length <= maxlistviewItemLenght) {
+    if (data.Name.length <= maxlistviewItemLength) {
 
-        if (data.Name.length + data.Text.length <= maxlistviewItemLenght) {
+        if (data.Name.length + data.Text.length <= maxlistviewItemLength) {
             itemStr += data.Name + ' - ' + data.Text;
         } else {
             tmpStr = data.Name + ' - ' + data.Text;
-            itemStr += tmpStr.substr(0, maxlistviewItemLenght) + '...';
+            itemStr += tmpStr.substr(0, maxlistviewItemLength) + '...';
         }
 
     } else {
-        itemStr += data.Name.substr(0, maxlistviewItemLenght) + '...';
+        itemStr += data.Name.substr(0, maxlistviewItemLength) + '...';
     }
 
-    return '<div class="draggable move k-block">' + itemStr + '</div>';
+    return '<div class="draggable move k-block" style="width:' + draggableWidth + 'px">' + itemStr + '</div>';
 }//function DisplayListViewItem(data)
 
 function DisplayQuestionDetails(data) {
@@ -507,6 +580,12 @@ function OnQuestionSearchFilterChange(value) {
 
     if (existingContainsFilterValue != value) {
 
+        //A change with question search filter - we have to check if question auto complete is being used.
+        if ($("#QuestionAutoComplete").data("kendoAutoComplete").value() != '') {
+            ClearQuestionAutocomplete(); ////anything entered in question search filter will make question autocomplete empty
+            $("#quesListview").data("kendoListView").dataSource.filter(GetQuesFilter('Base')); //set filter to Base
+        }
+
         gListView = $("#quesListview").data("kendoListView");
 
         //We check if the page index of the listview is greater than 1. if
@@ -515,8 +594,14 @@ function OnQuestionSearchFilterChange(value) {
         if (gListView.pager.page() > 1) {
             gListView.pager.page(1);
         }
-        dataToPass = { gameid: GAME_ID_PASSED_IN, questionsearch: $('#QuestionSearchFilter').val() };
-        quesDatasource.read(dataToPass);
+
+        qListViewDataSource = $("#quesListview").data("kendoListView").dataSource;
+        dataToPass = {
+            gameid: GAME_ID_PASSED_IN,
+            aclid: ($('#ACLDropdownList').val() == "") ? 0 : parseInt($('#ACLDropdownList').val()),
+            questionsearch: $('#QuestionSearchFilter').val()
+        };
+        qListViewDataSource.read(dataToPass);
 
     }//if (existingFilterValue != value) {
 
@@ -524,6 +609,47 @@ function OnQuestionSearchFilterChange(value) {
 
 }//function OnQuestionSearchFilterChange(value) {
 
+/*
+Called when QuestionAutoComplete control value has changed. This function
+will get the value and then push a new filter into the quesListview Listview. The filter will just show
+every question that equals the autocompleted selected question name.
+*/
+function QuestionAutocompleteChange() {
+    questionFilterValue = $("#QuestionAutoComplete").data("kendoAutoComplete").value();
+
+    ClearQuestionSearchFilter();
+
+    qListViewDataSource = $("#quesListview").data("kendoListView").dataSource;
+    var listViewFilter = { filters: [] };
+
+    if ($.trim(questionFilterValue).length > 0) {
+        listViewFilter = GetQuesFilter('Name');
+    } else {
+        listViewFilter = GetQuesFilter('Base');
+    }
+
+    qListViewDataSource.filter(listViewFilter);
+
+    dataToPass = {
+        gameid: GAME_ID_PASSED_IN,
+        aclid: ($('#ACLDropdownList').val() == "") ? 0 : parseInt($('#ACLDropdownList').val()),
+        questionsearch: $('#QuestionSearchFilter').val()
+    };
+    qListViewDataSource.read(dataToPass);
+
+}//function QuestionAutocompleteChange() {
+
+function OnACLDrpDownChange(e) {
+    console.log('start OnACLDrpDownChange');
+
+    qListViewDataSource = $("#quesListview").data("kendoListView").dataSource;
+    dataToPass = {
+        gameid: GAME_ID_PASSED_IN,
+        aclid: ($('#ACLDropdownList').val() == "") ? 0 : parseInt($('#ACLDropdownList').val()),
+        questionsearch: $('#QuestionSearchFilter').val()
+    };
+    qListViewDataSource.read(dataToPass);
+}
 
 /*
 Remove the Question from GameQuestion Listview and then
@@ -728,6 +854,7 @@ function UpdateQuestionDetailsView(e) {
         quesDetailsModel.dataSource.read(); //invoke the read transport of the DataSource
     } else {
         $("#questionDetailsView").html(DisplayQuestionDetails([])); //clear out question details view
+        AdjustListViewsHeight(); //when question details height changes we check
     }
 }//function UpdateQuestionDetailsView(e)
 
@@ -751,9 +878,9 @@ function IsQuestionDupforGame(questionName) {
 function AddInstructions() {
 
     if (GAME_EDITABLE == 'True') {
-        $('#instructionsView').html('Please fill out your game with the questions available to you from the Question Library. Select your questions and use the Move button or Drag them over to your Game area');
+        $('#instructionsView').html('Please fill out your game with the questions available to you from the Question Library. Select your questions and use the Move button or Drag them over to your Game area.');
     } else {
-        $('#instructionsView').html('Your game is active and read only. You can only view the questions in the game');
+        $('#instructionsView').html('Your game is active and read only. You can only view the questions in the game.');
     }
 
 }
@@ -771,10 +898,54 @@ function RemoveInstructions() {
 }
 
 function AdjustListViewsHeight() {
+    minLVHeight = 50;
+
     //if from some event the ques and game ques list views are at a different height, then we make their heights the same
-    quesTdHeight = $('#quesTd').css('height');
-    gameQuesTdHeight = $('#gameQuesTd').css('height');
-    $('#quesTd').css('height', gameQuesTdHeight);
+    quesLVParentHeight = convertPxStrToFloat($('#quesListview').parent().css('height'));
+    quesLVHeight = convertPxStrToFloat($('#quesListview').css('height'));
+    quesLVPagerHeight = convertPxStrToFloat($('#quesListviewPager').css('height'));
+    gameQuesLVParentHeight = convertPxStrToFloat($('#gameQuesListview').parent().css('height'));
+    gameQuesLVHeight = convertPxStrToFloat($('#gameQuesListview').css('height'));
+    gameQuesLVPagerHeight = convertPxStrToFloat($('#gameQuesListviewPager').css('height'));
+    quesDetailsDivHeight = convertPxStrToFloat($('#questionDetailsView').parent().css('height'));
+
+    //To adjust column heights - we first check Question LV against Question Details Div
+    if (quesLVParentHeight > quesDetailsDivHeight) {
+        //Ques LV height should not change
+
+        if (gameQuesLVParentHeight < quesLVParentHeight) {
+            //Game Question LV is shorter than Question LV; Therefore we will make GQ LV the same height as Ques LV
+            marginsVerticalPaddingTotal = 22;
+            heightOfJustquesLV = quesLVParentHeight - quesLVPagerHeight - marginsVerticalPaddingTotal;
+            $('#gameQuesListview').css('height', heightOfJustquesLV);
+        }
+
+    } else {
+        //Ques LV should change to be the height of the Ques Details DIV
+
+        $('#quesListview').css('height', quesDetailsDivHeight);
+
+        if (gameQuesLVParentHeight < quesDetailsDivHeight) {
+            $('#gameQuesListview').css('height', quesDetailsDivHeight);
+        }
+    }//if (quesLVParentHeight > quesDetailsDivHeight) {
+
+    //After all that. if the Ques or GameQues LV has a height of nothing. We are going to give it a boost.
+    if (quesLVHeight < minLVHeight) {
+        $('#quesListview').css('height', minLVHeight);
+    }
+    if (gameQuesLVHeight < minLVHeight) {
+        $('#gameQuesListview').css('height', minLVHeight);
+    }
+
+}
+
+function AdjustDraggable() {
+
+    draggableWidth = convertPxStrToFloat($('#quesListview').css('width')) - draggablePadding;
+    console.log('draggableWidth=' + draggableWidth);
+    //resize draggables (listview items) - using the width of the question listview minus some padding
+    $('.draggable').css('width', draggableWidth);
 }
 
 function SetGameQuesButtonsVisibility() {
@@ -791,22 +962,47 @@ function SetGameQuesButtonsVisibility() {
     }
 }
 
+function ClearQuestionAutocomplete() {
+    $("#QuestionAutoComplete").data("kendoAutoComplete").value('');
+}
 
+function ClearQuestionSearchFilter() {
+    $('#QuestionSearchFilter').val(''); //anything entered in question autocomplete will make question search filter empty
+}
 
+function CommonErrorHandler(message) {
+    ShowGeneralDialog(wndGen, 'Error', message, '', false, '', true, 'Close');
+    $("#noGen").click(function () {
+        wndGen.close();
+    });
+}//function CommonErrorHandler(message) {
 
+function GameQuesDataSourceErrorHandler(e) {
+    message = e.errors[""].errors[0];
+    message = "Game Question Query: " + message;
+    CommonErrorHandler(message);
+}
 
-//function AddItemsToGameQuestionWHENREADY(itemList, OrderNbrToRecord) {
+function QuesDataSourceErrorHandler(e) {
+    message = e.errors[""].errors[0];
+    message = "Question Library Query: " + message;
+    CommonErrorHandler(message);
+}
 
-//    TIMEOUT = 2000; //2 seconds before timeout
-//    timeWaiting = 0;
-//    var isNotReady = setInterval(function () {
-//        console.log('waiting for ready to add');
-//        if (isReadyToAddGQItem || timeWaiting > TIMEOUT) {
-//            clearInterval(isNotReady);
-//            AddItemsToGameQuestion(itemList, OrderNbrToRecord);
-//        };
-//        timeWaiting += 250;
-//    }
-//    , 250);
-//}//AddItemsToGameQuestionWHENREADY(itemList, OrderNbrToRecord)
+function GetQuesFilter(filterType) {
 
+    var listViewFilter = { filters: [] };
+    listViewFilter.logic = "and";   // a different logic 'or' can be selected
+
+    switch (filterType) {
+        case 'Base':
+            listViewFilter.filters.push({ field: "Visible", operator: "equals", value: true });
+            break;
+        case 'Name':
+            listViewFilter.filters.push({ field: "Visible", operator: "equals", value: true });
+            listViewFilter.filters.push({ field: "Name", operator: "eq", value: questionFilterValue });
+            break;
+    }
+
+    return listViewFilter;
+}//function GetQuesFilter(filterType) {

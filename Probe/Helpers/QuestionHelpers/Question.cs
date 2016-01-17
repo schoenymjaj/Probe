@@ -23,10 +23,10 @@ namespace Probe.Helpers.QuestionHelpers
     {
         /*
          * Will clone the question and all artifacts associated with that question. question/choicequestion,
-         * choice records. Returns the cloned question Id.
+         * choice records. Returns the cloned question (that hasn't been saved in database yet). Calling function needs
+         * to call db.SaveChanges
          */
-        public static long CloneQuestion(Controller controller, ProbeDataContext db, bool forQuestionInUse, long sourceQuestionId,
-            ref Dictionary<long,long> choiceXreference )
+        public static ChoiceQuestion CloneQuestion(Controller controller, ref ProbeDataContext db, bool forQuestionInUse, long sourceQuestionId)
         {
 
             //clone question
@@ -52,16 +52,14 @@ namespace Probe.Helpers.QuestionHelpers
 
 
             db.Question.Add(cqNew);
-            db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null); //this should get us a new ChoiceQuestionId
 
-            long clonedQuestionId = cqNew.Id;
             ChoiceQuestion cqOrg = db.ChoiceQuestion.Find(sourceQuestionId);
             //clone choices
             foreach (Choice c in cqOrg.Choices)
             {
                 Choice newC = new Choice
                 {
-                    ChoiceQuestionId = clonedQuestionId,
+                    ChoiceQuestion = cqNew,
                     Name = c.Name,
                     Text = c.Text,
                     OrderNbr = c.OrderNbr,
@@ -69,13 +67,9 @@ namespace Probe.Helpers.QuestionHelpers
                 };
 
                 db.Choice.Add(newC);
-                db.SaveChanges(controller.Request != null ? controller.Request.LogonUserIdentity.Name : null);
-
-                //Here we populate the choice X reference table. Associate the old choice with the new choice. Somebody might need this down the road.
-                choiceXreference.Add(c.Id, newC.Id);
             }
 
-            return clonedQuestionId;
+            return cqNew;
         }//CloneQuestions
 
         /*

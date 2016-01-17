@@ -44,6 +44,7 @@ namespace Probe.Controllers
                     {
                         Id = c.Id,
                         ChoiceQuestionId = c.ChoiceQuestionId,
+                        ACLId = c.ChoiceQuestion.ACLId,
                         Name = c.Name,
                         Text = c.Text,
                         Correct = c.Correct,
@@ -57,7 +58,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }//public JsonResult Get([DataSourceRequest]DataSourceRequest request)
@@ -104,7 +106,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
 
@@ -151,7 +154,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }//public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, ChoiceDTO choiceDTO)
@@ -184,169 +188,12 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
         }//public JsonResult Delete([DataSourceRequest] DataSourceRequest request, ChoiceDTO choiceDTO)
-
-        //// GET: Choices/Details/5
-        //public ActionResult Details(long id)
-        //{
-        //    //if (id == null)
-        //    //{
-        //    //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    //}
-
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    Choice choice = db.Choice.Find(id);
-        //    if (choice == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-
-        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-        //    return View(choice);
-        //}
-
-        //// GET: Choices/Create
-        //public ActionResult Create(long? SelectedQuestion)
-        //{
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsQuestionForLoggedInUser((long)SelectedQuestion))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", SelectedQuestion);
-        //    ChoiceQuestion cq = (ChoiceQuestion)db.Question.Find(SelectedQuestion);
-
-        //    Choice c = new Choice
-        //    {
-        //        ChoiceQuestionId = (long)SelectedQuestion,
-        //        OrderNbr = GetNextOrderNbr((long)SelectedQuestion),
-        //        ChoiceQuestion = new ChoiceQuestion {
-        //            Id = (long)SelectedQuestion,
-        //            Name = cq.Name,
-        //            Text = cq.Text
-        //        }
-        //    };
-
-        //    return View(c);
-        //}
-
-        //// POST: Choices/Create
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
-        //{
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsQuestionForLoggedInUser(choice.ChoiceQuestionId))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId); //only validate if choice selected uses correct
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Choice.Add(choice);
-        //        db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-        //        return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
-        //    }
-
-        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-        //    return View(choice);
-        //}
-
-        //// GET: Choices/Edit/5
-        //public ActionResult Edit(long id)
-        //{
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    Choice choice = db.Choice.Find(id);
-        //    if (choice == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-        //    return View(choice);
-        //}
-
-        //// POST: Choices/Edit/5
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit([Bind(Include = "Id,ChoiceQuestionId,Name,Text,Correct,OrderNbr")] Choice choice)
-        //{
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsChoiceForLoggedInUser(choice.Id))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    if (choice.Correct) ValidateChoice(choice.ChoiceQuestionId,choice.Id); //only validate if choice selected uses correct
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Entry(choice).State = EntityState.Modified;
-        //        db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-        //        return RedirectToAction("Index", "Choices", new { SelectedQuestion = choice.ChoiceQuestionId });
-        //    }
-        //    ViewBag.SelectedQuestion = new SelectList(db.Question, "Id", "Name", choice.ChoiceQuestionId);
-        //    return View(choice);
-        //}
-
-        //// GET: Choices/Delete/5
-        //public ActionResult Delete(long id)
-        //{
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsChoiceForLoggedInUser((long)id))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    Choice choice = db.Choice.Find(id);
-        //    if (choice == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(choice);
-        //}
-
-        //// POST: Choices/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult DeleteConfirmed(long id)
-        //{
-        //    //check to ensure the user owns the resources she is trying to access. if not; we get out of here. 
-        //    //Somebody is trying to do bad stuff.
-        //    if (!ProbeValidate.IsChoiceForLoggedInUser(id))
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-
-        //    Choice choice = db.Choice.Find(id);
-        //    db.Choice.Remove(choice);
-        //    db.SaveChanges(Request != null ? Request.LogonUserIdentity.Name : null);
-        //    return RedirectToAction("Index", "ChoiceQuestions");
-        //}
 
         private void ValidateChoice(long questionId)
         {

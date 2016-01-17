@@ -1,4 +1,9 @@
-﻿
+﻿/*
+    GLOBAL
+*/
+var wndGen; //make the general dialog handler global
+var saveScrollPositionInd = true;
+
 $(function () {
     // Reference the auto-generated proxy for the hub (SignalR CONNECTIONS)
     var notifyhub = $.connection.notifyHub; //THE REFERENCE MUST BE IN CAMEL CASE (SEE TUTUORIAL)
@@ -123,7 +128,7 @@ OnGridDataBound event for MyGames Grid
 3. Save Grid options/configuration/command buttons-event handler support
 */
 function OnGridDataBound(e) {
-
+    console.log('OnGridDataBound');
     grid = $("#MyGamesGrid").data("kendoGrid");
     gridView = grid.dataSource.view();
 
@@ -133,6 +138,7 @@ function OnGridDataBound(e) {
     RepairGridHeader("MyGamesGrid");
 
     saveGridOptions(grid);
+    restoreScrollPosition("GameScrollPosition");
 
     //BIND PLAYERS COUNT COLUMN CLICK WITH THE PLAYERS DIALOG.
     //THIS EVENT HANDLER IS WITHIN OnGridDataBound because we need to account
@@ -142,9 +148,8 @@ function OnGridDataBound(e) {
         gameCode = $(this).attr('data-code');
 
         url = PrepareURL(root + '/api/Players/GetPlayerByGameCode/' + gameCode);
-
-        $.getJSON(url, {},
-        function (data) {
+        ajaxGetHelper(url)
+        .done(function (data) {
 
             $('select[name="Pplayers"]').empty();
             data.forEach(function (value, index, ar) {
@@ -157,7 +162,8 @@ function OnGridDataBound(e) {
                 wndPlayers.close();
             });
 
-        });//post
+        })//post
+
     });//$('#playersDialogLink').click
 
 }//function OnGridDataBound() {
@@ -239,6 +245,8 @@ SUPPORT COMMAND EVENT HANDLERS FOR GRID
 */
 function openDeleteConfirm(e) {
     e.preventDefault();
+    saveScrollPosition("GameScrollPosition",true);
+
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
 
@@ -263,8 +271,8 @@ function openDeleteConfirm(e) {
     });
 }//function openDeleteConfirm(e)
 function openDetails(e) {
-
     e.preventDefault();
+    saveScrollPosition("GameScrollPosition",true);
 
     var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
     wndDetails.title("Game Details");
@@ -272,8 +280,9 @@ function openDetails(e) {
     wndDetails.center().open();
 }//function openDetails(e)
 function openConfig(e) {
+    saveScrollPosition("GameScrollPosition",true);
 
-    OpenProgressBarWindow();
+    OpenProgressBarWindow(40, 1000);
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -286,9 +295,9 @@ function openConfig(e) {
     window.location = url;
 }//function openConfig(e)
 function openSchedules(e) {
+    saveScrollPosition("GameScrollPosition",true);
 
-    OpenProgressBarWindow();
-
+    OpenProgressBarWindow(40, 1000);
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
 
@@ -300,6 +309,7 @@ function openSchedules(e) {
     window.location = url;
 }//function openConfig(e)
 function openQuestions(e) {
+    saveScrollPosition("GameScrollPosition",true);
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -313,33 +323,11 @@ function openQuestions(e) {
     //The GameQuestions page requires the https:// for some reason
     url = PrepareURL(url);
 
-    iframeHtml = '<iframe id="modalIframeId" width="100%" height="99%" marginWidth="0" marginHeight="0" ' +
-                 'frameBorder="0" scrolling="yes"/>';
-
-    dHeight = 620;
-
-    $("#dialog-iframe").html(iframeHtml);
-    wndIframe.title('Select Questions for Game - ' + gameName);
-    wndIframe.setOptions({
-        height: dHeight,
-        width: 1300,
-        position: {
-            top: 25,
-            left: 25
-        }
-    });
-
-    wndIframe.bind("close", function () {
-        SyncServerData();
-    });
-
-    wndIframe.open();
-
-    $("#modalIframeId").attr("src", url);
-
+    window.location = url;
 
 }//function openQuestions(e)
 function PublishNow(e) {
+    saveScrollPosition("GameScrollPosition",true);
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -349,27 +337,30 @@ function PublishNow(e) {
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
     publishedInd = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Published;
 
+    OpenProgressBarWindow(40, 1000);
+
     url = root + 'Games/Publish/' + gameId + '/1';
     if (publishedInd) {
         url = root + 'Games/Publish/' + gameId + '/0';
     }
-
     url = PrepareURL(url);
-    $.getJSON(url, {},
-    function (data) {
+    ajaxGetHelper(url)
+        .done(function (data) {
+            CloseProgressBarWindow();
 
-        //prepare and open informational dialog for clone action
-        title = (publishedInd) ? 'Unpublish Game' : 'Publish Game';
-        ShowGeneralDialog(wndGen, title, data.Message, '', false, '', true, 'Close');
-        $("#noGen").click(function () {
-            wndGen.close();
-        });
+            //prepare and open informational dialog for clone action
+            title = (publishedInd) ? 'Unpublish Game' : 'Publish Game';
+            ShowGeneralDialog(wndGen, title, data.Message, '', false, '', true, 'Close');
+            $("#noGen").click(function () {
+                wndGen.close();
+            });
 
-    });//post
+        })//post
 }//function PublishNow(e)
 function openPlayers(e) {
+    saveScrollPosition("GameScrollPosition",true);
 
-    OpenProgressBarWindow();
+    OpenProgressBarWindow(40, 1000);
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -384,6 +375,7 @@ function openPlayers(e) {
 
 }//function openPlayers(e)
 function openPreview(e) {
+    saveScrollPosition("GameScrollPosition",true);
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -393,11 +385,13 @@ function openPreview(e) {
     gameCode = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Code;
 
     ShowPreviewDialog(gameCode, 'TestName', 'TestName');
+    restoreScrollPosition("GameScrollPosition");
 
 }//function openPreview(e)
 function openResults(e) {
-
     e.preventDefault();
+    saveScrollPosition("GameScrollPosition",true);
+
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
 
@@ -412,6 +406,10 @@ function openResults(e) {
 
 }
 function CloneNow(e) {
+    console.log('func CloneNow begin');
+
+    saveScrollPosition("GameScrollPosition",true);
+    saveScrollPositionPrivate("GameScrollPosition");
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -420,155 +418,136 @@ function CloneNow(e) {
     gameGrid = $('#MyGamesGrid').data('kendoGrid');
     gameId = gameGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
+    OpenProgressBarWindow(40, 1000);
     url = PrepareURL(root + 'Games/Clone/' + gameId);
+    ajaxGetHelper(url)
+        .done(function (data) {
+            CloseProgressBarWindow();
+            //prepare and open informational dialog for clone action
+            ShowGeneralDialog(wndGen, 'Clone Game', data.Message, '', false, '', true, 'Close');
 
-    $.getJSON(url, {},
-    function (data) {
+            $("#noGen").click(function () {
+                console.log('#noGen click event');
 
-        //prepare and open informational dialog for clone action
-        ShowGeneralDialog(wndGen, 'Clone Game', data.Message, '', false, '', true, 'Close');
-        $("#noGen").click(function () {
-            wndGen.close();
-        });
+                wndGen.close();
+                restoreScrollPositionPrivate("GameScrollPosition"); //we use the private, triggering the clone somehow moves scrolltop to zero
+            });
 
-    });//post
+        })//post
+
+    console.log('func CloneNow end');
 }//function CloneNow(e) {
 
 /*
  FUNCTIONS THAT WILL SUPPORT THE EVENT HANDLERS
 */
-function ShowGeneralDialog(aWnd, aTitle, message1, message2, okInd, okText, closeInd, closeText) {
-
-    aWnd.title(aTitle);
-
-    $('#dialog-generalMessage').html(message1);
-    $('#dialog-generalMessage2').html(message2);
-
-    aWnd.center().open();
-
-    if (okInd) {
-        $("#yesGen").show();
-        $("#yesGen").html(okText);
-    } else {
-        $("#yesGen").hide();
-    }
-
-    if (closeInd) {
-        $("#noGen").show();
-        $("#noGen").html(closeText);
-    } else {
-        $("#noGen").hide();
-    }
-
-}//function ShowGeneralDialog
 
 function ShowReportDialog(code, gameId, gameType, playerCount) {
 
     url = PrepareURL(root + '/api/Players/GetPlayerByGameCode/' + code);
-    $.getJSON(url, {},
-    function (data) {
-
-        if (gameType == 'Match') {
-            if (playerCount > 1) {
+    ajaxGetHelper(url)
+        .done(function (data) {
+            if (gameType == 'Match') {
+                if (playerCount > 1) {
+                    $('#reportTypeDiv').show();
+                    $('#reportMessageDiv').hide();
+                    $('select[name="reportType"]').empty();
+                    $('select[name="reportType"]').append('<option>Game Match Summary</option><option>Player Match Summary</option><option>Player Match Stats</option>');
+                } else {
+                    $('#reportTypeDiv').hide();
+                    $('#reportMessageDiv').html('At least two players must have submitted game plays to generate a report.');
+                }
+            } else if (gameType == 'Test') {
                 $('#reportTypeDiv').show();
                 $('#reportMessageDiv').hide();
                 $('select[name="reportType"]').empty();
-                $('select[name="reportType"]').append('<option>Game Match Summary</option><option>Player Match Summary</option><option>Player Match Stats</option>');
-            } else {
-                $('#reportTypeDiv').hide();
-                $('#reportMessageDiv').html('At least two players must have submitted game plays to generate a report.');
-            }
-        } else if (gameType == 'Test') {
-            $('#reportTypeDiv').show();
-            $('#reportMessageDiv').hide();
-            $('select[name="reportType"]').empty();
-            $('select[name="reportType"]').append('<option>Game Test Scores</option><option>Game Test Stats</option>');
-        } else if (gameType == 'Last Man Standing') {
-            $('#reportTypeDiv').show();
-            $('#reportMessageDiv').hide();
-            $('select[name="reportType"]').empty();
-            $('select[name="reportType"]').append('<option>Game LMS Summary</option><option>Player LMS Summary</option><option>Player LMS Detail</option>');
-        }
-
-        $('select[name="reportType"]').change(function () {
-            //show players select menu when appropriate
-            switch ($('select[name="reportType"]').val()) {
-                case 'Game Match Summary':
-                    $('#RplayersDiv').hide();
-                    break;
-                case 'Player Match Summary':
-                    $('#RplayersDiv').show();
-                    break;
-                case 'Player Match Stats':
-                    $('#RplayersDiv').hide();
-                    break;
-                case 'Game Test Scores':
-                    $('#RplayersDiv').hide();
-                    break;
-                case 'Game Test Stats':
-                    $('#RplayersDiv').hide();
-                    break;
-                case 'Game LMS Summary':
-                    $('#RplayersDiv').hide();
-                    break;
-                case 'Player LMS Summary':
-                    $('#RplayersDiv').hide();
-                    break;
-                case 'Player LMS Detail':
-                    $('#RplayersDiv').show();
-                    break;
-            }
-
-        });
-
-        //fill the players selection menu
-        $('select[name="Rplayers"]').empty();
-        data.forEach(function (value, index, ar) {
-            $('select[name="Rplayers"]').append('<option data-playerid="' + value.Id + '">' + value.PlayerGameName + '</option>');
-        });
-
-        wndResult.setOptions({
-            width: 245,
-        });
-        wndResult.center().open();
-        $('#RplayersDiv').hide(); //hide the players selection initially because a first selection doesnt need player selection
-
-        $("#reportYes").click(function () {
-
-            //get selected report name
-            reportName = $('select[name="reportType"]').val();
-
-            playerId = $('select[name="Rplayers"] option:selected').attr('data-playerId');
-
-            reportURL = "";
-            if (gameType == 'Match') {
-                if (reportName == "Game Match Summary") {
-                    reportURL = 'Reports/GamePlayerMatchMinMax/' + gameId + '/' + code;
-                } else if (reportName == "Player Match Summary") {
-                    reportURL = 'Reports/PlayerMatchSummary/' + gameId + '/' + code + '/' + playerId;
-                }
-            } else if (gameType == 'Test') {
-                reportURL = 'Reports/PlayerTestSummary/' + gameId + '/' + code;
+                $('select[name="reportType"]').append('<option>Game Test Scores</option><option>Game Test Stats</option>');
             } else if (gameType == 'Last Man Standing') {
-                if (reportName == "Game LMS Summary") {
-                    reportURL = 'Reports/GameLMSSummary/' + gameId + '/' + code;
-                } else if (reportName == "Player LMS Summary") {
-                    reportURL = 'Reports/PlayerLMSSummary/' + gameId + '/' + code + '/0';
-                } else if (reportName == "Player LMS Detail") {
-                    reportURL = 'Reports/PlayerLMSDetail/' + gameId + '/' + code + '/' + playerId;
-                }
+                $('#reportTypeDiv').show();
+                $('#reportMessageDiv').hide();
+                $('select[name="reportType"]').empty();
+                $('select[name="reportType"]').append('<option>Game LMS Summary</option><option>Player LMS Summary</option><option>Player LMS Detail</option>');
             }
 
-            window.location = PrepareURL(root + reportURL);
+            $('select[name="reportType"]').change(function () {
+                //show players select menu when appropriate
+                switch ($('select[name="reportType"]').val()) {
+                    case 'Game Match Summary':
+                        $('#RplayersDiv').hide();
+                        break;
+                    case 'Player Match Summary':
+                        $('#RplayersDiv').show();
+                        break;
+                    case 'Player Match Stats':
+                        $('#RplayersDiv').hide();
+                        break;
+                    case 'Game Test Scores':
+                        $('#RplayersDiv').hide();
+                        break;
+                    case 'Game Test Stats':
+                        $('#RplayersDiv').hide();
+                        break;
+                    case 'Game LMS Summary':
+                        $('#RplayersDiv').hide();
+                        break;
+                    case 'Player LMS Summary':
+                        $('#RplayersDiv').hide();
+                        break;
+                    case 'Player LMS Detail':
+                        $('#RplayersDiv').show();
+                        break;
+                }
 
-            wndResult.close();
-        });
+            });
 
-        $("#reportNo").click(function () {
-            wndResult.close();
-        });
+            //fill the players selection menu
+            $('select[name="Rplayers"]').empty();
+            data.forEach(function (value, index, ar) {
+                $('select[name="Rplayers"]').append('<option data-playerid="' + value.Id + '">' + value.PlayerGameName + '</option>');
+            });
 
-    });//post
+            wndResult.setOptions({
+                width: 245,
+            });
+            wndResult.center().open();
+            $('#RplayersDiv').hide(); //hide the players selection initially because a first selection doesnt need player selection
+
+            $("#reportYes").click(function () {
+
+                //get selected report name
+                reportName = $('select[name="reportType"]').val();
+
+                playerId = $('select[name="Rplayers"] option:selected').attr('data-playerId');
+
+                reportURL = "";
+                if (gameType == 'Match') {
+                    if (reportName == "Game Match Summary") {
+                        reportURL = 'Reports/GamePlayerMatchMinMax/' + gameId + '/' + code;
+                    } else if (reportName == "Player Match Summary") {
+                        reportURL = 'Reports/PlayerMatchSummary/' + gameId + '/' + code + '/' + playerId;
+                    }
+                } else if (gameType == 'Test') {
+                    reportURL = 'Reports/PlayerTestSummary/' + gameId + '/' + code;
+                } else if (gameType == 'Last Man Standing') {
+                    if (reportName == "Game LMS Summary") {
+                        reportURL = 'Reports/GameLMSSummary/' + gameId + '/' + code;
+                    } else if (reportName == "Player LMS Summary") {
+                        reportURL = 'Reports/PlayerLMSSummary/' + gameId + '/' + code + '/0';
+                    } else if (reportName == "Player LMS Detail") {
+                        reportURL = 'Reports/PlayerLMSDetail/' + gameId + '/' + code + '/' + playerId;
+                    }
+                }
+
+                window.location = PrepareURL(root + reportURL);
+
+                wndResult.close();
+            });
+
+            $("#reportNo").click(function () {
+                wndResult.close();
+            });
+
+        })//post
 } //function ShowReportDialog
 
 function ShowPreviewDialog(code, firstName, nickName) {
@@ -595,7 +574,7 @@ function ShowPreviewDialog(code, firstName, nickName) {
                 left: "30%"
             }
         });
-        wndIframe.open();
+        wndIframe.center().open();
 
         $("#modalIframeId").attr("src", url);
     } else {
@@ -659,62 +638,16 @@ function restoreGridOptions(grid) {
 
 };//function restoreGridOptions() {
 
-/* Supporting Message Summary (for EDIT Popup) - Top of Create/Edit popup*/
-function MyErrorHandler(args) {
-    console.log('MyErrorHandler');
-    if (args.errors) {
-        var grid = $("#MyGamesGrid").data("kendoGrid");
-        var validationTemplate = kendo.template($("#SummaryValidationMessageTemplate").html());
-        grid.one("dataBinding", function (e) {
-            e.preventDefault();
-
-            grid.editable.element.find(".errors").html(''); //let's clear the validation summary
-
-            if (IsGeneralMessage(args.errors)) {
-                var renderedTemplate = validationTemplate({ messages: args.errors[""].errors });
-                grid.editable.element.find(".errors").append(renderedTemplate);
-            }
-        });
-
-        PopulateInlineMessages(grid, args);
-
-    }//if (args.errors)
-}//function MyErrorHandler(args)
-
-function IsGeneralMessage(errors) {
-    isGeneralMessage = false;
-
-    if (errors[""] != undefined) isGeneralMessage = true;
-    return isGeneralMessage;
-}
-
-/*Supports the Inline Messages for MyGames Edit Popup attached to the Fields of the Edit Popup*/
-var validationMessageTmpl = kendo.template($("#InLineMessage").html());
-
-function PopulateInlineMessages(grid, args) {
-    for (var error in args.errors) {
-        showMessage(grid.editable.element, error, args.errors[error].errors);
-    }
-}//function PopulateInlineMessages(grid,args)
-
-function showMessage(container, name, errors) {
-    //add the validation message to the form
-    container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]")
-    .replaceWith(validationMessageTmpl({ field: name, message: errors[0] }))
-
-    container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]").click(function () {
-        $(this).hide();
-    });
-
-}
-
 /*End of Support for Inline Messages*/
-
 function SyncServerData() {
-    console.log('SyncServerData');
+    console.log('func SyncServerData begin');
+
+    saveScrollPosition("GameScrollPosition");
     gridDataSource = $("#MyGamesGrid").data("kendoGrid").dataSource;
     gridDataSource.read();
+    restoreScrollPosition("GameScrollPosition");
 
+    console.log('func SyncServerData end');
 }//SyncServerData()
 
 /*
@@ -784,18 +717,6 @@ function StyleGridCommandRow(uid) {
     }
 }//StyleGridCommandRow
 
-function OpenProgressBarWindow() {
-
-    wndProgress.title("In Progress. Please Wait ...");
-    wndProgress.center().open(); //open progress window
-
-    progressBar = $('#progressbar').data('kendoProgressBar')
-    setTimeout(function () {
-        newProgressBarValue = progressBar.value() + 10;
-        progressBar.value(newProgressBarValue);
-    }
-    , 500);
-}
 /*
 MNS DEBUG
 */
@@ -848,11 +769,9 @@ function Onsavechanges() {
     console.log('Onsavechanges event');
 }
 
-var wndGen;
-
 $(document).ready(function () {
 
-    grid = $("#MyGamesGrid").data("kendoGrid");
+    var grid = $("#MyGamesGrid").data("kendoGrid"); //NEED THIS GLOBAL GRID VAR
 
     /*
     Supporting the Delete Confirmation
@@ -965,6 +884,12 @@ $(document).ready(function () {
     grid.bind("save", Onsave);
     grid.bind("savechanges", Onsavechanges);
 
+    /*
+    saves the scroll position when the scroll bar is used
+    */
+    $(window).scroll(function () {
+        saveScrollPosition("GameScrollPosition");
+    });
 
     //Will restore Grid configuration/options/command button event handlers - every time the Games Index page is called
     restoreGridOptions(grid);

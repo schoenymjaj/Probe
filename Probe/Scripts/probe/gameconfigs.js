@@ -181,30 +181,6 @@ function openEdit(e) {
 /*
  FUNCTIONS THAT WILL SUPPORT THE EVENT HANDLERS
 */
-function ShowGeneralDialog(aWnd, aTitle, message1, message2, okInd, okText, closeInd, closeText) {
-
-    aWnd.title(aTitle);
-
-    $('#dialog-generalMessage').html(message1);
-    $('#dialog-generalMessage2').html(message2);
-
-    aWnd.center().open();
-
-    if (okInd) {
-        $("#yesGen").show();
-        $("#yesGen").html(okText);
-    } else {
-        $("#yesGen").hide();
-    }
-
-    if (closeInd) {
-        $("#noGen").show();
-        $("#noGen").html(closeText);
-    } else {
-        $("#noGen").hide();
-    }
-
-}//function ShowGeneralDialog
 
 function saveGridOptions(grid) {
     localStorage["GameConfigsGridOptions"] = kendo.stringify(grid.getOptions());
@@ -240,57 +216,6 @@ function restoreGridOptions(grid) {
     }
 
 };//function restoreGridOptions() {
-
-/* Supporting Message Summary (for EDIT Popup) - Top of Create/Edit popup*/
-function MyErrorHandler(args) {
-    console.log('MyErrorHandler');
-    if (args.errors) {
-        var grid = $("#MyGameConfigsGrid").data("kendoGrid");
-        var validationTemplate = kendo.template($("#SummaryValidationMessageTemplate").html());
-        grid.one("dataBinding", function (e) {
-            e.preventDefault();
-
-            grid.editable.element.find(".errors").html(''); //let's clear the validation summary
-
-            if (IsGeneralMessage(args.errors)) {
-                var renderedTemplate = validationTemplate({ messages: args.errors[""].errors });
-                grid.editable.element.find(".errors").append(renderedTemplate);
-            }
-        });
-
-        PopulateInlineMessages(grid, args);
-
-    }//if (args.errors)
-}//function MyErrorHandler(args)
-
-function IsGeneralMessage(errors) {
-    isGeneralMessage = false;
-
-    if (errors[""] != undefined) isGeneralMessage = true;
-    return isGeneralMessage;
-}
-
-/*Supports the Inline Messages for MyGameConfigs Edit Popup attached to the Fields of the Edit Popup*/
-var validationMessageTmpl = kendo.template($("#InLineMessage").html());
-
-function PopulateInlineMessages(grid, args) {
-    for (var error in args.errors) {
-        showMessage(grid.editable.element, error, args.errors[error].errors);
-    }
-}//function PopulateInlineMessages(grid,args)
-
-function showMessage(container, name, errors) {
-    //add the validation message to the form
-    container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]")
-    .replaceWith(validationMessageTmpl({ field: name, message: errors[0] }))
-
-    container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]").click(function () {
-        $(this).hide();
-    });
-
-}
-
-/*End of Support for Inline Messages*/
 
 function SyncServerData() {
     console.log('SyncServerData');
@@ -401,7 +326,7 @@ var wndGen;
 
 $(document).ready(function () {
 
-    grid = $("#MyGameConfigsGrid").data("kendoGrid");
+    var grid = $("#MyGameConfigsGrid").data("kendoGrid"); //NEED THIS GLOBAL GRID VAR
 
     /*
     Supporting the Delete Confirmation

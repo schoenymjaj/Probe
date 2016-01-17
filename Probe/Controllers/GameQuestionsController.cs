@@ -15,6 +15,7 @@ using Probe.Helpers.Validations;
 using Probe.Helpers.QuestionHelpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using Probe.Helpers.Mics;
 
 namespace Probe.Controllers
 {
@@ -65,7 +66,9 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return Json(ModelState.ToDataSourceResult());
             }
         }//public JsonResult GetGameQuestions([DataSourceRequest]DataSourceRequest request)
 
@@ -91,7 +94,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }
@@ -131,9 +135,8 @@ namespace Probe.Controllers
 
                 //We need to clone the question and set the UsedInGame field to true. The cloned questions
                 //is what will be associated with the game
-                Dictionary<long,long> choiceXreference = new Dictionary<long,long>();
-                long clonedQuestionId = ProbeQuestion.CloneQuestion(this, db, true, gameQuestion.QuestionId, ref choiceXreference);
-                gameQuestion.QuestionId = clonedQuestionId; //we do a switch to the cloned question
+                ChoiceQuestion clonedQuestion = ProbeQuestion.CloneQuestion(this, ref db, true, gameQuestion.QuestionId);
+                gameQuestion.Question = clonedQuestion; //we do a switch to the cloned question
 
 
                 db.GameQuestion.Add(gameQuestion);
@@ -145,7 +148,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
 
@@ -181,94 +185,76 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
 
         }//public JsonResult DeleteGameQuestion([DataSourceRequest] DataSourceRequest request, GameQuestionDTO gameQuestionDTO)
 
-        //private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
-        //{
-
-        //    //find all questions for the user that are available for use in a game and set in allQuestions var
-        //    IQueryable<ProbeDAL.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
-        //    switch (db.Game.Find(SelectedGame).GameType.Name)
-        //    {
-        //        case "Test":
-        //            allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
-        //            break;
-        //        case "Match":
-        //            allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
-        //            break;
-        //        default:
-        //            allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
-        //            break;
-                
-        //    }
-
-        //    //get all questions (id's only) that are currently in use 
-        //    var usedQuestions = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.QuestionId); //THIS IS THE ORIGINAL
-
-        //    if (gameQuestionId != null)
-        //    {
-        //        //include the question for the current GameQuestion
-        //        long currentQuestionId = db.GameQuestion.Find(gameQuestionId).Question.Id;
-        //        return allQuestions.Where(aq => (aq.Id == currentQuestionId) || (!usedQuestions.Contains(aq.Id))).OrderBy(aq => aq.Name).ToList();
-        //    }
-        //    else
-        //    {
-        //        return allQuestions.Where(aq => !usedQuestions.Contains(aq.Id)).OrderBy(aq => aq.Name).ToList();
-        //    }
-
-        //}
-
         private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
         {
-
-            //find all questions for the user that are available for use in a game and set in allQuestions var
-            IQueryable<ProbeDAL.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
-            switch (db.Game.Find(SelectedGame).GameType.Name)
+            try
             {
-                case "Test":
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
-                    break;
-                case "Last Man Standing":
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
-                    break;
-                case "Match":
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
-                    break;
-                default:
-                    allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
-                    break;
 
+                //find all questions for the user that are available for use in a game and set in allQuestions var
+                IQueryable<ProbeDAL.Models.Question> allQuestions = Enumerable.Empty<Question>().AsQueryable();
+                switch (db.Game.Find(SelectedGame).GameType.Name)
+                {
+                    case "Test":
+                        allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
+                        break;
+                    case "Last Man Standing":
+                        allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame && cq.Choices.Any(c => c.Correct));
+                        break;
+                    case "Match":
+                        allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
+                        break;
+                    default:
+                        allQuestions = db.ChoiceQuestion.Where(cq => cq.AspNetUsersId == loggedInUserId && !cq.UsedInGame);
+                        break;
+
+                }
+
+                //get all questions (question names only) that are currently in use 
+                var usedQuestionNames = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.Question.Name); //THIS IS THE ORIGINAL
+
+                if (gameQuestionId != null)
+                {
+                    //include the question for the current GameQuestion. And remove all questions that possess a name that is already been used
+                    string currentQuestionName = db.GameQuestion.Find(gameQuestionId).Question.Name;
+
+                    return allQuestions.Where(aq => (aq.Name == currentQuestionName) || (!usedQuestionNames.Contains(aq.Name))).OrderBy(aq => aq.Name).ToList();
+                }
+                else
+                {
+                    //remove all questions that possess a name that is already been used
+                    return allQuestions.Where(aq => !usedQuestionNames.Contains(aq.Name)).OrderBy(aq => aq.Name).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
-            //get all questions (question names only) that are currently in use 
-            var usedQuestionNames = db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Select(gq => gq.Question.Name); //THIS IS THE ORIGINAL
-
-            if (gameQuestionId != null)
-            {
-                //include the question for the current GameQuestion. And remove all questions that possess a name that is already been used
-                string currentQuestionName = db.GameQuestion.Find(gameQuestionId).Question.Name;
-
-                return allQuestions.Where(aq => (aq.Name == currentQuestionName) || (!usedQuestionNames.Contains(aq.Name))).OrderBy(aq => aq.Name).ToList();
-            }
-            else
-            {
-                //remove all questions that possess a name that is already been used
-                return allQuestions.Where(aq => !usedQuestionNames.Contains(aq.Name)).OrderBy(aq => aq.Name).ToList();
-            }
-
-        }
+        }//private IList<Question> GetRemainingQuestions(long SelectedGame, string loggedInUserId, long? gameQuestionId)
 
         private int GetNextOrderNbr(long SelectedGame) {
-            if (db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Count() > 0)
+
+            try
             {
-                return (int)db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Max(gq => gq.OrderNbr) + 1;
+                if (db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Count() > 0)
+                {
+                    return (int)db.GameQuestion.Where(gq => gq.GameId == SelectedGame).Max(gq => gq.OrderNbr) + 1;
+                }
+                else
+                {
+                    return 1;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return 1;
+                throw ex;
             }
         }
 

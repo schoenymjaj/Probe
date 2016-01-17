@@ -7,12 +7,15 @@ using ProbeDAL.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Probe.Helpers.Mics;
+using Probe.DAL;
 
 namespace Probe.Controllers
 {
     [RequireHttps]
     public class HomeController : Controller
     {
+        ProbeDataContext db = new ProbeDataContext();
+
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -32,6 +35,7 @@ namespace Probe.Controllers
                 id = 0;
             }
 
+            ViewBag.InCommonVersion = db.ConfigurationG.Where(c => c.Name == "InCommon-Version").FirstOrDefault().Value;
             ViewBag.AboutSectionOffset = id;
             return View("About");
         }

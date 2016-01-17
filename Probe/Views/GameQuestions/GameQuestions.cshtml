@@ -1,18 +1,138 @@
 ﻿@using Probe.Models
 @{
-    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    Layout = "~/Views/Shared/_LayoutWide.cshtml";
 }
 
 <style>
-    .quesContainer {
-        float: left;
-        margin-left: 0px;
-        min-width: 400px;
-        min-height: 300px;
-        height: 100%;
-        width: 440px;
-        border: 5px solid #CDCDCD;
+    /*
+        BEGIN - STYLE FOR COLUMNS THAT SUPPORT QUESTION DETAILS, AVAILABLE QUESTION LIBRARY,
+        GAME QUESTIONS, AND BUTTONS
+        */
+
+    .headerHeight1 {
+        height: 50px;
     }
+    .headerHeight2 {
+        height: 40px;
+    }
+
+    .qlGameColumns {
+        overflow: hidden;
+    }
+
+    .lfRtButtonsColumn {
+        width: 40px;
+        text-align: center;
+    }
+
+    /*
+        DISPLAY QUESTIONAUTOCOMPLETE SEARCH TEXTBOX UP TO A SPECIFIC WINDOW WIDTH
+    */
+    @@media only screen and (min-width: 1405px) {
+        #QuestionAutoCompleteDiv {
+            display: block;
+        }
+    }
+
+    @@media only screen and (max-width: 1404px) {
+        #QuestionAutoCompleteDiv {
+            display: block;  /*display: none;*/
+        }
+    }
+
+    /*
+        COLUMNS FOR QUESTION DETAILS, QUESTIONS, GAME-QUESTIONS - STYLE WILL CHANGE BASED ON
+        ONE BREAKPOINT (1100px)
+    */
+    @@media only screen and (max-width: 1100px) {
+        .qDetailsColumn {
+            display: none;
+            width: 0px;
+            height: 0px;
+            min-width: 0px;
+            float: left;
+            padding-top: 10px;
+            padding-right: 2px;
+        }
+
+        .upDnButtonsColumn {
+            display: none;
+            width: 0px;
+            float: right;
+        }
+
+        .rowOfColumns {
+            width: 1000px;
+        }
+
+        .qlGameColumns > div {
+            text-align: left;
+            height: 100%;
+            float: left;
+            margin-left: 0px;
+            padding: 5px;
+            /*border: 1px solid blue;*/
+            display: inline-block;
+        }
+
+        .quesContainer {
+        }
+
+        .quesContainerCalcWidth {
+            width: 400px;
+        }
+
+        .quesContainerCalcWidthZero {
+        }
+    }
+    /*@@media only screen and (max-width: 1101px) {*/
+    @@media screen and (min-width: 1101px) {
+        .qDetailsColumn {
+            display: block;
+            width: 200px;
+            min-width: 200px;
+            float: left;
+            padding-top: 10px;
+            padding-right: 2px;
+        }
+
+        .upDnButtonsColumn {
+            display: block;
+            width: 40px;
+            /*float: right;*/
+        }
+
+        .rowOfColumns {
+            width: 100%;
+        }
+
+        .qlGameColumns > div {
+            text-align: left;
+            height: 100%;
+            float: left;
+            margin-left: 0px;
+            padding: 5px;
+            /*border: 1px solid blue;*/
+        }
+
+        .quesContainer {
+            min-width: 320px;
+        }
+
+        .quesContainerCalcWidth {
+            width: calc(50% - 40px);
+        }
+
+        .quesContainerCalcWidthZero {
+            width: 50%;
+        }
+    }
+    /*@@media screen and (min-width: 1101px)*/
+
+    /*
+        END - STYLE FOR COLUMNS THAT SUPPORT QUESTION DETAILS, AVAILABLE QUESTION LIBRARY,
+        GAME QUESTIONS, AND BUTTONS
+        */
 
     .k-block:not(.k-state-selected) {
         background-color: #00edf0;
@@ -23,27 +143,15 @@
         border-color: #111111;
     }
 
-    #quesTd {
-        height: 300px;
-    }
-    #gameQuesTd {
-        height: 300px;
-    }
-
-    #addRemButtonsTd {
-        vertical-align: middle;
-    }
-
     /*
-        margin - affects the vertical spacing of the items in the listviews
-        padding - affects the height of the items in the listviews
-    */
+            margin - affects the vertical spacing of the items in the listviews
+            padding - affects the height of the items in the listviews
+        */
     .draggable {
         margin: 5px;
         padding: 5px;
         float: left;
         color: #fff;
-        width: 430px;
     }
 
     .move {
@@ -70,65 +178,116 @@
         width: 217px;
     }
 
-    #questionDetailsViewTd {
-        width: 300px;
-    }
-    #questionDetailsView {
-        width: 300px;
-        min-height: 300px;
-        padding: 10px;
-        border: solid;
-        border-color: black;
-    }
     #instructionsView {
-        width: 300px;
+        /*
         padding: 10px;
         border: solid;
         border-color: black;
-        font-size: large;
+            */
+        font-size: 16px;
+        font-style: italic;
         color: black;
     }
 
+    #dialog-generalMessage {
+        padding-bottom: 10px;
+    }
+
+    .dialog-generalButtons {
+        padding-top: 15px;
+        float: right;
+    }
 </style>
 
-<div style="padding:0px;">
-    <table>
-        <tr>
-            <td>
-                <h2 class="gqMargin" style="float: left">Selected Question</h2>
-            </td>
-            <td style="text-align: left">
-                <h2 class="gqMargin" style="float: left">Question Library</h2>
-                <span class="k-widget k-autocomplete k-header k-textbox gameQuesWidth gqMargin" style="float: left">
-                    @Html.TextBox("QuestionSearchFilter", "", new { @class = "k-textbox" })
-                </span>
-            </td>
-            <td></td>
-            <td style="text-align: center">
-                <h2 id="gameTitle" class="gqMargin">Game</h2>
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="questionDetailsViewTd">
-                <table>
-                    <tr>
-                        <td>
-                            <div id="questionDetailsView"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div id="instructionsView">Please fill out your game with the questions available to you from the Question Library. Select your questions and use the Move button or Drag them over to your Game area.</div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td id="quesTd">
-                <div id="quesListview" class="quesContainer"></div>
-                <div class="k-pager-wrap" id="quesListviewPager"></div>
-            </td>
-            <td id="addRemButtonsTd">
+<h2>Questions for Game <i><b>@ViewBag.GameName</b></i></h2>
+
+<div style="vertical-align:text-bottom;padding-bottom:5px;margin:0px; width:100%">
+    <div id="instructionsView" style="float:left"></div>
+    <div style="margin-bottom:7px;float:right">@Html.ActionLink("Back to My Games", "Index", "Games")</div>
+</div>
+<div style="clear:both"></div>
+<div class="rowOfColumns">
+    <div class="qDetailsColumn headerHeight1">
+        <h3 class="gqMargin" style="margin-top: 13px;text-align:left"></h3>
+    </div>
+    <div class="qlGameColumns headerHeight1">
+        <div class="headerHeight1" style="width:100%;padding:5px;">
+            <div style="width:100%">
+                <div style="margin-top:6px;float:left;margin-right:3px">
+                    @(Html.Kendo().DropDownList().Name("ACLDropdownList")
+                                        .DataValueField("Id")
+                                        .DataTextField("Description")
+                                        .DataSource(source =>
+                                            { source.Read(read => { read.Action("Get/0", "ACLs"); }); }
+                                            )
+                                        .Events(events => events.Change("OnACLDrpDownChange"))
+                    )
+                </div>
+                <div style="float:left">
+                    <span class="k-widget k-autocomplete k-header k-textbox gameQuesWidth gqMargin" style="float: left">
+                        @Html.TextBox("QuestionSearchFilter", "", new { @class = "k-textbox" })
+                    </span>
+                </div>
+                <div id="QuestionAutoCompleteDiv" style="float:left;padding-top:5px;padding-left:10px;padding-right:0px;margin-right:0px">
+                    @(Html.Kendo().AutoComplete()
+                    .Name("QuestionAutoComplete") //The name of the autocomplete is mandatory. It specifies the "id" attribute of the widget.
+                    .IgnoreCase(true)
+                    .Placeholder("Enter search keyword for one question")
+                    .Filter("contains")
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetQuestionsForAutoComplete", "ChoiceQuestions").Data("ReturnGameHandler"); //Set the Action and Controller name
+                        })
+                        .ServerFiltering(false); //If true the DataSource will not filter the data on the client.
+                    })
+                    .Events(e => e
+                    .Change("QuestionAutocompleteChange")
+                    )
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="upDnButtonsColumn headerHeight1">
+        </div>
+    </div>
+</div>
+<div class="rowOfColumns">
+    <div class="qDetailsColumn headerHeight2">
+        <h3 class="gqMargin" style="margin-top: 3px;text-align:left">Question Detail</h3>
+    </div>
+    <div class="qlGameColumns headerHeight2">
+        <div class="quesContainer quesContainerCalcWidth headerHeight2">
+            <div style="float:left;width:100%">
+                <h3 class="gqMargin" style="margin-top: 5px;text-align:center">Questions Available</h3>
+            </div>
+        </div>
+        <div class="lfRtButtonsColumn headerHeight2" style="margin-left:0px">
+            <div>
+            </div>
+        </div>
+        <div class="quesContainer quesContainerCalcWidth headerHeight2" style="text-align: center">
+            <h3 class="gqMargin" style="margin-top:5px">Game <i><b>@ViewBag.GameName</b></i></h3>
+        </div>
+        <div class="upDnButtonsColumn headerHeight2">
+        </div>
+    </div>
+</div>
+
+<div class="rowOfColumns">
+    <div class="qDetailsColumn">
+        <div id="questionDetailsView">No Question Selected</div>
+    </div>
+    <div class="qlGameColumns">
+        <div id="quesDiv" class="quesContainer quesContainerCalcWidth">
+            <div style="border:5px solid black;background-color:white;">
+                <div id="quesListview" class="quesContainer" style="border:1px solid green"></div>
+                <div id="quesListviewPager" class="k-pager-wrap"></div>
+            </div>
+        </div>
+        <div class="lfRtButtonsColumn">
+            <div id="lfRtButtonsDiv" style="margin-left:0px">
                 <table>
                     <tr>
                         <td><button id="gameQuesLtButton" type="button" style="margin-top: 10px"></button></td>
@@ -137,27 +296,49 @@
                         <td><button id="gameQuesRtButton" type="button" style="margin-top: 10px"></button></td>
                     </tr>
                 </table>
-            </td>
-            <td id="gameQuesTd">
+            </div>
+        </div>
+        <div id="gameQuesDiv" class="quesContainer quesContainerCalcWidth">
+            <div style="border:5px solid black;background-color:white;">
                 <div id="gameQuesListview" class="quesContainer"></div>
-                <div class="k-pager-wrap" id="gameQuesListviewPager"></div>
-            </td>
-            <td>
-                <table>
-                    <tr>
-                        <td><button id="gameQuesUpButton" type="button"></button></td>
-                    </tr>
-                    <tr>
-                        <td><button id="gameQuesDnButton" type="button" style="margin-top: 10px"></button></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                <div id="gameQuesListviewPager" class="k-pager-wrap"></div>
+            </div>
+        </div>
+        <div class="upDnButtonsColumn" style="margin-top:15px">
+            <table>
+                <tr>
+                    <td><button id="gameQuesUpButton" type="button"></button></td>
+                </tr>
+                <tr>
+                    <td><button id="gameQuesDnButton" type="button" style="margin-top: 7px"></button></td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<div style="vertical-align:text-bottom;padding-top:15px;margin:0px; width:100%">
+    <div style="margin-bottom:15px;float:left">@Html.ActionLink("Back to My Games", "Index", "Games")</div>
+</div>
+<script>
+    function ReturnGameHandler() {
+        return {
+            gameId: '@ViewBag.GameId'
+        };
+    }
+</script>
+
+<div id="dialog-general" class="noDisplay">
+    <div id="dialog-generalMessage"></div>
+    <div id="dialog-generalMessage2"></div>
+    <div class="dialog-generalButtons">
+        <button id="yesGen" class="k-button">OK</button>
+        <button id="noGen" class="k-button">Cancel</button>
+    </div>
 </div>
 
 <!-- START DISPLAY TEMPLATES -->
-
 <!-- END DISPLAY TEMPLATES -->
 
 <script>

@@ -14,6 +14,11 @@ $(function () {
 });
 
 /*
+    COMMON VARIABLES/TYPES
+*/
+var ACLType = { "All": 0, "Private": 1, "Global": 2 };
+
+/*
 FUNCTIONS FOR FORMATTING GRID COLUMNS
 */
 
@@ -114,6 +119,7 @@ function OnGridDataBound(e) {
     RepairGridHeader("MyQuestionsGrid");
 
     saveGridOptions(grid);
+    restoreScrollPosition("QuestionScrollPosition");
 
 }//function OnGridDataBound() {
 
@@ -181,6 +187,14 @@ function OnViewDrpDownChange(e) {
 
     grid.setOptions(gridOptions);
     grid.refresh();
+}//function OnViewDrpDownChange(e)
+
+function OnACLDrpDownChange(e) {
+    console.log('start OnACLDrpDownChange');
+
+    ClearQuestionSearchFilter();
+    grid.dataSource.read();
+    grid.dataSource.page(1);;
 }
 
 function OnQuestionSearchFilterChange(value) {
@@ -190,6 +204,7 @@ function OnQuestionSearchFilterChange(value) {
     if (existingContainsFilterValue != value) {
         grid = $("#MyQuestionsGrid").data("kendoGrid");
 
+        ClearQuestionAutocomplete();
         grid.dataSource.read();
         grid.dataSource.page(1);;
 
@@ -202,6 +217,8 @@ SUPPORT COMMAND EVENT HANDLERS FOR GRID
 */
 function openDeleteConfirm(e) {
     e.preventDefault();
+    saveScrollPosition("QuestionScrollPosition");
+
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
 
@@ -223,8 +240,8 @@ function openDeleteConfirm(e) {
     });
 }//function openDeleteConfirm(e)
 function openDetails(e) {
-
     e.preventDefault();
+    saveScrollPosition("QuestionScrollPosition");
 
     var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
     wndDetails.title("Question Details");
@@ -232,6 +249,8 @@ function openDetails(e) {
     wndDetails.center().open();
 }//function openDetails(e)
 function CloneNow(e) {
+    saveScrollPosition("QuestionScrollPosition");
+    saveScrollPositionPrivate("QuestionScrollPosition");
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -240,22 +259,26 @@ function CloneNow(e) {
     questionGrid = $('#MyQuestionsGrid').data('kendoGrid');
     questionId = questionGrid.dataItem('[data-uid="' + rowUID + '"]').Id;
 
+    OpenProgressBarWindow(40, 1000);
     url = PrepareURL(root + 'ChoiceQuestions/Clone/' + questionId);
-    $.getJSON(url, {},
-    function (data) {
+    ajaxGetHelper(url)
+        .done(function (data) {
+            CloseProgressBarWindow();
 
-        if (data.MessageId == 23) SyncServerData(); //successful clone - we need to sync question data
-        //prepare and open informational dialog for clone action
-        ShowGeneralDialog(wndGen, 'Clone Question', data.Message, '', false, '', true, 'Close');
-        $("#noGen").click(function () {
-            wndGen.close();
-        });
+            if (data.MessageId == 23) SyncServerData(); //successful clone - we need to sync question data
+            //prepare and open informational dialog for clone action
+            ShowGeneralDialog(wndGen, 'Clone Question', data.Message, '', false, '', true, 'Close');
+            $("#noGen").click(function () {
+                wndGen.close();
+                restoreScrollPositionPrivate("QuestionScrollPosition"); //we use the private, triggering the clone somehow moves scrolltop to zero
+            });
 
-    });//post
+        })//post
 }//function CloneNow(e) {
 function openChoices(e) {
+    saveScrollPosition("QuestionScrollPosition");
 
-    OpenProgressBarWindow();
+    OpenProgressBarWindow(40, 1000);
 
     var grid = this;
     var row = $(e.currentTarget).closest("tr");
@@ -270,30 +293,6 @@ function openChoices(e) {
 /*
  FUNCTIONS THAT WILL SUPPORT THE EVENT HANDLERS
 */
-function ShowGeneralDialog(aWnd, aTitle, message1, message2, okInd, okText, closeInd, closeText) {
-
-    aWnd.title(aTitle);
-
-    $('#dialog-generalMessage').html(message1);
-    $('#dialog-generalMessage2').html(message2);
-
-    aWnd.center().open();
-
-    if (okInd) {
-        $("#yesGen").show();
-        $("#yesGen").html(okText);
-    } else {
-        $("#yesGen").hide();
-    }
-
-    if (closeInd) {
-        $("#noGen").show();
-        $("#noGen").html(closeText);
-    } else {
-        $("#noGen").hide();
-    }
-
-}//function ShowGeneralDialog
 
 function saveGridOptions(grid) {
     localStorage["QuestionsGridOptions"] = kendo.stringify(grid.getOptions());
@@ -359,57 +358,6 @@ function restoreGridOptions(grid) {
 
 };//function restoreGridOptions() {
 
-/* Supporting Message Summary (for EDIT Popup) - Top of Create/Edit popup*/
-function MyErrorHandler(args) {
-    console.log('MyErrorHandler');
-    if (args.errors) {
-        var grid = $("#MyQuestionsGrid").data("kendoGrid");
-        var validationTemplate = kendo.template($("#SummaryValidationMessageTemplate").html());
-        grid.one("dataBinding", function (e) {
-            e.preventDefault();
-
-            grid.editable.element.find(".errors").html(''); //let's clear the validation summary
-
-            if (IsGeneralMessage(args.errors)) {
-                var renderedTemplate = validationTemplate({ messages: args.errors[""].errors });
-                grid.editable.element.find(".errors").append(renderedTemplate);
-            }
-        });
-
-        PopulateInlineMessages(grid, args);
-
-    }//if (args.errors)
-}//function MyErrorHandler(args)
-
-function IsGeneralMessage(errors) {
-    isGeneralMessage = false;
-
-    if (errors[""] != undefined) isGeneralMessage = true;
-    return isGeneralMessage;
-}
-
-/*Supports the Inline Messages for MyQuestions Edit Popup attached to the Fields of the Edit Popup*/
-var validationMessageTmpl = kendo.template($("#InLineMessage").html());
-
-function PopulateInlineMessages(grid, args) {
-    for (var error in args.errors) {
-        showMessage(grid.editable.element, error, args.errors[error].errors);
-    }
-}//function PopulateInlineMessages(grid,args)
-
-function showMessage(container, name, errors) {
-    //add the validation message to the form
-    container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]")
-    .replaceWith(validationMessageTmpl({ field: name, message: errors[0] }))
-
-    container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]").click(function () {
-        $(this).hide();
-    });
-
-}
-
-/*End of Support for Inline Messages*/
-
 function SyncServerData() {
     console.log('SyncServerData');
     gridDataSource = $("#MyQuestionsGrid").data("kendoGrid").dataSource;
@@ -448,7 +396,13 @@ function StyleGridCommandRow(uid) {
     //We don't style the current row if there is nothing selected. Current row = []
     if (currentDataItem != undefined) {
 
-        //THERE ARE NO CONDITIONALS FOR THE QUESTION COMMANDS IN THE COMMAND COLUMN
+        editButton = $(currentRow).find(".k-grid-edit:eq(0)");
+        deleteButton = $(currentRow).find(".k-grid-Delete");
+
+        if (currentDataItem.ACLId == ACLType.Global) {
+            editButton.hide();
+            deleteButton.hide();
+        }
 
     }
 }//StyleGridCommandRow
@@ -481,24 +435,21 @@ function DisplayQuestionDetails(data) {
     return html;
 }//function DisplayQuestionDetails(data)
 
-function OpenProgressBarWindow() {
-
-    wndProgress.title("In Progress. Please Wait ...");
-    wndProgress.center().open(); //open progress window
-
-    progressBar = $('#progressbar').data('kendoProgressBar')
-    setTimeout(function () {
-        newProgressBarValue = progressBar.value() + 10;
-        progressBar.value(newProgressBarValue);
-    }
-    , 500);
-}
-
 function ReturnQuestionSearchHandler() {
     return {
-        questionSearch: $('#QuestionSearchFilter').val()
+        questionSearch: $('#QuestionSearchFilter').val(),
+        aclid: ($('#ACLDropdownList').val() == "") ? 0 : parseInt($('#ACLDropdownList').val())
     };
 }
+
+function ClearQuestionAutocomplete() {
+    $("#QuestionAutoComplete").data("kendoAutoComplete").value('');
+}
+
+function ClearQuestionSearchFilter() {
+    $('#QuestionSearchFilter').val(''); //anything entered in question autocomplete will make question search filter empty
+}
+
 
 /*
 MNS DEBUG
@@ -553,7 +504,7 @@ var wndGen;
 
 $(document).ready(function () {
 
-    grid = $("#MyQuestionsGrid").data("kendoGrid");
+    var grid = $("#MyQuestionsGrid").data("kendoGrid");  //NEED THIS GLOBAL GRID VAR
 
     $('#QuestionSearchFilter').keyup(function () {
 
@@ -632,7 +583,7 @@ $(document).ready(function () {
     */
     $('#QuestionSearchFilter').parent().addClass("k-space-right").append('<span class="k-icon k-i-search"></span>');
     $('#QuestionSearchFilter').parent().css('width', '300px'); //this will increase the Autocomplete Textbox size
-    $('#QuestionSearchFilter').css('height', '28px');
+    $('#QuestionSearchFilter').css('height', '26px');
     $('#QuestionSearchFilter').attr('placeholder', 'Enter search words for questions ...');
 
 
@@ -658,6 +609,13 @@ $(document).ready(function () {
     grid.bind("save", Onsave);
     grid.bind("savechanges", Onsavechanges);
 
+    /*
+    saves the scroll position when the scroll bar is used
+    */
+    $(window).scroll(function () {
+        console.log('scroll:' + document.body.scrollTop)
+        saveScrollPosition("QuestionScrollPosition");
+    });
 
     //Will restore Grid configuration/options/command button event handlers - every time the Questions Index page is called
     restoreGridOptions(grid);

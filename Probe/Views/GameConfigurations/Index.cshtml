@@ -73,7 +73,7 @@
     @(Html.Kendo().AutoComplete()
     .Name("GameConfigAutoComplete") //The name of the autocomplete is mandatory. It specifies the "id" attribute of the widget.
     .IgnoreCase(true)
-    .Placeholder("Enter search value for one configuration ...")
+    .Placeholder("Enter search keyword for one configuration ...")
     .Filter("contains")
     .DataSource(source =>
         {
@@ -156,6 +156,7 @@
 <div id="dialog-progress" class="noDisplay" style="text-align:center">
     <div id="progressbar" style="width:80%"></div>
 </div>
+<div id="progress-spinner" style="text-align:center"></div>
 
 <!--
     TEMPLATES
@@ -210,7 +211,8 @@
     var root = '@Request.Url.Authority' + '@Url.Content("~")';
     var gameEditable = '@ViewBag.GameEditable';
 
-
+    /*Supports the Inline Messages for MyGames Edit Popup attached to the Fields of the Edit Popup*/
+    var validationMessageTmpl = kendo.template($("#InLineMessage").html());
 </script>
 
 <script src="@Url.Content("~/Scripts/probe/gameconfigs.js")"

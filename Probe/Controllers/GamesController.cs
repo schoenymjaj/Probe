@@ -30,7 +30,6 @@ namespace Probe.Controllers
         public ActionResult Index()
         {
 
-
             //Currently this logic and the setting of ViewBag does nothing. I am keeping
             //it here because eventually we will use this to establish a My Games
             //page that will behave differently for an Admin versus a regular user
@@ -59,7 +58,6 @@ namespace Probe.Controllers
         {
             try
             {
-
                 List<Probe.Models.ApplicationUser> userList = new ProbeIdentity().GetAllUsers();
 
                 var users = userList.OrderBy(u => u.UserName).Select(u => new { u.Id, u.UserName });
@@ -71,7 +69,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }
@@ -96,7 +95,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }
@@ -130,7 +130,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
@@ -148,7 +149,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
@@ -168,7 +170,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }
@@ -306,7 +309,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
 
@@ -318,7 +322,6 @@ namespace Probe.Controllers
 
             try
             {
-
                 ValidateGameCreate(gameDTO);
                 if (ModelState.IsValid)
                 {
@@ -365,7 +368,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.IsValid ? true : ModelState.ToDataSourceResult());
             }
 
@@ -427,7 +431,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
                 return Json(ModelState.ToDataSourceResult());
             }
         }//public ActionResult Update([DataSourceRequest] DataSourceRequest dsRequest, GameDTO gameDTO)
@@ -457,7 +462,9 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                ModelState.AddModelError("", ProbeConstants.MSG_UnsuccessfulOperation_STR);
+                return Json(ModelState.ToDataSourceResult());
             }
 
         }//public JsonResult Delete([DataSourceRequest] DataSourceRequest request, GameDTO gameDTO)
@@ -514,6 +521,8 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+
                 //The message return via an AJAX call
                 resultMessage = new ResultMessage
                 {
@@ -557,6 +566,7 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
 
                 //The message return via an AJAX call
                 ResultMessage resultMessage = new ResultMessage
@@ -599,6 +609,7 @@ namespace Probe.Controllers
             }
             catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
 
                 //The message return via an AJAX call
                 ResultMessage resultMessage = new ResultMessage
@@ -628,7 +639,7 @@ namespace Probe.Controllers
                 {
                     MessageId = ProbeConstants.MSG_GamePublishSuccessful,
                     MessageType = Helpers.Mics.MessageType.Error,
-                    Message = (publishInd == 1) ? "The game was not published successfully" : "The game was not unpublished successfully"
+                    Message = (publishInd == 1) ? "The game was not published successfully" : ProbeConstants.MSG_UnsuccessfulOperation_STR
                 };
 
                 return Json(resultMessage, JsonRequestBehavior.AllowGet);
@@ -697,6 +708,16 @@ namespace Probe.Controllers
                         Message = "A game with an end date that has passed cannot be published"
                     };
                 }
+                catch (Exception ex)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                    resultMessage = new ResultMessage
+                    {
+                        MessageId = ProbeConstants.MSG_UnsuccessfulOperation,
+                        MessageType = Helpers.Mics.MessageType.Error,
+                        Message = ProbeConstants.MSG_UnsuccessfulOperation_STR
+                    };
+                }
             }
             else
             {
@@ -739,6 +760,17 @@ namespace Probe.Controllers
                         Message = "A suspended game cannot be unpublished"
                     };
                 }
+                catch (Exception ex)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                    resultMessage = new ResultMessage
+                    {
+                        MessageId = ProbeConstants.MSG_UnsuccessfulOperation,
+                        MessageType = Helpers.Mics.MessageType.Error,
+                        Message = ProbeConstants.MSG_UnsuccessfulOperation_STR
+                    };
+                }
+
             }
 
             return Json(resultMessage, JsonRequestBehavior.AllowGet);
@@ -756,192 +788,243 @@ namespace Probe.Controllers
 
         private IList<GameDTO> GetAvailableGames()
         {
-            //limit the games to only what the user possesses
-            string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
-
-            ViewBag.DctGameHasQuestions = ProbeValidate.GetAllGamesDoesHaveQuestions();
-            ViewBag.DctAllGamesActiveStatus = ProbeValidate.GetAllGamesStatus();
-
-            IList<GameDTO> gameDTOList = db.Game.Where(g => g.AspNetUsersId == loggedInUserId)
-            .Select(g => new GameDTO
+            try
             {
-                Id = g.Id,
-                AspNetUsersId = g.AspNetUsersId,
-                GameTypeId = g.GameType.Id,
-                Name = g.Name,
-                Description = g.Description,
-                ACLId = g.ACLId,
-                Code = g.Code,
-                GameUrl = g.GameUrl,
-                StartDate = g.StartDate,
-                EndDate = g.EndDate,
-                Published = g.Published,
-                SuspendMode = g.SuspendMode,
-                ClientReportAccess = g.ClientReportAccess,
-                PlayerCount = g.Players.Count(),
-                PlayerActiveCount = g.Players.Where(p => p.Active).Count(),
-                QuestionCount = g.GameQuestions.Count(),
-                IsActive = (((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
-                                DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0)
-                                || (g.Players.Count() > 0))
-                                && !g.SuspendMode
-                                && g.Published)
-            }).ToList();
+                //limit the games to only what the user possesses
+                string loggedInUserId = (User.Identity.GetUserId() != null ? User.Identity.GetUserId() : "-1");
 
-            /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL*/
-            foreach (GameDTO gameDTO in gameDTOList)
-            {
-                gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.StartDate, false);
-                gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.EndDate, false);
+                ViewBag.DctGameHasQuestions = ProbeValidate.GetAllGamesDoesHaveQuestions();
+                ViewBag.DctAllGamesActiveStatus = ProbeValidate.GetAllGamesStatus();
+
+                IList<GameDTO> gameDTOList = db.Game.Where(g => g.AspNetUsersId == loggedInUserId)
+                .Select(g => new GameDTO
+                {
+                    Id = g.Id,
+                    AspNetUsersId = g.AspNetUsersId,
+                    GameTypeId = g.GameType.Id,
+                    Name = g.Name,
+                    Description = g.Description,
+                    ACLId = g.ACLId,
+                    Code = g.Code,
+                    GameUrl = g.GameUrl,
+                    StartDate = g.StartDate,
+                    EndDate = g.EndDate,
+                    Published = g.Published,
+                    SuspendMode = g.SuspendMode,
+                    ClientReportAccess = g.ClientReportAccess,
+                    PlayerCount = g.Players.Count(),
+                    PlayerActiveCount = g.Players.Where(p => p.Active).Count(),
+                    QuestionCount = g.GameQuestions.Count(),
+                    IsActive = (((DateTime.Compare(DateTime.UtcNow, g.StartDate) > 0 &&
+                                    DateTime.Compare(DateTime.UtcNow, g.EndDate) <= 0)
+                                    || (g.Players.Count() > 0))
+                                    && !g.SuspendMode
+                                    && g.Published)
+                }).ToList();
+
+                /* WHEN WE PASS A LIST TO KENDO GRID - IT TAKES CARE OF CONVERTING UTC DATE TO LOCAL*/
+                foreach (GameDTO gameDTO in gameDTOList)
+                {
+                    gameDTO.StartDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.StartDate, false);
+                    gameDTO.EndDate = ClientTimeZoneHelper.ConvertToLocalTime(gameDTO.EndDate, false);
+                }
+
+
+                return gameDTOList;
             }
-
-
-            return gameDTOList;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }//private IList<GameDTO> GetAvailableGames()
 
         private void ValidateGameCreate(GameDTO gameDTO)
         {
-            //GamePlay Business Rules
-            if (!ProbeValidate.IsCodeValid(gameDTO.Code))
+            try
             {
-                ModelState.AddModelError("Code", "The code must be at least 5 characters and can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
-            }
-            else if (ProbeValidate.IsCodeExistInProbe(gameDTO.Code))
-            {
-                ModelState.AddModelError("Code", "The code already exists for In Common.");
-            }
 
-            if (ProbeValidate.IsGameNameExistForLoggedInUser(gameDTO.Name))
-            {
-                ModelState.AddModelError("Name", "The game name already exists for the logged in user.");
+                //GamePlay Business Rules
+                if (!ProbeValidate.IsCodeValid(gameDTO.Code))
+                {
+                    ModelState.AddModelError("Code", "The code must be at least 5 characters and can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
+                }
+                else if (ProbeValidate.IsCodeExistInProbe(gameDTO.Code))
+                {
+                    ModelState.AddModelError("Code", "The code already exists for In Common.");
+                }
+
+                if (ProbeValidate.IsGameNameExistForLoggedInUser(gameDTO.Name))
+                {
+                    ModelState.AddModelError("Name", "The game name already exists for the logged in user.");
+                }
+
+                //Game game = new Game();
+                //game.StartDate =  Probe.Helpers.Mics.ClientTimeZoneHelper.ConvertLocalToUTC(gameDTO.StartDate);
+                //if (ProbeValidate.IsGameStartPassed(game))
+                //{
+                //    ModelState.AddModelError("", "The game start date has been passed.");
+                //}
+
+                Game game = new Game();
+                game.StartDate = gameDTO.StartDate;
+                game.EndDate = gameDTO.EndDate;
+                if (ProbeValidate.IsGameEndDateGreaterThanStartDate(game))
+                {
+                    ModelState.AddModelError("", "The game's start date is passed it's end date.");
+                }
+
             }
-
-            //Game game = new Game();
-            //game.StartDate =  Probe.Helpers.Mics.ClientTimeZoneHelper.ConvertLocalToUTC(gameDTO.StartDate);
-            //if (ProbeValidate.IsGameStartPassed(game))
-            //{
-            //    ModelState.AddModelError("", "The game start date has been passed.");
-            //}
-
-            Game game = new Game();
-            game.StartDate = gameDTO.StartDate;
-            game.EndDate = gameDTO.EndDate;
-            if (ProbeValidate.IsGameEndDateGreaterThanStartDate(game))
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", "The game's start date is passed it's end date.");
+                throw ex;
             }
 
         }
 
         private void ValidateGameEdit(GameDTO gameDTO)
         {
-            //GamePlay Business Rules
-            if (!ProbeValidate.IsCodeValid(gameDTO.Code))
+            try
             {
-                ModelState.AddModelError("Code", "The code must be at least 5 characters and can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
-            }
-            else if (ProbeValidate.IsCodeExistInProbe(gameDTO.Id, gameDTO.Code))
-            {
-                ModelState.AddModelError("Code", "The code already exists for In Common.");
-            }
 
-            if (ProbeValidate.IsGameNameExistForLoggedInUser(gameDTO.Id, gameDTO.Name))
-            {
-                ModelState.AddModelError("Name", "The game name already exists for the logged in user.");
-            }
+                //GamePlay Business Rules
+                if (!ProbeValidate.IsCodeValid(gameDTO.Code))
+                {
+                    ModelState.AddModelError("Code", "The code must be at least 5 characters and can only contain letters, numbers, and spaces. It also cannot contain leading or trailing spaces.");
+                }
+                else if (ProbeValidate.IsCodeExistInProbe(gameDTO.Id, gameDTO.Code))
+                {
+                    ModelState.AddModelError("Code", "The code already exists for In Common.");
+                }
 
-            Game game = new Game();
-            game.StartDate = gameDTO.StartDate;
-            game.EndDate = gameDTO.EndDate;
-            if (ProbeValidate.IsGameEndDateGreaterThanStartDate(game))
+                if (ProbeValidate.IsGameNameExistForLoggedInUser(gameDTO.Id, gameDTO.Name))
+                {
+                    ModelState.AddModelError("Name", "The game name already exists for the logged in user.");
+                }
+
+                Game game = new Game();
+                game.StartDate = gameDTO.StartDate;
+                game.EndDate = gameDTO.EndDate;
+                if (ProbeValidate.IsGameEndDateGreaterThanStartDate(game))
+                {
+                    ModelState.AddModelError("", "The game's start date is passed it's end date.");
+                }
+            }
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", "The game's start date is passed it's end date.");
+                throw ex;
             }
 
         }//private void ValidateGameEdit(Game game)
 
         private void ValidateGamePublish(Game game)
         {
-
-            //A game must have questions to publish
-            if (db.GameQuestion.Where(gq => gq.GameId == game.Id).Count() == 0)
+            try
             {
-                throw new GameHasNoQuestionsException();
+                //A game must have questions to publish
+                if (db.GameQuestion.Where(gq => gq.GameId == game.Id).Count() == 0)
+                {
+                    throw new GameHasNoQuestionsException();
+                }
+
+                //A game cannot have players to publish
+                if (db.Player.Where(p => p.GameId == game.Id).Count() > 0)
+                {
+                    throw new GameHasPlayersException();
+                }
+
+                //A game cannot have end date less than start date to publish
+                if (DateTime.Compare(game.StartDate, game.EndDate) > 0)
+                {
+                    throw new GameStartGTEndDateException();
+                }
+
+                //A game cannot have an end date in the passed to publish
+                if (DateTime.Compare(game.EndDate, DateTime.UtcNow) <= 0)
+                {
+                    throw new GameEndDateIsPassedException();
+                }
             }
-
-            //A game cannot have players to publish
-            if (db.Player.Where(p => p.GameId == game.Id).Count() > 0)
+            catch (Exception ex)
             {
-                throw new GameHasPlayersException();
-            }
-
-            //A game cannot have end date less than start date to publish
-            if (DateTime.Compare(game.StartDate, game.EndDate) > 0)
-            {
-                throw new GameStartGTEndDateException();
-            }
-
-            //A game cannot have an end date in the passed to publish
-            if (DateTime.Compare(game.EndDate, DateTime.UtcNow) <= 0)
-            {
-                throw new GameEndDateIsPassedException();
+                throw ex;
             }
 
         }//private void ValidateGamePublish(Game game)
 
         private void ValidateGameDelete(long gameId)
         {
-
-            Game game = db.Game.Find(gameId);
-            if (ProbeValidate.IsGameActiveOrPlayersExist(game))
+            try
             {
-                ModelState.AddModelError("", "A game cannot be deleted that is either active or has a player that has submitted .");
+                Game game = db.Game.Find(gameId);
+                if (ProbeValidate.IsGameActiveOrPlayersExist(game))
+                {
+                    ModelState.AddModelError("", "A game cannot be deleted that is either active or has a player that has submitted .");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
         }//private void ValidateGameDelete(Game game)
 
         private void ValidateGameUnpublish(Game game)
         {
-
-            //A game cannot have players to unpublish
-            if (db.Player.Where(p => p.GameId == game.Id).Count() > 0)
+            try
             {
-                throw new GameHasPlayersException();
+                //A game cannot have players to unpublish
+                if (db.Player.Where(p => p.GameId == game.Id).Count() > 0)
+                {
+                    throw new GameHasPlayersException();
+                }
+
+                //A game must be in suspend mode to unpublish
+                if (game.SuspendMode)
+                {
+                    throw new GameInSuspendModeException();
+                }
             }
-
-            //A game must be in suspend mode to unpublish
-            if (game.SuspendMode)
+            catch (Exception ex)
             {
-                throw new GameInSuspendModeException();
+                throw ex;
             }
 
         }//private void ValidateGameUnpublish(Game game)
 
         private string ConvertTimeSpanToString(TimeSpan timeSpan)
         {
-            string timeSpanStr = string.Empty;
-            if (timeSpan.Days > 0)
+            try
             {
-                timeSpanStr = string.Format("{0} Days:{1} Hours:{2} Mins:{3} Secs"
-                    , timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+                string timeSpanStr = string.Empty;
+                if (timeSpan.Days > 0)
+                {
+                    timeSpanStr = string.Format("{0} Days:{1} Hours:{2} Mins:{3} Secs"
+                        , timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+                }
+                else if (timeSpan.Days == 0 && timeSpan.Hours > 0)
+                {
+                    timeSpanStr = string.Format("{0} Hours:{1} Mins:{2} Secs"
+                        , timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+                }
+                else if (timeSpan.Days == 0 && timeSpan.Hours == 0 && timeSpan.Minutes > 0)
+                {
+                    timeSpanStr = string.Format("{0} Mins:{1} Secs"
+                        , timeSpan.Minutes, timeSpan.Seconds);
+                }
+                else if (timeSpan.Days == 0 && timeSpan.Hours == 0 && timeSpan.Minutes == 0)
+                {
+                    timeSpanStr = string.Format("{0} Seconds"
+                        , timeSpan.Seconds);
+                }
+
+                return timeSpanStr;
             }
-            else if (timeSpan.Days == 0 && timeSpan.Hours > 0)
+            catch (Exception ex)
             {
-                timeSpanStr = string.Format("{0} Hours:{1} Mins:{2} Secs"
-                    , timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-            }
-            else if (timeSpan.Days == 0 && timeSpan.Hours == 0 && timeSpan.Minutes > 0)
-            {
-                timeSpanStr = string.Format("{0} Mins:{1} Secs"
-                    , timeSpan.Minutes, timeSpan.Seconds);
-            } else if (timeSpan.Days == 0 && timeSpan.Hours == 0 && timeSpan.Minutes == 0)
-            {
-                timeSpanStr = string.Format("{0} Seconds"
-                    ,timeSpan.Seconds);
+                throw ex;
             }
 
-            return timeSpanStr;
-        }
+        }//private string ConvertTimeSpanToString(TimeSpan timeSpan)
 
     }
 }

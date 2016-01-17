@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ProbeDAL;
 
 namespace Probe.Models.View
 {
@@ -16,12 +17,16 @@ namespace Probe.Models.View
 
         [Required]
         //[DataType(DataType.Text)] This data type sets the editable popup textbox for this field to be as wide as the popup (NOT GOOD)
-        [StringLength(maximumLength: 60, MinimumLength = 5)]
+        [StringLength(maximumLength: ProbeDALTypes.QuestionNameMaxChars, MinimumLength = 5)]
         public string Name { get; set; }
 
+        [StringLength(maximumLength: ProbeDALTypes.QuestionDescriptionMaxChars, MinimumLength = 5)]
         public string Text { get; set; }
 
+        [StringLength(maximumLength: ProbeDALTypes.QuestionDescriptionMaxChars, MinimumLength = 0)] //300 characters is enough for tags
         public string Tags { get; set; }
+
+        public long ACLId { get; set; }
 
         public bool TestEnabled { get; set; }
 

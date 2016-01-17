@@ -26,117 +26,80 @@ namespace Probe.Controllers.api
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        // GET: api/Players
-        public IQueryable<Player> GetPlayer()
-        {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
-            var players = db.Player;
-
-            return players;
-        }
-
         // GET: api/Players NOTE: currently used by server client page (games)
         public List<PlayerDTO> GetPlayerByGame(long id)
         {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
-            var players = db.Player.Where(p => p.GameId == id).OrderBy(p => p.FirstName + "-" + p.NickName);
-
-            List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
-
-            foreach (Player player in players)
-            {
-                PlayerDTO playerDTO = new PlayerDTO
-                {
-                    Id = player.Id,
-                    FirstName = player.FirstName,
-                    LastName = player.LastName,
-                    NickName = player.NickName,
-                    Sex = player.Sex
-                };
-                playerDTOs.Add(playerDTO);
-            }
-
-            return playerDTOs;
-        }
-
-        // GET: api/Players NOTE: currently used by server client page (games)
-        [Route("api/Players/GetPlayerByGameCode/{code}")]
-        public List<PlayerDTO> GetPlayerByGameCode(string code)
-        {
-            //without this command there would be a serializer error when returning the db.Players
-            db.Configuration.LazyLoadingEnabled = false;
-            var players = db.Player.Where(p => p.Game.Code == code).OrderBy(p => p.FirstName + "-" + p.NickName);
-
-            List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
-
-            foreach (Player player in players)
-            {
-                PlayerDTO playerDTO = new PlayerDTO
-                {
-                    Id = player.Id,
-                    FirstName = player.FirstName,
-                    LastName = player.LastName,
-                    NickName = player.NickName,
-                    EmailAddr = player.EmailAddr,
-                    Sex = player.Sex,
-                    PlayerGameName = new ProbePlayer(player).PlayerGameName
-                };
-                playerDTOs.Add(playerDTO);
-            }
-
-            return playerDTOs;
-        }
-
-        // GET: api/Players/5
-        [ResponseType(typeof(Player))]
-        public IHttpActionResult GetPlayer(long id)
-        {
-            Player player = db.Player.Find(id);
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(player);
-        }
-
-
-        // PUT: api/Players/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutPlayer(long id, Player player)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != player.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(player).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
+
+                //without this command there would be a serializer error when returning the db.Players
+                db.Configuration.LazyLoadingEnabled = false;
+                var players = db.Player.Where(p => p.GameId == id).OrderBy(p => p.FirstName + "-" + p.NickName);
+
+                List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
+
+                foreach (Player player in players)
+                {
+                    PlayerDTO playerDTO = new PlayerDTO
+                    {
+                        Id = player.Id,
+                        FirstName = player.FirstName,
+                        LastName = player.LastName,
+                        NickName = player.NickName,
+                        Sex = player.Sex
+                    };
+                    playerDTOs.Add(playerDTO);
+                }
+
+                return playerDTOs;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!PlayerExists(id))
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                var internalServerErrorResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(internalServerErrorResponse);
+            }
+        }//GetPlayerByGame
+
+        // GET: api/Players NOTE: currently used by server client page (games)
+        //[Route("api/Players/GetPlayerByGameCode/{code}")] Moved to WebApiConfig
+        public List<PlayerDTO> GetPlayerByGameCode(string code)
+        {
+            try
+            {
+
+                //without this command there would be a serializer error when returning the db.Players
+                db.Configuration.LazyLoadingEnabled = false;
+                var players = db.Player.Where(p => p.Game.Code == code).OrderBy(p => p.FirstName + "-" + p.NickName);
+
+                List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
+
+                foreach (Player player in players)
                 {
-                    return NotFound();
+                    PlayerDTO playerDTO = new PlayerDTO
+                    {
+                        Id = player.Id,
+                        FirstName = player.FirstName,
+                        LastName = player.LastName,
+                        NickName = player.NickName,
+                        EmailAddr = player.EmailAddr,
+                        Sex = player.Sex,
+                        PlayerGameName = new ProbePlayer(player).PlayerGameName
+                    };
+                    playerDTOs.Add(playerDTO);
                 }
-                else
-                {
-                    throw;
-                }
+
+                return playerDTOs;
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+                var internalServerErrorResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(internalServerErrorResponse);
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        }//GetPlayerByGameCode
 
         // POST: api/Players NOTE: currently used by the client 11/2/14 - NEW API AS OF 2/14/15
         [ResponseType(typeof(PlayerDTO))]
@@ -195,22 +158,24 @@ namespace Probe.Controllers.api
                     throw new GameNotActiveException();
                 }
 
-                player = new Player
-                {
-                    Id = playerDTO.Id,
-                    GameId = playerDTO.GameId,
-                    FirstName = playerDTO.FirstName,
-                    LastName = playerDTO.LastName,
-                    NickName = playerDTO.NickName,
-                    EmailAddr = playerDTO.EmailAddr,
-                    Sex = playerDTO.Sex,
-                    //Active = true, //Do not specify at this point
-                    SubmitDate = dateTimeNow.Date,
-                    SubmitTime = DateTime.Parse(dateTimeNow.ToShortTimeString())
-                };
-
+                player.Id = playerDTO.Id;
                 if (!probeGame.IsPlayerSubmitted(player))
                 {
+                    //In here, we know this is a new player
+                    player = new Player
+                    {
+                        Id = playerDTO.Id,
+                        GameId = playerDTO.GameId,
+                        FirstName = playerDTO.FirstName,
+                        LastName = playerDTO.LastName,
+                        NickName = playerDTO.NickName,
+                        EmailAddr = playerDTO.EmailAddr,
+                        Sex = playerDTO.Sex,
+                        //Active = true, //Do not specify at this point
+                        SubmitDate = dateTimeNow.Date,
+                        SubmitTime = DateTime.Parse(dateTimeNow.ToShortTimeString())
+                    };
+
                     //will throw the following exceptions if there is a problem
                     //GameDuplicatePlayerNameException, GameInvalidFirstNameException, GameInvalidNickNameException
                     //ONLY NEED TO VALIDATE IF THE PLAYER HAS NOT SUBMITTED FOR A GAME YET
@@ -218,14 +183,17 @@ namespace Probe.Controllers.api
 
                     player.Active = true; //Player is always active to begin with
                     db.Person.Add(player);
-                    db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-                    playerDTO.Id = player.Id; //after db.SaveChanges. The id is set
                 }
+                else
+                {  //we get here only if it's an existing player
 
-                if (!probeGame.IsPlayerActive(player))
-                {
-                    throw new GamePlayerInActiveException();
-                }
+                    player = db.Player.Find(playerDTO.Id);
+
+                    if (!probeGame.IsPlayerActive(player)) 
+                    {
+                        throw new GamePlayerInActiveException();
+                    }
+                }//if (!probeGame.IsPlayerSubmitted(player))
 
                 //Making this API backward compatible. Will not attempt to record game answers if its
                 //client version v1.0
@@ -261,14 +229,13 @@ namespace Probe.Controllers.api
                         //we need to create a gameAnswer (to record in the database)
                         GameAnswer GameAnswerforDB = new GameAnswer
                         {
-                            PlayerId = playerDTO.Id,
+                            Player = player, //player could have been created new or an existing
                             ChoiceId = gameAnswer.ChoiceId
                         };
 
                         db.GameAnswer.Add(GameAnswerforDB);
-                        db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-
                     } //foreach (GameAnswerDTO gameAnswerDTOIn in gameAnswersDTOsIn)
+                    db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null); //record all gameanswers to player
 
                     //We pass in the playerDO.GameAnswers because it holds the QuestionId of each question. Much
                     //more assurance that we are correcting the appropriate questions and answers
@@ -297,6 +264,7 @@ namespace Probe.Controllers.api
                 playerDTO.PlayerGameStatus.PlayerActive = probeGame.IsPlayerActive(player);
                 playerDTO.PlayerGameStatus.MessageId = ProbeConstants.MSG_NoError;
 
+                playerDTO.Id = player.Id; //if a new player created then we have to set the Id to be passed back to the client
                 return CreatedAtRoute("DefaultApi", new { id = playerDTO.Id }, playerDTO); //EVERYTHING IS GOOD!
 
             } //try
@@ -405,7 +373,6 @@ namespace Probe.Controllers.api
                 //Everything is not good. The GameAnswer submission is too early. 
                 //We will still send player game stats to the client.
                 //We will keep the player status active at this point.
-                //Note: we want to keep the player in the datbase (active) also.
                 //probeGame.SetPlayerStatus(player, false); DONT NEED THIS FOR NOW
 
                 playerDTO.PlayerGameStatus = new PlayerGameStatus();
@@ -429,6 +396,8 @@ namespace Probe.Controllers.api
             }
             catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex); //log to elmah
+
                 //cleanup first - different type of cleanup depends on game type
                 if (probeGame.GameType == ProbeConstants.LMSGameType)
                 {
@@ -455,22 +424,6 @@ namespace Probe.Controllers.api
                 return CreatedAtRoute("DefaultApi", new { id = errorObject.errorid }, errorObject);
             }
         }//public IHttpActionResult PostPlayer([...
-
-        // DELETE: api/Players/5
-        [ResponseType(typeof(Player))]
-        public IHttpActionResult DeletePlayer(long id)
-        {
-            Player player = db.Player.Find(id);
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            db.Person.Remove(player);
-            db.SaveChanges(Request != null ? Request.Headers.UserAgent.ToString() : null);
-
-            return Ok(player);
-        }
 
         protected override void Dispose(bool disposing)
         {

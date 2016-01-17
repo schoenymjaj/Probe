@@ -30,13 +30,8 @@
         min-width: 167px;
     }
 
-        .questionsGridCommandColumn .k-button { /*style all command buttons*/
-            width: 79px;
-        }
-
-    .questionsAutoCompleteSearch {
-        color: blue;
-        font-weight: bold;
+    .questionsGridCommandColumn .k-button { /*style all command buttons*/
+        width: 79px;
     }
 
     #dialog-generalMessage {
@@ -69,6 +64,7 @@
 
 @{
     var drpViewTypeList = new List<string>() { "Compact View", "Full View" };
+    var drpACLTypeList = new List<string>() { "My Questions", "Shared Questions", "All Questions" };
 }
 
 
@@ -83,27 +79,40 @@
 <h2>My Question Library</h2>
 <div style="vertical-align:text-bottom;padding-bottom:5px;margin:0px;overflow: auto">
     <div style="float:left;margin-right:10px">
-        <span class="k-widget k-autocomplete k-header k-state-default k-textbox" style="float: left;margin-right:20px">
+
+        <div style="margin-bottom: 0px;float:left;margin-right:10px">
+            @(Html.Kendo().DropDownList().Name("ACLDropdownList")
+                                        .DataValueField("Id")
+                                        .DataTextField("Description")
+                                        .DataSource(source =>
+                                        { source.Read(read => { read.Action("Get/0", "ACLs"); }); }
+                                            )
+                                        .Events(events => events.Change("OnACLDrpDownChange"))
+                                        )
+        </div>
+
+        <span class="k-widget k-autocomplete k-header k-state-default k-textbox" style="margin-bottom:0px;float:left;margin-right:10px">
             @Html.TextBox("QuestionSearchFilter", "", new { @class = "k-textbox" })
         </span>
 
-    @(Html.Kendo().AutoComplete()
-    .Name("QuestionAutoComplete") //The name of the autocomplete is mandatory. It specifies the "id" attribute of the widget.
-    .IgnoreCase(true)
-    .Placeholder("Enter search value for one question ...")
-    .Filter("contains")
-    .DataSource(source =>
-        {
-            source.Read(read =>
-            {
-                read.Action("GetQuestionsForAutoComplete", "ChoiceQuestions"); //Set the Action and Controller name
-            })
-            .ServerFiltering(false); //If true the DataSource will not filter the data on the client.
-        })
-        .Events(e => e
-            .Change("QuestionAutocompleteChange")
-        )
-        )
+        @(Html.Kendo().AutoComplete()
+            .Name("QuestionAutoComplete") //The name of the autocomplete is mandatory. It specifies the "id" attribute of the widget.
+            .IgnoreCase(true)
+            .Placeholder("Enter search keyword for one question ...")
+            .Filter("contains")
+            .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetQuestionsForAutoComplete", "ChoiceQuestions"); //Set the Action and Controller name
+                    })
+                    .ServerFiltering(false); //If true the DataSource will not filter the data on the client.
+                })
+                .Events(e => e
+                    .Change("QuestionAutocompleteChange")
+                )
+            )
+ 
     </div>
 
     <div style="margin-bottom: 0px;float:right">
@@ -178,6 +187,7 @@
 <div id="dialog-progress" class="noDisplay" style="text-align:center">
     <div id="progressbar" style="width:80%"></div>
 </div>
+<div id="progress-spinner" style="text-align:center"></div>
 
 <!--
     TEMPLATES
@@ -240,6 +250,8 @@
     //global variable
     var root = '@Request.Url.Authority' + '@Url.Content("~")';
 
+    /*Supports the Inline Messages for MyGames Edit Popup attached to the Fields of the Edit Popup*/
+    var validationMessageTmpl = kendo.template($("#InLineMessage").html());
 
 </script>
 

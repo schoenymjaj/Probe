@@ -14,6 +14,8 @@ namespace Probe.Models.View
 
         public long ChoiceQuestionId { get; set; }
 
+        public long ACLId { get; set; }
+
         public string Name { get; set; }
 
         [StringLength(maximumLength: ProbeDALTypes.ChoiceDescriptionMaxChars, MinimumLength = 2)]

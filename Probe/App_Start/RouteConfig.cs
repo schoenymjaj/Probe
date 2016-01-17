@@ -57,14 +57,26 @@ namespace Probe
             );
 
             routes.MapRoute(
+            name: "ChoiceQuestions.Get",
+            url: "ChoiceQuestions/Get/{aclid}/{questionsearch}",
+            defaults: new { controller = "ChoiceQuestions", action = "Get", questionsearch = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
             name: "ChoiceQuestions.GetQuestions",
             url: "ChoiceQuestions/GetQuestions/{gameid}",
             defaults: new { controller = "ChoiceQuestions", action = "GetQuestions", gameid = UrlParameter.Optional }
             );
 
             routes.MapRoute(
+            name: "ChoiceQuestions.GetQuestionsForAutoComplete",
+            url: "ChoiceQuestions/GetQuestionsForAutoComplete/{gameid}",
+            defaults: new { controller = "ChoiceQuestions", action = "GetQuestionsForAutoComplete", gameid = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
             name: "ChoiceQuestions.GetGameQuestions",
-            url: "ChoiceQuestions/GetGameQuestions/{gameid}/{questionsearch}",
+            url: "ChoiceQuestions/GetGameQuestions/{gameid}/{aclid}/{questionsearch}",
             defaults: new { controller = "ChoiceQuestions", action = "GetGameQuestions", questionsearch = UrlParameter.Optional }
             );
 
@@ -184,6 +196,12 @@ namespace Probe
                 name: "PlayerLMSDetail",
                 url: "Reports/PlayerLMSDetail/{gameid}/{code}/{playerid}/{mobileind}",
                 defaults: new { controller = "Reports", action = "PlayerLMSDetail", playerstatusfilter = UrlParameter.Optional, mobileind = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "ACLs.Get",
+                url: "ACLs/Get/{probeacltype}",
+                defaults: new { controller = "ACLs", action = "Get" }
             );
 
 

@@ -23,7 +23,9 @@ namespace Probe.Controllers.api
         [Route("api/GameConfigurations/GetConfiguration/{code}")]
         public IHttpActionResult GetConfiguration(string code)
         {
-
+            /*
+             * This API pulls just the global configuration parameters and their values
+             */
             if (code != "incommon-code-around")
             {
                 var errorObject = new
@@ -40,6 +42,12 @@ namespace Probe.Controllers.api
                 db.Configuration.LazyLoadingEnabled = false;
                 List<ConfigurationG> configurationsList = db.ConfigurationG
                     .Where(c => c.ConfigurationType == ConfigurationG.ProbeConfigurationType.GLOBAL).ToList();
+
+                //Set InCommon-About with the latest version
+                string InCommonVersionStr = db.ConfigurationG.Where(c => c.Name == "InCommon-Version").FirstOrDefault().Value;
+
+                string InCommonAboutWithVersion = configurationsList.Where(c => c.Name == "InCommon-About").FirstOrDefault().Value.Replace("@InCommonVersionPlaceholder@", InCommonVersionStr);
+                configurationsList.Where(c => c.Name == "InCommon-About").FirstOrDefault().Value = InCommonAboutWithVersion;
 
                 IQueryable<ConfigurationG> configurations = configurationsList.AsQueryable<ConfigurationG>();
 
@@ -64,7 +72,9 @@ namespace Probe.Controllers.api
         [Route("api/GameConfigurations/GetGameConfiguration/{code}")]
         public IHttpActionResult GetGameConfiguration(string code)
         {
-
+            /*
+             * This API gets all configuration parameters that are game specific
+             */
             if (!ProbeValidate.IsCodeExistInProbe(code))
             {
                 //GameDoesNotExistException

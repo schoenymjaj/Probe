@@ -18,6 +18,12 @@ namespace Probe
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
+                name: "Players.GetPlayersByGameCode",
+                routeTemplate: "api/Players/GetPlayerByGameCode/{code}",
+                defaults: new { controller = "Players", action = "GetPlayerByGameCode" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 //routeTemplate: "api/{controller}/{id}",
                 routeTemplate: "api/{controller}/{action}/{id}",

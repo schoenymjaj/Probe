@@ -106,10 +106,12 @@
 <div id="dialog-progress" class="noDisplay" style="text-align:center">
     <div id="progressbar" style="width:80%"></div>
 </div>
-<div id='spinner'></div>
+<div id="progress-spinner" style="text-align:center"></div>
+
 
 <script>
-
+    //global variable
+    var root = '@Request.Url.Authority' + '@Url.Content("~")';
 </script>
 
 <script src="@Url.Content("~/Scripts/probe/gameadmin.js")"

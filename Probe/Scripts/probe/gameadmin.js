@@ -18,28 +18,27 @@ function OnCloneToUserButtonClick(e) {
         ShowGeneralDialog(wndGen, 'Clone Game To User', message1, message2, true, 'OK', true, 'Cancel');
         $("#yesGen").click(function () {
             console.log('ShowGeneralDialog click YES');
-            ActivityIndicatorOn('#spinner');
+            OpenProgressBarWindow(40, 1000);
 
             gameId = gameDropDownList.value();
             userId = userDropDownList.value();
 
-            url = PrepareURL('CloneToUser/' + gameId + '/' + userId);
-            $.getJSON(url, {},
-            function (data) {
+            url = PrepareURL(root + 'Games/CloneToUser/' + gameId + '/' + userId);
+            ajaxGetHelper(url)
+                .done(function (data) {
+                    $("#yesGen").unbind("click");
+                    $("#noGen").unbind("click");
+                    CloseProgressBarWindow();
 
-                $("#yesGen").unbind("click");
-                $("#noGen").unbind("click");
-                ActivitySelectorOff('#spinner');
+                    //prepare and open informational dialog for clone action
+                    ShowGeneralDialog(wndGen, 'Clone Game to User', data.Message, '', false, '', true, 'Close');
+                    $("#noGen").click(function () {
+                        console.log('ShowGeneralDialog2 click CLOSE');
 
-                //prepare and open informational dialog for clone action
-                ShowGeneralDialog(wndGen, 'Clone Game to User', data.Message, '', false, '', true, 'Close');
-                $("#noGen").click(function () {
-                    console.log('ShowGeneralDialog2 click CLOSE');
+                        wndGen.close();
+                    });
 
-                    wndGen.close();
-                });
-
-            });//post
+                })//post
 
             wndGen.close();
         });
@@ -55,32 +54,6 @@ function OnCloneToUserButtonClick(e) {
 /*
  FUNCTIONS THAT WILL SUPPORT THE EVENT HANDLERS
 */
-function ShowGeneralDialog(aWnd, aTitle, message1, message2, okInd, okText, closeInd, closeText) {
-    console.log('func ShowGeneralDialog start');
-
-    aWnd.title(aTitle);
-
-    $('#dialog-generalMessage').html(message1);
-    $('#dialog-generalMessage2').html(message2);
-
-    aWnd.center().open();
-
-    if (okInd) {
-        $("#yesGen").show();
-        $("#yesGen").html(okText);
-    } else {
-        $("#yesGen").hide();
-    }
-
-    if (closeInd) {
-        $("#noGen").show();
-        $("#noGen").html(closeText);
-    } else {
-        $("#noGen").hide();
-    }
-
-    console.log('func ShowGeneralDialog end');
-}//function ShowGeneralDialog
 
 /*
 MNS DEBUG
