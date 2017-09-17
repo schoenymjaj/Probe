@@ -126,21 +126,21 @@
     It is setup for SERVER-SIDE filtering, sorting, paging
 *@
 @(@Html.Kendo().Grid<Probe.Models.View.QuestionDTO>().Name("MyQuestionsGrid").Columns(c =>
-        {
-            c.Bound(g => g.Name).Title("Name").Width(150);
-            c.Bound(g => g.QuestionTypeId).Title("Type").ClientTemplate("#= DisplayQuestionType(data) #").ClientGroupHeaderTemplate("Type: #= QuestionTypeText(value) #").Width(70);
-            c.Bound(g => g.Text).Title("Text").Width(300);
-            c.Bound(g => g.TestEnabled).Title("Test Enabled").ClientTemplate("#= DisplayTestEnabled(data) #").ClientGroupHeaderTemplate("Test Enabled: #= TestEnabledText(value) #").Width(70);
-            c.Bound(g => g.ChoicesCount).Title("Choices Count").ClientTemplate("#= DisplayChoiceCount(data) #");
-            c.Command(cmd =>
-                            {
-                                cmd.Edit();
-                                cmd.Custom("Details").Text("Details").Click("openDetails");
-                                cmd.Custom("Choices").Click("openChoices");
-                                cmd.Custom("Clone").Text("Clone").Click("CloneNow");
-                                cmd.Custom("Delete").Click("openDeleteConfirm");
-                            }).HtmlAttributes(new { @class = "questionsGridCommandColumn" });
-        })
+{
+    c.Bound(g => g.Name).Title("Name").Width(150);
+    c.Bound(g => g.QuestionTypeId).Title("Type").ClientTemplate("#= DisplayQuestionType(data) #").ClientGroupHeaderTemplate("Type: #= QuestionTypeText(value) #").Width(70);
+    c.Bound(g => g.Text).Title("Text").Width(300);
+    c.Bound(g => g.TestEnabled).Title("Test Enabled").ClientTemplate("#= DisplayTestEnabled(data) #").ClientGroupHeaderTemplate("Test Enabled: #= TestEnabledText(value) #").Width(70);
+    c.Bound(g => g.ChoicesCount).Title("Choices Count").ClientTemplate("#= DisplayChoiceCount(data) #");
+    c.Command(cmd =>
+    {
+        cmd.Edit();
+        cmd.Custom("Details").Text("Details").Click("openDetails");
+        cmd.Custom("Choices").Click("openChoices");
+        cmd.Custom("Clone").Text("Clone").Click("CloneNow");
+        cmd.Custom("Delete").Click("openDeleteConfirm");
+    }).HtmlAttributes(new { @class = "questionsGridCommandColumn" });
+})
         .DataSource(d => d
             .Ajax()
             .Model(model => model.Id(question => question.Id))
@@ -160,8 +160,8 @@
         //edit mode popup - disable the lame canned delete confirmation window. Popup
         .Editable(ed => ed.Mode(GridEditMode.PopUp).TemplateName("Question").Window(w => w.Title("Edit Question")).DisplayDeleteConfirmation(false))
         .ToolBar(toolbar =>
-                {
-                    toolbar.Template(@<text>
+        {
+        toolbar.Template(@<text>
                         @ToolbarTemplate()
                     </text>);
                 })

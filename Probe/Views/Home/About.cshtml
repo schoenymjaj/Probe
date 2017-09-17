@@ -4,12 +4,14 @@
 
 <script>
     $(function () {
-        $("#accordion").accordion({
+        $("#accordion").accordion(
+            {
             heightStyle: "content",
             autoHeight: false,
             clearStyle: true,
-            active: @ViewBag.AboutSectionOffset
-        });
+            active: @ViewBag.AboutSectionOffset,
+            }
+        );
     });
 </script>
 

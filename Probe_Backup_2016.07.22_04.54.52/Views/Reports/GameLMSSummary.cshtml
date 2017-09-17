@@ -1,0 +1,284 @@
+﻿@{
+    ViewBag.Title = "LMSGameSummary";
+}
+
+<html>
+<head>
+    <title>LMS Game Status</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi "></script>
+    <script type="text/javascript">
+
+    @Html.Partial("ReportStyleJavaScript")
+
+    google.load("visualization", "1", { packages: ["corechart"] });
+
+    //google.setOnLoadCallback(drawContent);
+    $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
+        drawContent();
+    });
+
+    function IsContentToChart(gameStatus) {
+        contentToChart = false;
+        if (gameStatus != 0 &&
+            gameStatus != 1) {
+            contentToChart = true;
+        }
+
+        return contentToChart;
+    }
+
+    function drawContent() {
+        console.log('func drawContent');
+        logError('GameLMSSummary - func drawContent start', arguments.callee.trace()); //Logging an event on the server
+
+        if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
+
+        var gameId = '@ViewBag.GameId';
+        var gameCode = '@ViewBag.GameCode';
+
+        $.getJSON('@Url.Content("~")' + 'api/Reports/GetGameLMSSummaryData/' + gameId + '/' + gameCode, {},
+         function (data) {
+
+             //HANDLER FOR INTERACTIVITY
+             selectHandler = function () {
+                 console.log('selectHandler');
+                 var selectedItem = chart.getSelection()[0]; //will get the playerstatusfilter either all, active, or inactive
+                 if (selectedItem) {
+                     var playerStatusFilter = 0;
+                     if (selectedItem.row == 1) {
+                         playerStatusFilter = 1;
+                     } else if (selectedItem.row == 2) {
+                         playerStatusFilter = 2;
+                     }
+
+                     console.log('The player selected ' + playerStatusFilter);
+
+                     window.location = '@Url.Content("~")' + 'Reports/PlayerLMSSummary/'
+                         + gameId + '/' + gameCode + '/' + playerStatusFilter;
+
+                 }
+             };
+
+             //Let's start catching exceptions
+             try {
+
+                 /*
+                 SETUP REPORT HEADER
+                Back button will not exist if report loads within an iFrame (then its in mobile mode)
+                 */
+                 switch (data.GameStatus) {
+                     case GAME_STATUS_UNKNOWN:
+                         statusText = 'Unknown';
+                         break;
+                     case GAME_STATUS_NOTSTARTED:
+                         statusText = 'Not Started';
+                         break;
+                     case GAME_STATUS_STARTEDNOQUESTIONPASSED:
+                         if (data.MaxQuestionNbrSubmitted != VAR_NONE) {
+                             statusText = 'Started';
+                         } else {
+                             statusText = 'Started - No Submissions Yet';
+                         }
+                         break;
+                     case GAME_STATUS_ACTIVE:
+                         statusText = 'Active';
+                         break;
+                     case GAME_STATUS_SUSPENDED:
+                         statusText = 'Suspended';
+                         break;
+                     case GAME_STATUS_COMPLETED:
+                         statusText = 'Completed';
+                         break;
+                 };
+
+                 //There will be data for most recent question deadline regardless of the status of the 
+                 //game. If the first question's deadline HAS NOT passed then nbr will be -1.
+                 if (data.MostRecentQuestionNbrDeadlinePassed != VAR_NONE) {
+                     mostRecentQuestionNbrDeadlinePassed = data.MostRecentQuestionNbrDeadlinePassed + 1;
+                     mostRecentQuestionDeadlinePassed = (new Date(data.MostRecentQuestionDeadlinePassed)).toUTCString();
+                     if (data.NextQuestionNbr + 1 < data.GameNbrQuestions) {
+                         nextQuestionNbr = data.NextQuestionNbr + 1;
+                         nextQuestionDeadline = (new Date(data.NextQuestionDeadline)).toUTCString();
+                     } else {
+                         nextQuestionNbr = "None";
+                         nextQuestionDeadline = "None";
+                     }
+                 } else {
+                     if (data.GameStatus == GAME_STATUS_STARTEDNOQUESTIONPASSED) {
+                         mostRecentQuestionNbrDeadlinePassed = "None";
+                         mostRecentQuestionDeadlinePassed = "None";
+                         nextQuestionNbr = 1;
+                         nextQuestionDeadline = (new Date(data.NextQuestionDeadline)).toUTCString();
+                     } else {
+                         mostRecentQuestionNbrDeadlinePassed = "None";
+                         mostRecentQuestionDeadlinePassed = "None";
+                         nextQuestionNbr = "None";
+                         nextQuestionDeadline = "None";
+                     }
+                 }
+
+                 htmlHeader =
+                    '<div class="reportInCommonTable">\
+                                 <div class="reportInCommonRow">\
+                                     <div class="reportInCommonCell reportLabel">\
+                                         Game:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         @ViewBag.GameName\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabel" style="padding-left: 35px">\
+                                         Status:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         ' + statusText + '\
+                                     </div>\
+                                 </div>\
+                                 <div class="reportInCommonRow">\
+                                     <div class="reportInCommonCell reportLabel">\
+                                         Total Questions:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         ' + data.GameNbrQuestions + '\
+                                     </div>\
+                                 </div>\
+                                 <div class="reportInCommonRow">\
+                                     <div class="reportInCommonCell reportLabel">\
+                                         Question# Deadline Passed:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         ' + mostRecentQuestionNbrDeadlinePassed + '\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabel" style="padding-left: 35px">\
+                                         Deadline:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         ' + mostRecentQuestionDeadlinePassed + '\
+                                     </div>\
+                                 </div>\
+                                 <div class="reportInCommonRow">\
+                                     <div class="reportInCommonCell reportLabel">\
+                                         Next Question#:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         ' + nextQuestionNbr + '\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabel" style="padding-left: 35px">\
+                                         Deadline:\
+                                     </div>\
+                                     <div class="reportInCommonCell reportLabelText">\
+                                         ' + nextQuestionDeadline + '\
+                                     </div>\
+                                 </div>\
+                     </div>';
+                 $('#header').html(htmlHeader);
+                 $('.reportReturnLink').html('<a href="#">Back to Game</a>');
+                 $('.reportReturnLink').click(function (event) {
+                     window.history.go(-1);
+                 });
+
+
+                 //Check if there is any data
+                 if (data.NbrPlayers == 0) {
+                     $('#chart_div').html('<br/><br/><span class="reportNoDataText">No players have played this LMS game yet</span>');
+                     if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
+                     return;
+                 }
+
+                 /*
+                 SETUP GOOGLE CHART DATA
+                 */
+                 var dSeries = new Array(4)
+                 dSeries[0] = new Array(4)
+                 dSeries[0][0] = 'Status';
+                 dSeries[0][1] = '# of Players';
+                 dSeries[0][2] = { role: 'annotation' };
+                 dSeries[0][3] = { role: 'style' };
+
+                 legendStrTotal = '';
+                 legendStrActive = '';
+                 legendStrInactive = '';
+                 dSeries[1] = new Array(3)
+                 dSeries[1][0] = 'All';
+                 dSeries[1][1] = data.NbrPlayers;
+                 (data.NbrPlayers > 0) ? legendStrTotal = '(' + data.NbrPlayers + ')' : legendStrTotal = '';
+                 dSeries[1][2] = legendStrTotal;
+                 dSeries[1][3] = '#000000';
+
+                 dSeries[2] = new Array(3)
+                 dSeries[2][0] = 'Standing';
+                 dSeries[2][1] = data.NbrPlayersActive;
+                 (data.NbrPlayersActive > 0) ? legendStrActive = '(' + data.NbrPlayersActive + ')' : legendStrActive = '';
+                 dSeries[2][2] = legendStrActive;
+                 dSeries[2][3] = '#00ff00';
+
+                 dSeries[3] = new Array(3)
+                 dSeries[3][0] = 'Sitting';
+                 dSeries[3][1] = data.NbrPlayersInactive;
+                 (data.NbrPlayersInactive > 0) ? legendStrInactive = '(' + data.NbrPlayersInactive + ')' : legendStrInactive = '';
+                 dSeries[3][2] = legendStrInactive;
+                 dSeries[3][3] = '#ff0000';
+
+
+                 /*
+                 SETUP V-AXIS
+                 */
+                 var hAxisText = '#Questions Submitted';
+
+                 var tdata = google.visualization.arrayToDataTable(dSeries);
+
+                 /*
+                 SETUP GOOGLE CHART STYLE THROUGH OPTIONS
+                 */
+
+                 var options = {};
+                 options = {
+                     isStacked: true,
+                     height: Math.round(150 * 3),
+                     chartArea: { left: 100, top: 10, width: '80%', height: '80%' },
+                     colors: ['#262626'],
+                     vAxis: { title: 'Player Status', titleTextStyle: { fontSize: '25' } },
+                     hAxis: {
+                         title: hAxisText,
+                         format: '#',
+                         titleTextStyle: { fontSize: '25' },
+                     },
+                     backgroundColor: 'transparent',
+                     bar: { groupWidth: "80%" },
+                     legend: { position: 'top', alignment: 'end', textStyle: { color: 'red', fontSize: 16 } },
+                 };
+
+                 var chart = new google.visualization.BarChart($('#chart_div')[0]); //jquery for document.getElementById
+                 google.visualization.events.addListener(chart, 'select', selectHandler);
+                 chart.draw(tdata, options);
+
+                 if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
+
+                 logError('GameLMSSummary - func drawContent end', null); //Logging an event on the server
+
+             } catch (err) {
+                 if (arguments != null && arguments.callee != null && arguments.callee.trace) {
+                     logError(err, arguments.callee.trace());
+                 } else {
+                     logError(err, null);
+                 }
+
+                 //retry generating the report (ie.e android emulator had a problem)
+                 //window.location.reload(true); hopefully won't don't need this. loading via document ready alleviated issue
+             }
+
+         });
+    }
+    </script>
+</head>
+<body>
+    <div id='spinner'></div>
+    <div id="title" class="reportTitle">LMS Game Summary</div>
+    <div class="reportReturnLink"></div>
+    <div class="reportResetSytle"></div>
+    <div id="header" class="reportHeader"></div>
+    <div id="parent_chart_div">
+        <div id="chart_div" class="chartDiv"></div>
+    </div>
+</body>
+</html>

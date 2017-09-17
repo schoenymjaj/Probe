@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "PlayerTestSummary";
+}
+
+<html>
+<head>
+    <title>Player Match Summary</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi "></script>
+    <script type="text/javascript">
+
+    @Html.Partial("ReportStyleJavaScript")
+
+        google.load("visualization", "1", { packages: ["corechart"] });
+
+        //google.setOnLoadCallback(drawContent);
+        $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
+            drawContent();
+        });
+        function drawContent() {
+            console.log('func drawContent');
+            logError('PlayerTestSummary - func drawContent start', arguments.callee.trace()); //Logging an event on the server
+
+            if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
+
+            var gameId = '@ViewBag.GameId';
+            var gameCode = '@ViewBag.GameCode';
+
+            $.post('@Url.Content("~")' + 'Reports/GetPlayerTestSummaryData/' + gameId + '/' + gameCode, {},
+             function (data) {
+
+                 //HANDLER FOR INTERACTIVITY
+                 selectHandler = function () {
+                     console.log('selectHandler');
+                     var selectedItem = chart.getSelection()[0]; //will get player name
+                     if (selectedItem) {
+                         var playerId = data[selectedItem.row].Id;
+                         console.log('The player selected ' + playerId);
+
+                         window.location = '@Url.Content("~")' + 'Reports/PlayerTestDetail/'
+                             + gameId + '/' + gameCode + '/' + playerId + (DoStyleMobile() ? '/1' : '');
+
+                     }
+                 };
+
+                 //Let's start catching exceptions
+                 try {
+
+                     /*
+                     SETUP REPORT HEADER
+                    Back button will not exist if report loads within an iFrame (then its in mobile mode)
+                     */
+                     $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>');
+                     $('.reportReturnLink').html('<a href="#">Back to Game</a>');
+                     $('.reportReturnLink').click(function (event) {
+                         window.history.go(-1);
+                     });
+ 
+                     /*
+                     SETUP GOOGLE CHART DATA
+                     */
+                     maxTickValue = 0;
+
+                     var dSeries = new Array(data.length + 1)
+                     dSeries[0] = new Array(3)
+                     dSeries[0][0] = 'Player';
+                     dSeries[0][1] = '% Correct';
+                     dSeries[0][2] = { role: 'annotation' };
+                     for (var i = 0; i < data.length; i++) {
+                         dSeries[i + 1] = new Array(3)
+                         dSeries[i + 1][0] = data[i].Name;
+                         dSeries[i + 1][1] = data[i].Value;
+
+                         legendStr = '(' + data[i].Value + ')';
+                         if (DoStyleMobile()) {
+                             legendStr = data[i].Name + '(' + data[i].Value + ')';
+                         }
+                         dSeries[i + 1][2] = legendStr;
+
+                         maxTickValue = Math.max(maxTickValue, data[i].Value);
+                     }
+
+                     /*
+                     SETUP V-AXIS
+                     */
+                     var vAxisText = '% Correct (' + '@ViewBag.NbrQuestions' + ' Questions)';
+
+
+                     var tdata = google.visualization.arrayToDataTable(dSeries);
+
+                     /*
+                     SETUP GOOGLE CHART STYLE THROUGH OPTIONS
+                     */
+
+                     //We're going use just 5 gridlines (vertical). The first will be 0 (doesn't count)
+                     //, the last will be the max
+                     tickArray = GetChartAxisTickets(0, maxTickValue, 4);
+
+                     var options = {};
+                     if (DoStyleMobile()) {
+
+                         options = {
+                             height: Math.round(70 * data.length),
+                             chartArea: { left: 0, top: 25, right: 10, width: '100%', height: '80%' },
+                             colors: ['#262626'],
+                             vAxis: { title: 'Players', titleTextStyle: { fontSize: '20' } },
+                             hAxis: {
+                                 title: vAxisText,
+                                 format: '#',
+                                 titleTextStyle: { fontSize: '15' },
+                                 ticks: tickArray
+                             },
+                             backgroundColor: 'transparent',
+                             bar: { groupWidth: "75%" },
+                             legend: { position: 'top', alignment: 'end', textStyle: { color: 'black', fontSize: 16 } },
+                             annotations: {
+                                 textStyle: {
+                                     fontName: 'Times-Roman',
+                                     fontSize: 18,
+                                     bold: true,
+                                     italic: true,
+                                     opacity: 0.8          // The transparency of the text.
+                                 }
+                             },
+                         };
+
+
+                     } else {
+
+                         options = {
+                             //title: "Player's Test Scores",
+                             //isStacked: true,
+                             height: Math.round(80 * data.length),
+                             chartArea: { left: 200, top: 10, width: '80%', height: '80%' },
+                             colors: ['#262626'],
+                             vAxis: { title: 'Players', titleTextStyle: { fontSize: '25' } },
+                             hAxis: {
+                                 title: vAxisText,
+                                 format: '#',
+                                 titleTextStyle: { fontSize: '25' },
+                                 ticks: tickArray
+                             },
+                             backgroundColor: 'transparent',
+                             bar: { groupWidth: "75%" },
+                             legend: { position: 'top', alignment: 'end', textStyle: { color: 'black', fontSize: 16 } },
+                         };
+
+                     }//if (DoStyleMobile()) {
+
+
+                     var chart = new google.visualization.BarChart($('#chart_div')[0]); //jquery for document.getElementById
+                     google.visualization.events.addListener(chart, 'select', selectHandler);
+                     chart.draw(tdata, options);
+
+                     if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
+
+                     logError('PlayerTestSummary - func drawContent end', null); //Logging an event on the server
+
+                 } catch (err) {
+                     if (arguments != null && arguments.callee != null && arguments.callee.trace) {
+                         logError(err, arguments.callee.trace());
+                     } else {
+                         logError(err, null);
+                     }
+
+                     //retry generating the report (ie.e android emulator had a problem)
+                     //window.location.reload(true); hopefully won't don't need this. loading via document ready alleviated issue
+                 }
+
+             });
+        }
+    </script>
+</head>
+<body>
+    <div id='spinner'></div>
+    <div id="title" class="reportTitle">Player Test Scores</div>
+    <div class="reportReturnLink"></div>
+    <div class="reportResetSytle"></div>
+    <div id="header" class="reportHeader"></div>
+    <div id="parent_chart_div">
+        <div id="chart_div" class="chartDiv"></div>
+    </div>
+</body>
+</html>

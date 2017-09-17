@@ -1,0 +1,267 @@
+﻿@using Probe.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /*styles below accomplished word wrapping of header columns in MyQuestionsGrid, but it didn't accomplish auto-column width*/
+    .k-grid .k-grid-header .k-header .k-link {
+        height: auto;
+    }
+
+    .k-grid .k-grid-header .k-header {
+        white-space: normal;
+    }
+
+    /* ensure content wrapper is big enough for grid */
+    .content-wrapper {
+        max-width: 1200px;
+    }
+
+    .k-state-selected {
+        background-color: #000000;
+        border-color: #111111;
+    }
+
+    .questionsGridCommandColumn { /*style grid command column*/
+        padding-left: 3px;
+        padding-right: 3px;
+        width: 167px;
+        min-width: 167px;
+    }
+
+    .questionsGridCommandColumn .k-button { /*style all command buttons*/
+        width: 79px;
+    }
+
+    #dialog-generalMessage {
+        padding-bottom: 10px;
+    }
+
+    .dialog-generalButtons {
+        padding-top: 15px;
+        float: right;
+    }
+
+    #detailsTemplate-container td {
+        padding-bottom: 10px;
+        font-weight: normal;
+    }
+
+    .detailsHeader {
+        font-weight: bold;
+    }
+
+    .detailsLabel {
+        font-weight: bolder;
+        color: #00edf0;
+    }
+
+    .noDisplay {
+        display: none;
+    }
+</style>
+
+@{
+    var drpViewTypeList = new List<string>() { "Compact View", "Full View" };
+    var drpACLTypeList = new List<string>() { "My Questions", "Shared Questions", "All Questions" };
+}
+
+
+@helper ToolbarTemplate()
+{
+    <a class="k-button k-button-icontext k-grid-add" href="/ChoiceQuestions/Get?MyQuestionsGrid-mode=insert"><span class="k-icon k-add"></span>Add new question</a>
+}
+<script type="text/x-kendo-template" id="toolbarTemplate">
+    @Html.Raw(@ToolbarTemplate().ToHtmlString().Replace("#", "\\#").Replace("</scr", "<\\/scr"))
+</script>
+
+<h2>My Question Library</h2>
+<div style="vertical-align:text-bottom;padding-bottom:5px;margin:0px;overflow: auto">
+    <div style="float:left;margin-right:10px">
+
+        <div style="margin-bottom: 0px;float:left;margin-right:10px">
+            @(Html.Kendo().DropDownList().Name("ACLDropdownList")
+                                        .DataValueField("Id")
+                                        .DataTextField("Description")
+                                        .DataSource(source =>
+                                        { source.Read(read => { read.Action("Get/0", "ACLs"); }); }
+                                            )
+                                        .Events(events => events.Change("OnACLDrpDownChange"))
+                                        )
+        </div>
+
+        <span class="k-widget k-autocomplete k-header k-state-default k-textbox" style="margin-bottom:0px;float:left;margin-right:10px">
+            @Html.TextBox("QuestionSearchFilter", "", new { @class = "k-textbox" })
+        </span>
+
+        @(Html.Kendo().AutoComplete()
+            .Name("QuestionAutoComplete") //The name of the autocomplete is mandatory. It specifies the "id" attribute of the widget.
+            .IgnoreCase(true)
+            .Placeholder("Enter search keyword for one question ...")
+            .Filter("contains")
+            .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetQuestionsForAutoComplete", "ChoiceQuestions"); //Set the Action and Controller name
+                    })
+                    .ServerFiltering(false); //If true the DataSource will not filter the data on the client.
+                })
+                .Events(e => e
+                    .Change("QuestionAutocompleteChange")
+                )
+            )
+ 
+    </div>
+
+    <div style="margin-bottom: 0px;float:right">
+        @Html.Kendo().DropDownList().Name("ViewDropdownList").BindTo(@drpViewTypeList).Events(events => events.Change("OnViewDrpDownChange"))
+
+    </div>     
+
+</div>
+
+@*MyQuestionsGrid - displays all games for a user.
+    It is setup for SERVER-SIDE filtering, sorting, paging
+*@
+@(@Html.Kendo().Grid<Probe.Models.View.QuestionDTO>().Name("MyQuestionsGrid").Columns(c =>
+        {
+            c.Bound(g => g.Name).Title("Name").Width(150);
+            c.Bound(g => g.QuestionTypeId).Title("Type").ClientTemplate("#= DisplayQuestionType(data) #").ClientGroupHeaderTemplate("Type: #= QuestionTypeText(value) #").Width(70);
+            c.Bound(g => g.Text).Title("Text").Width(300);
+            c.Bound(g => g.TestEnabled).Title("Test Enabled").ClientTemplate("#= DisplayTestEnabled(data) #").ClientGroupHeaderTemplate("Test Enabled: #= TestEnabledText(value) #").Width(70);
+            c.Bound(g => g.ChoicesCount).Title("Choices Count").ClientTemplate("#= DisplayChoiceCount(data) #");
+            c.Command(cmd =>
+                            {
+                                cmd.Edit();
+                                cmd.Custom("Details").Text("Details").Click("openDetails");
+                                cmd.Custom("Choices").Click("openChoices");
+                                cmd.Custom("Clone").Text("Clone").Click("CloneNow");
+                                cmd.Custom("Delete").Click("openDeleteConfirm");
+                            }).HtmlAttributes(new { @class = "questionsGridCommandColumn" });
+        })
+        .DataSource(d => d
+            .Ajax()
+            .Model(model => model.Id(question => question.Id))
+            .Sort(sort => sort.Add("Name").Ascending())
+            .Read(r => r.Action("Get", "ChoiceQuestions").Data("ReturnQuestionSearchHandler"))
+            .Update(up => up.Action("Update", "ChoiceQuestions"))
+            .Create(cr => cr.Action("Create", "ChoiceQuestions"))
+            .Destroy(ds => ds.Action("Delete", "ChoiceQuestions"))
+            .Events(events => events
+                .Error("MyErrorHandler"))
+        )
+        .Pageable(page => page.PageSizes(new[] { 5, 10, 20, 50, 100 }))
+        .Filterable()
+        .Sortable()
+        .Groupable()
+        .Selectable()
+        //edit mode popup - disable the lame canned delete confirmation window. Popup
+        .Editable(ed => ed.Mode(GridEditMode.PopUp).TemplateName("Question").Window(w => w.Title("Edit Question")).DisplayDeleteConfirmation(false))
+        .ToolBar(toolbar =>
+                {
+                    toolbar.Template(@<text>
+                        @ToolbarTemplate()
+                    </text>);
+                })
+                            .Events(events =>
+                                    {
+                                        events.DataBound("OnGridDataBound");
+                                        events.Edit("OnGridEdit");
+                                    })   //Add event to attach event handlers to completely rendered grid
+)
+
+<br />
+
+<div id="dialog-details" title="Details" class="noDisplay"></div>
+<div id="dialog-iframe" title="IFrame Play Preview" class="noDisplay"></div>
+<div id="dialog-general" class="noDisplay">
+    <div id="dialog-generalMessage"></div>
+    <div id="dialog-generalMessage2"></div>
+    <div class="dialog-generalButtons">
+        <button id="yesGen" class="k-button">OK</button>
+        <button id="noGen" class="k-button">Cancel</button>
+    </div>
+</div>
+<div id="dialog-progress" class="noDisplay" style="text-align:center">
+    <div id="progressbar" style="width:80%"></div>
+</div>
+<div id="progress-spinner" style="text-align:center"></div>
+
+<!--
+    TEMPLATES
+-->
+<!--  Supports the Message Sum mary on top of the Create/Edit popup  -->
+<script type="text/x-kendo-template" id="SummaryValidationMessageTemplate">
+    # if (messages.length) { #
+    <ul>
+        # for (var i = 0; i < messages.length; ++i) { #
+        <li style="color:red">#= messages[i] #</li>
+        # } #
+    </ul>
+    # } #
+</script>
+
+<!-- Supports the Inline Message -->
+<script type="text/kendo-template" id="InLineMessage">
+    <div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error" style="margin: 0.5em; display: block;" data-for="#=field#" data-valmsg-for="#=field#" id="#=field#_validationMessage">
+        <span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="detailsTemplate">
+    <div id="detailsTemplate-container">
+        <h4 class="detailsHeader" style="margin-top:0px">#= Name #</h4>
+        <h5 class="detailsHeader">Type: #= QuestionTypeText(QuestionTypeId) #</h5>
+        <em>#= Text #</em>
+        <h5 class="detailsHeader"></h5>
+        <table>
+            <tr>
+                <td class="detailsLabel">
+                    Test Enabled:
+                </td>
+                <td>
+                    #= TestEnabledText(TestEnabled) #
+                </td>
+            </tr>
+            <tr>
+                <td class="detailsLabel">
+                    Nbr Choices:
+                </td>
+                <td>
+                    #= ChoicesCount #
+                </td>
+            </tr>
+        </table>
+        <dl>
+            <dt> </dt>
+        </dl>
+    </div>
+</script>
+
+
+<!--
+    END TEMPLATES
+-->
+
+
+<script>
+    //global variable
+    var root = '@Request.Url.Authority' + '@Url.Content("~")';
+
+    /*Supports the Inline Messages for MyGames Edit Popup attached to the Fields of the Edit Popup*/
+    var validationMessageTmpl = kendo.template($("#InLineMessage").html());
+
+</script>
+
+<script src="@Url.Content("~/Scripts/probe/questions.js")"
+        type="text/javascript"></script>
+
+<script src="@Url.Content("~/Scripts/probe/probe-ui-common.js")"
+        type="text/javascript"></script>
+
+<!--Reference the SignalR library. -->
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<!--Reference the autogenerated SignalR hub script. -->
+<script src="~/signalr/hubs"></script>

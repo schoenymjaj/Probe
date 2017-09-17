@@ -1,4 +1,9 @@
-﻿
+﻿/*
+    GLOBAL
+*/
+var wndGen; //make the general dialog handler global
+var saveScrollPositionInd = true;
+
 $(function () {
     // Reference the auto-generated proxy for the hub (SignalR CONNECTIONS)
     var notifyhub = $.connection.notifyHub; //THE REFERENCE MUST BE IN CAMEL CASE (SEE TUTUORIAL)
@@ -500,7 +505,6 @@ function Onsavechanges() {
     console.log('Onsavechanges event');
 }
 
-var wndGen;
 
 $(document).ready(function () {
 

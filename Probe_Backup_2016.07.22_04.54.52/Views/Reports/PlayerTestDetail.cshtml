@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "PlayerTestDetail";
+}
+
+<html>
+<head>
+    <title>Player Test Detail</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi "></script>
+    <script type="text/javascript">
+
+    @Html.Partial("ReportStyleJavaScript")
+
+    google.load('visualization', '1', { packages: ['table'] });
+
+    //google.setOnLoadCallback(drawContent);
+    $(document).ready(function () { //appears to be clear up some timing problems for mobile (i.e. android emulator)
+        drawContent();
+    });
+
+    function CalcTestScore(data) {
+
+        nbrCorrect = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].QuestionCorrect == 1) nbrCorrect++;
+        }
+        return Math.round(nbrCorrect * 100 / data.length);
+    }
+
+    function AlignTableCellContent() {
+        //set the alignment of the cell contents. Can only do this after the fact
+        $('.googleReportTableHeader').css('vertical-align', 'top');
+        $('.googleReportCellYES').css('vertical-align', 'top');
+        $('.googleReportCellNO').css('vertical-align', 'top');
+        $('.googleReportCell').css('vertical-align', 'top');
+        $('.googleReportCellYESWB').css('vertical-align', 'top');
+        $('.googleReportCellNOWB').css('vertical-align', 'top');
+        $('.googleReportCellWB').css('vertical-align', 'top');
+    }//function AlignTableCellContent
+
+    function drawContent() {
+        console.log('func drawContent');
+        logError('PlayerTestDetail - func drawContent start', arguments.callee.trace()); //Logging an event on the server
+
+        if (IsActivitySelector(resize)) ActivityIndicatorOn('#spinner');
+
+        var gameId = '@ViewBag.GameId';
+        var gameCode = '@ViewBag.GameCode';
+        var playerId = '@ViewBag.PlayerId';
+        $.post('@Url.Content("~")' + 'Reports/GetPlayerTestDetailData/' + gameId + '/' + gameCode + '/' + playerId, {},
+         function (data) {
+
+             //SET COLUMN WIDTHS
+             setColumnWidths = function () {
+                 $('.googleReportTableHeader:contains("Percnt Correct")').css('width', '50px'); //set the width of the percent choice column
+             };
+
+             //HANDLER FOR INTERACTIVITY
+             selectHandler = function () {
+                 console.log('selectHandler');
+                 var selectedItem = chart.getSelection()[0]; //will get question id
+                 if (selectedItem) {
+                     var questionId = data[selectedItem.row].QuestionId;
+                     console.log('The question selected ' + questionId);
+
+                     //no handling of an event at this time (9/4/14)
+                 }
+             };
+
+             //Let's start catching exceptions
+             try {
+
+                 /*
+                 SETUP REPORT HEADER
+                    Header will be different - dependent on the mobile indicator
+                    Back button will not exist if report loads within an iFrame (then its in mobile mode)
+                 */
+                 if (data.length >= 1) {
+                    $('#header').html('<span class="reportLabel">Game:</span> ' + '<span class="reportLabelText">@ViewBag.GameName</span>'
+                        + ' <span class="reportLabel reportLabelMargin">Player:</span> <span class="reportLabelText">' + data[0].PlayerName
+                        + '</span> <span class="reportLabel reportLabelMargin">Score:</span> <span class="reportLabelText">' + CalcTestScore(data) + '%</span>');
+                     $('.reportReturnLink').html('<a href="#">Back to Player Test Scores</a>');
+                     $('.reportReturnLink').click(function (event) {
+                         window.history.go(-1);
+                     });
+
+                 }
+
+                 /*
+                 SETUP GOOGLE TABLE DATA
+                 */
+                 var tdata = new google.visualization.DataTable();
+
+                 tdata.addColumn('string', 'Question');
+                 tdata.addColumn('string', 'Selections');
+                 tdata.addColumn('string', 'Correct Choices');
+                 if (!DoStyleMobile()) tdata.addColumn('number', 'Percnt Correct');
+
+
+                 (!DoStyleMobile()) ? rowlength = 4 : rowlength = 3;
+                 rowVector = new Array(rowlength);
+
+                 correctCount = 0;
+                 for (var i = 0; i < data.length; i++) {
+
+                     cellClassName = 'googleReportCellNOWB';
+                     if (data[i].QuestionCorrect == 1) {
+                         cellClassName = 'googleReportCellYESWB'
+                         correctCount++;
+                     } else {
+                         cellClassName = 'googleReportCellNOWB';
+                     }
+
+                     row = 0;
+                     rowVector[row++] = { v: data[i].Question, p: { 'className': 'googleReportCell' } };
+                     rowVector[row++] = { v: data[i].SelectedChoices, p: { 'className': cellClassName } };
+                     rowVector[row++] = { v: data[i].CorrectChoices, p: { 'className': 'googleReportCellWB' } };
+                     if (!DoStyleMobile()) rowVector[row++] = { v: data[i].PercentCorrect, p: { 'className': cellClassName } };
+
+                     tdata.addRow(rowVector);
+                 }
+
+                 $('.tableHeader').html(correctCount + ' Correct out of ' + data.length + ' Questions');
+
+
+                 var options = {
+                     allowHtml: true,
+                     alternatingRowStyle: true,
+                     cssClassNames: {
+                         headerCell: 'googleReportTableHeader',
+                         tableCell: 'googleReportTableNonHeader',
+                         tableRow: 'googleReportTableNonHeader'
+                     },
+                     backgroundColor: 'transparent' //doesn't work for tables
+                 };
+
+
+                 var tableAll = new google.visualization.Table(document.getElementById('table_div'));
+                 google.visualization.events.addListener(tableAll, 'ready', setColumnWidths);
+                 google.visualization.events.addListener(tableAll, 'select', selectHandler);
+                 tableAll.draw(tdata, options);
+
+                 if (IsActivitySelector(resize)) ActivitySelectorOff('#spinner');
+                 logError('PlayerTestDetail - func drawContent end', null); //Logging an event on the server
+
+                 app.AlignTableCellContent();
+
+             } catch (err) {
+                 if (arguments != null && arguments.callee != null && arguments.callee.trace) {
+                     logError(err, arguments.callee.trace());
+                 } else {
+                     logError(err, null);
+                 }
+
+                 //retry generating the report (ie.e android emulator had a problem)
+                 //window.location.reload(true); hopefully won't don't need this. loading via document ready alleviated issue
+             }
+
+         });
+    }
+    </script>
+</head>
+<body>
+    <div id='spinner'></div>
+    <div id="title" class="reportTitle">Player Test Details</div>
+    <div class="reportReturnLink"></div>
+    <div class="reportResetSytle"></div>
+    <div id="header" class="reportHeader"></div>
+    <div class="tableHeader"></div>
+    <div id="table_div"></div>
+</body>
+</html>

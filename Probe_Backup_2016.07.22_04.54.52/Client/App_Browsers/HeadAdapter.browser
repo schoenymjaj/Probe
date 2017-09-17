@@ -1,0 +1,12 @@
+﻿<browsers>
+  <browser refID="Default">
+    <controlAdapters>
+      <adapter controlType="System.Web.UI.HtmlControls.HtmlHead"
+         adapterType="CombineAndMinify.HeadAdapter" />
+    </controlAdapters>
+  </browser>
+</browsers>
+
+
+
+

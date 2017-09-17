@@ -3322,7 +3322,7 @@ $(function () {
                         break;
                     case "sex":
                         returnJQM = '<fieldset data-role="controlgroup" data-type="horizontal">' +
-                        '<legend>Sex</legend>' +
+                        '<legend>Gender</legend>' +
                         '<input name="sex" id="sex-male" type="radio" checked="checked" value="on">' +
                         '<label for="sex-male" style="font-size:0.8em;color: black;font-weight:bold;text-shadow: 0 0 0;text-align:center">Male</label>' +
                         '<input name="sex" id="sex-female" type="radio">' +

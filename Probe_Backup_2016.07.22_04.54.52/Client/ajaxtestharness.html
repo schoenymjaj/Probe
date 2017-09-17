@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>In Common</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <!-- WEINRE SERVER - REMOTE DEBUGGING--> 
+    <!--<script src="./js/set-weinre.js"></script>-->                                        <!--USED ONLY FOR HTTPS CLIENTS-->
+    <!--<script src="https://169.254.80.80:8050/target/target-script-min.js#anonymous"></script>--> <!--USED ONLY FOR HTTPS CLIENTS-->
+    <!--<script src="http://192.168.1.195:8080//target/target-script-min.js#anonymous"></script>--> <!--USED ONLY FOR NON HTTPS CLIENTS-->
+    <!-- WEINRE SERVER FOR PHONEGAP BELOW -->
+    <!--<script src="http://debug.build.phonegap.com/target/target-script-min.js#4580610c-4a51-11e4-8cf5-6a355d46d5fc"></script>-->
+        
+    <!-- the three things that jQuery Mobile needs to work -->
+    <!--custom themes design using themeroller be referenced before the jquery.com/mobile css-->
+    <link rel="stylesheet" href="./css/themes/ProbeTheme.V0.1.min.css" />
+    <link rel="stylesheet" href="./css/themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="./css/icon-pack/jqm-icon-pack-fa.css" />
+
+    <link rel="stylesheet" href="./js/jqm/jquery.mobile.structure-1.4.3.min.css" />
+
+    <link rel="stylesheet" href="./css/custom-accordian/jquery-ui-1.10.4.custom.min.css" />
+
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <link rel="stylesheet" href="./js/jquery.countdown.css" />
+
+    <!-- CDN jquery 
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    -->
+
+    <script src="./js/jquery/jquery-2.1.1.min.js"></script>
+
+    <script src="./js/jqm-config.js"></script>
+
+    <script src="./js/jqm/jquery.mobile-1.4.3.min.js"></script>
+
+    <!-- JQuery UI-->
+    <script src="./css/custom-accordian/js/jquery-ui-1.10.4.custom.min.js"></script>
+
+    <!-- JQuery extension -->
+    <script src="./js/jquery.countdown.js"></script>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", { packages: ["corechart", "table"] });
+    </script>
+
+    <!-- PhoneGap for debug -->
+    <script src="phonegap.js"></script>
+
+</head>
+<body data-env="development">
+
+    <!-- ================= Home ======================== -->
+    <section id="home" data-role="page" data-theme="a" data-title="In Common" class="backimageInCommon">
+        <header data-role="header" data-position="fixed" data-id="hdrPersist">
+            <div class="headerImage"><img src="./images/header/header180x40.png" alt="In Common Logo" /></div>
+            <a id="#newgame" href="#" data-icon="plus" data-iconpos="notext">New Game</a>
+            <a href="#menu" data-icon="bars" data-iconpos="notext">Menu</a>
+        </header>
+        <article data-role="content" style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px">
+            <div class="insetBug">
+                <button id="btnPost" class="ui-btn" data-icon="action">POST NEW PLAYER - 6/2/15</button>
+            </div>
+        </article>
+        <footer data-role="footer" data-position="fixed" data-id="ftrPersist">
+            <nav data-role="navbar" data-theme="a">
+                <ul>
+                    <li><a class="backButton" href="#" data-icon="carat-l" data-iconpos="notext" data-theme="a">Back</a></li>
+                    <li><a class="summaryButton" href="#" data-icon="grid" data-theme="a">Summary</a></li>
+                    <li><a class="submitButton" href="#" data-icon="cloud" data-theme="a">Submit</a></li>
+                    <li><a class="nextButton" href="#" data-icon="carat-r" data-iconpos="notext" data-theme="a">Next</a></li>
+                </ul>
+            </nav>
+        </footer>
+    </section>
+ 
+    <script src="./js/eventScript.js"></script>
+    <script src="./js/commonScript.js"></script>
+    <script src="./js/commonGraphicScript.js"></script>
+    <script>
+        /*
+        This function executes after the following events
+        pagebeforechange, pagebeforecreate, pagecreate, 
+        pageinit, pagebeforeshow, pageshow, pagechange
+        note: document ready occurs after all these.
+        */
+        $(function () {
+
+            // define the application
+            var jasonTestHarness = {};
+
+            // start the external panel
+            $("[data-role=panel]").panel();
+            $("[data-role=panel]").listview();
+            $("[data-role=panel]").trigger("create");
+
+            (function (app) {
+
+
+                /*
+                Globals
+                */
+                var jasonTestHarnessVersion = '1.0';
+
+
+                app.init = function () {
+                    //this occurs after document is ready (runs once)
+                    //console.log('func app.init');
+                    app.bindings();
+                    //app.checkForStorage();
+                };
+
+                app.bindings = function () {
+
+                    /*
+                    document ready event
+                    Start the XMLHttpRequest (download xml and jason files) 
+                    when document ready event is triggered. Store documents in localStorage
+                    */
+                    $(document).on("ready", function (event) {  //jquery document ready event gets you jquery mobile styles, and data rendered
+                        //console.log('event doc ready');
+
+                        $('#btnPost').on('tap', function () {
+                            event.preventDefault();
+                            alert('btnPost clicked');
+
+                            //test data to be posted
+                            jasonData =
+                            //good post - correct answer (test completed successfully)
+                            '{"GameId":40,"GameCode":"LMS Test3","Id":0,"NickName":"tom","LastName":"seaver","Sex":1,"ClientVersion":"1.2.0",\
+                                "GameAnswer":[{"PlayerId":0,"GameCode":"LMS Test3","QuestionNbr":1,"QuestionId":10091,"ChoiceId":"10358"}]}';
+
+                            //too early post (test completedly successfully)
+                            //'{"GameId":40,"GameCode":"LMS Test3","Id":0,"NickName":"bruce","LastName":"smith","Sex":1,"ClientVersion":"1.2.0",\
+                            //    "GameAnswer":[{"PlayerId":0,"GameCode":"LMS Test3","QuestionNbr":2,"QuestionId":10092,"ChoiceId":"10360"}]}';
+
+                            //bad name post (test completed successfully)
+                            //'{"GameId":40,"GameCode":"LMS Test3","Id":0,"Sex":1,"ClientVersion":"1.2.0",\
+                            //    "GameAnswer":[{"PlayerId":0,"GameCode":"LMS Test3","QuestionNbr":1,"QuestionId":10091,"ChoiceId":"10358"}]}';
+
+
+                            var ProbeAPIurl = 'https://localhost:44300/api/Players/PostPlayer';
+                            app.ajaxHelper(ProbeAPIurl, 'POST', jasonData)
+                                .done(function (item) {
+                                    console.log('item.Id = ' + item.Id + ' returned from server');
+                                })
+                            .fail(function (jqXHR, textStatus, errorThrown) {
+                                console.log(jqXHR);
+                                console.log(textStatus);
+                                console.log(errorThrown);
+                                alert('failed post:' + errorThrown);
+                            });
+
+
+                        });//$('#button2').on('tap',function () {
+
+
+                    }); //$(document).on
+
+                }; //app.bindings = function () {
+
+                app.ajaxHelper = function (uri, method, data) {
+                    console.log('func app.ajaxHelper uri:' + uri);
+
+                    return $.ajax({
+                        type: method,
+                        async: false,
+                        url: uri,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: data ? data : null
+                    })
+                }//function ajaxHelper
+
+                /* END Helper routines********************************** */
+
+                //initialize the Prob app
+                app.init();
+
+
+            })(jasonTestHarness); //app
+
+        });
+    </script>
+</body>
+    </html>

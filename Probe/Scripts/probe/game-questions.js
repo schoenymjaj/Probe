@@ -333,13 +333,13 @@ $(document).ready(function () {
                     for (i = 0; i < gameQuesSelect.length; i++) {
 
                         uid = $(gameQuesSelect[i]).attr('data-uid');
-                        item = gameQuesDatasource.getByUid(uid);
-                        item.set('OrderNbr', orderNbr);
+                        anItem = gameQuesDatasource.getByUid(uid);
+                        anItem.set('OrderNbr', orderNbr);
                         orderNbr++;
                     }
 
-                    item = gameQuesDatasource.getByUid(uidOfItemDestination);
-                    item.set('OrderNbr', orderNbr);
+                    anItem = gameQuesDatasource.getByUid(uidOfItemDestination);
+                    anItem.set('OrderNbr', orderNbr);
 
                 }//if (itemPosition > 0) {
             }//if (gqListView.select().length > 0) {
@@ -377,12 +377,12 @@ $(document).ready(function () {
                     for (i = 0; i < gameQuesSelect.length; i++) {
 
                         uid = $(gameQuesSelect[i]).attr('data-uid');
-                        item = gameQuesDatasource.getByUid(uid);
-                        item.set('OrderNbr', item.OrderNbr + 1);
+                        anItem = gameQuesDatasource.getByUid(uid);
+                        anItem.set('OrderNbr', anItem.OrderNbr + 1);
                     }
 
-                    item = gameQuesDatasource.getByUid(uidOfItemDestination);
-                    item.set('OrderNbr', OrderNbrOfItemStart);
+                    anItem = gameQuesDatasource.getByUid(uidOfItemDestination);
+                    anItem.set('OrderNbr', OrderNbrOfItemStart);
 
                 }//if (itemPosition > 0) {
             }//if (gqListView.select().length > 0) {
@@ -656,11 +656,11 @@ Remove the Question from GameQuestion Listview and then
 make Question visible again in the Question Listview
 */
 function RemoveQuestionFromGame(id) {
-    var item = gameQuesDatasource.getByUid(id);
+    var anItem = gameQuesDatasource.getByUid(id);
 
-    SetQuestionVisibility(true, item.Name);
+    SetQuestionVisibility(true, anItem.Name);
 
-    gameQuesDatasource.remove(item);
+    gameQuesDatasource.remove(anItem);
 }//function RemoveQuestionFromGame(e, id) {
 
 /*

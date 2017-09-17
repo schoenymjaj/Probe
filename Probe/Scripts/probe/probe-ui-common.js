@@ -30,7 +30,7 @@ function PrepareURL(url) {
 */
 
 function saveScrollPosition(localStorageName, dontSavePositionNextInd) {
-    console.log('func saveScrollPosition: ' + document.body.scrollTop + '  saveScrollPositionInd: ' + saveScrollPositionInd + '  dontSavePositionNextInd: ' + dontSavePositionNextInd);
+    //console.log('func saveScrollPosition: ' + document.body.scrollTop + '  saveScrollPositionInd: ' + saveScrollPositionInd + '  dontSavePositionNextInd: ' + dontSavePositionNextInd);
 
     if (saveScrollPositionInd) {
         console.log('actually saving scroll position')

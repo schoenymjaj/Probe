@@ -1,0 +1,510 @@
+
+/******************
+    GENERAL   
+ *****************/
+
+#home, #question, #summary, #about, #chartreport, #chartreportback, #tablereport, #about, #menu {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    /*filter: alpha(opacity=10);*/
+}
+
+
+.noMargins {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.spacing {
+    padding-top: 20px;
+    text-align: center;
+}
+
+.insetBug {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.disabledCustColor {
+    color: red;
+}
+
+/*
+ responsive background image   
+ */
+@media only screen and (min-height: 2560px) { /*height: 2560px width 1440*/
+    .backimageInCommon {
+        background: url(../images/bckground/1440x2560_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 2559px) and (min-height: 1912px) { /*MANY -height: 1920px width 1080*/
+    .backimageInCommon {
+        background: url(../images/bckground/1440x2560_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1911px) and (min-height: 1600px) { /*height: 1600px width 900*/
+    .backimageInCommon {
+        background: url(../images/bckground/1080x1920_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1599px) and (min-height: 1180px) { /*MANY -height: 1280px width 800*/
+    .backimageInCommon {
+        background: url(../images/bckground/900x1600_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1179px) and (min-height: 1024px) { /*height: 1024px width 600*/
+    .backimageInCommon {
+        background: url(../images/bckground/800x1280_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 1023px) and (min-height: 800px) { /*MANY -height: 800px  width 480*/
+    .backimageInCommon {
+        background: url(../images/bckground/600x1024_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 799px) and (min-height: 480px) { /*MANY - height 480 width 320*/
+    .backimageInCommon {
+        background: url(../images/bckground/480x800_BG.jpg) no-repeat center center fixed;
+    }
+}
+@media only screen and (max-height: 479px) and (min-height: 0px) { /*height 320 width 240*/
+    .backimageInCommon {
+        background: url(../images/bckground/320x480_BG.jpg) no-repeat center center fixed;
+    }
+}
+
+
+.headerImage {
+    text-align: center; 
+    margin: 0px 0px 0px 0px;
+}
+
+
+/*****************
+    SETTINGS POPUP 
+******************/
+.popupMessage {
+    max-width: 300px;
+}
+
+.buttonRight {
+    text-align: right;
+}
+
+.popupContentFontSize {
+    font-size: 80%;
+}
+
+.popupButtonFontSize {
+    font-size: 85%;
+}
+
+.popupGameName {
+    font-style: italic;
+    font-weight: bolder;
+}
+
+
+.myDebug {
+    border: solid;
+    border-color: red;
+}
+
+.dynamicFontSize {
+}
+
+/*
+    GAME PLAYER PROMT PAGE
+*/
+
+.sexLabel {
+    font-size: 0.8em;
+    color: red;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+} 
+
+#homePageContent label {
+    font-size: 0.8em;
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+}
+
+.gpType, .gameCode {
+    font-size: 0.8em;
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+}
+#homePageContent legend {
+    font-size: 0.8em;
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+}
+
+#homePageContent  input {
+    font-size: 0.8em;
+    color: black;
+    text-shadow: 0 0 0; 
+}
+
+#gameCode {
+    font-size: 0.8em;
+    color: black;
+    text-shadow: 0 0 0; 
+}
+#homePageContent button {
+    color: black;
+    font-size: 0.8em;
+    text-shadow: 0 0 0; 
+}
+
+/*
+    QUESTION PAGE
+*/
+.bodyText {
+    color: black;
+    font-weight: bold;
+    text-shadow: 0 0 0; 
+}
+
+.stackedDivs {
+    border-width: 1px;
+    width: 100%;
+    float: left;
+}
+
+.backButtonAbrev,.nextButtonAbrev {
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+.questionNavButtonsParentDiv {
+    width: 100%;
+    height: 35px;
+    padding-bottom: 3px;
+}
+
+.playerConsoleTextDiv {
+    width: 100%;
+    margin:0px;
+    padding:0px;
+}
+
+
+.backButtonDiv {
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    float: left;
+    width: 27%;
+    height: 100%;
+}
+
+.legendDiv {
+    text-align: center;
+}
+
+.legendTextDiv {
+    text-align: center;
+    padding-top: 8px;
+    padding-bottom: 0px;
+    text-shadow: 0 0 0; 
+}
+
+.nextButtonDiv {
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    float: right;
+    width: 27%;
+    height: 100%;
+}
+
+/*
+    .questionText and #choiceList .ui-btn classes determine the question and choice text font
+ */
+.questionText {
+    font-size: 1.1em;
+    text-shadow: 0 0 0;
+}
+
+.choiceList {
+}
+
+#choiceList .ui-btn {
+    font-size: 0.9em;
+    color:  black;
+    text-shadow: 0 0 0; 
+}
+
+
+/*
+    HOME PAGE BUTTONS   
+ */
+.GameReadOnlyButtons {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.AboutButtonDiv {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    width: 100%;
+    text-align: right;
+}
+
+
+#aboutBtn {
+    background-color: #00edf0;
+    color: #000000;
+    text-shadow: 0 0 0; 
+    border: solid;
+    border-color: #ffffff;
+    border-width: 3px;
+    height: 35px;
+    padding: 0px;
+    width: 250px
+}
+
+.demoGameLinkDiv {
+    margin: 0px;
+    padding-top: 3px;
+}
+
+#demoGameLink {
+    padding: 0px;
+    background-color: #00edf0;
+    color: #000000;
+    text-shadow: 0 0 0; 
+    width: 250px;
+    height: 35px;
+    border: solid;
+    border-color: #ffffff;
+    border-width: 3px;
+    /*margin: 0 auto;*/
+}
+
+/*
+ HOME PAGE LIST VIEW OF GAMES   
+ */
+.listviewGameName {
+    font-size: .9em;
+}
+
+.listviewPlayerName {
+    font-size: .7em;
+    font-weight: bold;
+}
+
+.gameResumeAction {
+
+}
+
+.gameReportAction {
+
+}
+
+/* text for listview text*/
+#gameList a {
+    color: black;
+    text-shadow: 0 0 0; 
+}
+
+/*
+  SUMMARY PAGE   
+ */
+.summaryText {
+    padding-top: 15px;
+    font-size: 1.1em;
+    text-shadow: 0 0 0; 
+    padding-bottom: 12px;
+    text-align: center;
+}
+
+#questionList .ui-btn {
+    font-size: 0.9em;
+    color:  black;
+    text-shadow: 0 0 0; 
+}
+
+/*
+ REPORTS PAGE   
+ */
+.reportTitle {
+    margin-top: 3px;
+    font-size:  1.1em;
+    font-weight: bolder;
+    color: black;
+    float: left; 
+    text-shadow: 0 0px 0;
+    width: 70%
+    /*text-align: center;*/
+}
+
+.reportGameHeader {
+    font-size: 1em;
+    font-weight: bolder;
+    color: black;
+}
+
+.reportHeader {
+    font-size: 1em;
+    font-weight: bolder;
+    color: black;
+}
+
+.reportLabel {
+    font-size: 1em;
+    color: black;
+    text-shadow: 0 0px 0;
+}
+
+.reportLabelText {
+    font-size: 0.9em;
+    /*color: #f6f6f6;*/
+    color: black;
+    font-style: italic;
+    text-shadow: 0 0px 0;
+}
+
+.reportLabelMargin {
+    margin-left: 0px;
+}
+
+.reportReturnLink {
+    float: right;
+    margin-top: 0px;
+}
+
+.reportResetSytle {
+    clear:both;
+}
+
+.chartDiv {
+    overflow: hidden; /*avoid unneeded scrollbars*/
+}
+
+.tableHeader {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    color: black;
+}
+
+.googleReportTableBGTransparent {
+    background: transparent;
+    opacity: 1.0;
+}
+
+.googleReportTableHeader {
+    font-weight: bold;
+    color: white;
+    background-color: #262626;
+    text-align: left;
+    /*
+    border: solid;
+    border-width: 1px;
+    border-color: #bbbbbb;
+        */
+}
+
+.googleReportTableNonHeader {
+    text-align: left;
+    background-color: #ededed;
+}
+
+.googleReportCell {
+    color: #262626;
+}
+
+.googleReportCellYES {
+    color: #262626;
+}
+
+.googleReportCellNO {
+    color: red;
+}
+
+/* we do word break depending on the width of the device*/
+@media only screen and (min-width: 901px) {
+    .googleReportCellNOWB {
+        color: red;
+    }
+
+    .googleReportCellYESWB {
+        color: #262626;
+    }
+
+    .googleReportCellWB {
+        color: #262626;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .googleReportCellNOWB {
+        color: red;
+        word-break: break-all;
+    }
+
+    .googleReportCellYESWB {
+        color: #262626;
+        word-break: break-all;
+    }
+
+    .googleReportCellWB {
+        color: #262626;
+        word-break: break-all;
+    }
+}
+
+.tableMatch {
+    width: 100%;
+}
+
+.tableNonMatch {
+    width: 100%;
+}
+
+
+/*
+ Navigation Bar   
+ */
+#question .summaryButton {
+   color: black;
+}
+
+#question .submitButton {
+    color: black;
+}
+
+#question .nextButton {
+    color: black;
+}
+
+#question .backButton {
+    color: black;
+} 
+
+#summary .summaryButton {
+   color: black;
+}
+
+#summary .submitButton {
+    color: black;
+}
+
+#summary .nextButton {
+    color: black;
+}
+
+#summary .backButton {
+    color: black;
+} 
