@@ -117,12 +117,51 @@ namespace Probe.Controllers.api
     {
         private ProbeDataContext db = new ProbeDataContext();
 
-        // GET: api/Game
-        public IQueryable<Game> GetGame()
+        // GET: api/Games/GetGamesByUser/{aspnetusersid}
+        [Route("api/Games/GetGamesByUser/{aspnetusersid}")]
+        public IHttpActionResult GetGamesByUser(string aspnetusersid)
         {
             db.Configuration.LazyLoadingEnabled = false;
-            return db.Game;
-        }
+
+            /*
+             * Given a user (organizer). We return the Games and the Player Count for each Games
+             */
+
+            try
+            {
+                var games = db.Game
+                                 .Select(g => new
+                                 {
+                                     g.Id,
+                                     g.AspNetUsersId,
+                                     GameType = g.GameType.Name,
+                                     g.Name,
+                                     g.Description,
+                                     g.Code,
+                                     g.GameUrl,
+                                     g.StartDate,
+                                     g.EndDate,
+                                     g.SuspendMode,
+                                     g.ClientReportAccess,
+                                     g.TestMode,
+                                     PlayerCount = g.Players.Count()
+                                 }).Where(g => g.AspNetUsersId == aspnetusersid).OrderBy(g => g.Name);
+
+                return Ok(games);
+
+            }
+            catch
+            {
+                var errorObject = new
+                {
+                    errorid = 1,
+                    errormessage = "There was an error when reading all the games for the organizer.",
+                };
+                return Ok(errorObject);
+            }
+
+        }//public IHttpActionResult GetGame()
+
 
         // GET: api/Games/GetGameById/{id}
         [Route("api/Games/GetGameById/{id}")]
@@ -418,6 +457,181 @@ namespace Probe.Controllers.api
             }
 
         } //public HttpResponseMessage GetGame(string code)
+
+        //NOTE: currently used by client (2/1/15)
+        [Route("api/Games/GetAnyGame/{code}/{clientvernumber}")]
+        [ResponseType(typeof(Game))]
+        public HttpResponseMessage GetAnyGame(string code, string clientvernumber)
+        {
+            /*
+             * Given a Game ID. We return the Game, GameQuestions, Question/ChoiceQuestion, Choices
+             */
+
+            try
+            {
+                var game = db.Game.Where(g => g.Code == code);
+
+                try
+                {
+                    Game isGame = game.Single();
+                }
+                catch (Exception ex)
+                {
+                    if (ex is GameDoesNotExistException)
+                    {
+                        throw ex;
+                    }
+                    else if (ex.HResult == -2146233079)
+                    {
+                        throw new GameDoesNotExistException();
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
+                }
+
+                //Go to the Database and get the Game - Questions - Choices All at Once Time
+                var result = db.Database.SqlQuery<GetGameforCodeData>
+                                     ("exec GetGameforCode '" + code + "'").ToList();
+
+
+                var lnqGame = result.First();
+
+                //Lets fill the Game level
+                JGame jsnGame = new JGame();
+                jsnGame.Id = lnqGame.Id;
+                jsnGame.GameType = lnqGame.gameType;
+                jsnGame.Name = lnqGame.Name;
+                jsnGame.Description = lnqGame.Description;
+                jsnGame.Code = lnqGame.Code;
+                jsnGame.StartDate = lnqGame.StartDate;
+                jsnGame.EndDate = lnqGame.EndDate;
+                jsnGame.TestMode = lnqGame.TestMode;
+                jsnGame.GameName = lnqGame.GameName;
+                jsnGame.ServerNowDate = DateTime.UtcNow;
+                jsnGame.ServerVersion = ProbeConstants.ServerVersion;
+                jsnGame.GameQuestions = new List<JGameQuestion>();
+
+                var lnqQuestions = result.OrderBy(q => q.gqOrderNbr).Select(q => new
+                {
+                    q.QuestionId,
+                    q.qName,
+                    q.qText,
+                    q.QuestionType,
+                    q.OneChoice,
+                    q.gqWeight,
+                    q.gqOrderNbr
+                }).Distinct().ToList();
+
+
+                foreach (var lnqQuestion in lnqQuestions)
+                {
+                    JQuestion jsnQuestion = new JQuestion();
+                    jsnQuestion.Id = lnqQuestion.QuestionId;
+                    jsnQuestion.Name = lnqQuestion.qName;
+                    jsnQuestion.Text = Convert.ToBase64String(Encoding.UTF8.GetBytes(lnqQuestion.qText)); //ofuscate question text
+                    jsnQuestion.OrderNbr = lnqQuestion.gqOrderNbr;
+                    jsnQuestion.Weight = lnqQuestion.gqWeight;
+                    jsnQuestion.QuestionType = lnqQuestion.QuestionType;
+                    jsnQuestion.OneChoice = lnqQuestion.OneChoice;
+                    jsnQuestion.Choices = new List<JChoice>();
+
+                    var lnqChoices = result.Where(c => c.QuestionId == lnqQuestion.QuestionId).OrderBy(c => c.cOrderNbr)
+                        .Select(c => new
+                        {
+                            c.cId,
+                            c.cName,
+                            c.cText,
+                            c.Correct,
+                            c.cOrderNbr
+                        }).ToList();
+
+                    foreach (var lnqChoice in lnqChoices)
+                    {
+                        JChoice jsnChoice = new JChoice();
+                        jsnChoice.Id = lnqChoice.cId;
+                        jsnChoice.Name = lnqChoice.cName;
+                        jsnChoice.Text = Convert.ToBase64String(Encoding.UTF8.GetBytes(lnqChoice.cText)); ////ofuscate choice text
+                        jsnChoice.OrderNbr = lnqChoice.cOrderNbr;
+                        jsnChoice.Correct = lnqChoice.Correct;
+
+                        //Add each choice to the current question
+                        jsnQuestion.Choices.Add(jsnChoice);
+                    }
+                    //For every question - we create a GameQuestion, and Question object then
+                    //we add this to the Game object
+                    JGameQuestion jsnGameQuestion = new JGameQuestion();
+                    jsnGameQuestion.Question = jsnQuestion;
+                    jsnGame.GameQuestions.Add(jsnGameQuestion);
+
+                }
+
+                if (jsnGame == null)
+                {
+                    throw new Exception("Game is Corrupted");
+                }
+
+                //We will serialize the jnsGame object and all its children and then we will package it for an HTTP Response
+                string aResp = JsonConvert.SerializeObject(jsnGame);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+
+
+            }
+            catch (GameInSuspendModeException)
+            {
+                var errorObject = new
+                {
+                    errorid = ProbeConstants.MSG_GameInSuspendMode,
+                    errormessage = "A game has been suspended.",
+                    code = code
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+            }
+            catch (GameDoesNotExistException)
+            {
+                var errorObject = new
+                {
+                    errorid = 1,
+                    errormessage = "A game was not found for the code specified.",
+                    code = code
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+            }
+            catch (GameNotActiveException)
+            {
+                var errorObject = new
+                {
+                    errorid = 2,
+                    errormessage = "This game is not active at this time.",
+                    code = code
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                var errorObject = new
+                {
+                    errorid = ex.HResult,
+                    errormessage = ex.Message,
+                    errorinner = ex.InnerException,
+                    errortrace = ex.StackTrace
+                };
+                string aResp = JsonConvert.SerializeObject(errorObject);
+                var resp = new HttpResponseMessage { Content = new StringContent(aResp, System.Text.Encoding.UTF8, "application/json") };
+                return resp;
+
+            }
+
+        } //public HttpResponseMessage GetAnyGame(string code)
+
 
         // PUT: api/Games/5
         [ResponseType(typeof(void))]
